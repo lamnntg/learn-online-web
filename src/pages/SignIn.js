@@ -106,7 +106,7 @@ const signin = [
     />
   </svg>,
 ];
-function SignIn(props) {
+function SignIn() {
   const form = useRef();
   const checkBtn = useRef();
 
@@ -131,14 +131,15 @@ function SignIn(props) {
   };
 
   const handleLogin = (e) => {
-    e.preventDefault();
 
+    e.preventDefault();
     setLoading(true);
 
     if (checkBtn.current.context._errors.length === 0) {
       dispatch(login(username, password))
         .then(() => {
           history.push("/profile");
+          console.log(111);
           window.location.reload();
         })
         .catch(() => {
@@ -196,7 +197,7 @@ function SignIn(props) {
             </Menu>
           </div>
           <div className="header-col header-btn">
-            <Button type="primary">FREE DOWNLOAD</Button>
+
           </div>
         </Header>
         <Content className="signin">
@@ -227,7 +228,7 @@ function SignIn(props) {
                     },
                   ]}
                 >
-                  <Input placeholder="Email" />
+                  <Input placeholder="Email" onChange={onChangeUsername} />
                 </Form.Item>
 
                 <Form.Item
@@ -241,7 +242,7 @@ function SignIn(props) {
                     },
                   ]}
                 >
-                  <Input placeholder="Password" />
+                  <Input placeholder="Password" onChange={onChangePassword} />
                 </Form.Item>
 
                 <Form.Item
@@ -258,6 +259,7 @@ function SignIn(props) {
                     type="primary"
                     htmlType="submit"
                     style={{ width: "100%" }}
+                    onClick={handleLogin}
                   >
                     SIGN IN
                   </Button>
