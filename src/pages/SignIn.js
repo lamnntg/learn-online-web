@@ -115,8 +115,8 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { isLoggedIn } = useSelector(state => state.auth);
-  const { message } = useSelector(state => state.message);
+  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { message } = useSelector((state) => state.message);
 
   const dispatch = useDispatch();
 
@@ -131,28 +131,23 @@ function SignIn() {
   };
 
   const handleLogin = (e) => {
-
     e.preventDefault();
     setLoading(true);
 
-    if (checkBtn.current.context._errors.length === 0) {
-      dispatch(login(username, password))
-        .then(() => {
-          history.push("/profile");
-          console.log(111);
-          window.location.reload();
-        })
-        .catch(() => {
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
+    dispatch(login(username, password))
+      .then(() => {
+        history.push("/profile");
+        window.location.reload();
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   };
 
   if (isLoggedIn) {
     return <Redirect to="/profile" />;
   }
+
   const onFinish = (values) => {
     console.log("Success:", values);
   };
@@ -196,9 +191,7 @@ function SignIn() {
               </Menu.Item>
             </Menu>
           </div>
-          <div className="header-col header-btn">
-
-          </div>
+          <div className="header-col header-btn"></div>
         </Header>
         <Content className="signin">
           <Row gutter={[24, 0]} justify="space-around">
@@ -242,7 +235,7 @@ function SignIn() {
                     },
                   ]}
                 >
-                  <Input placeholder="Password" onChange={onChangePassword} />
+                  <Input type="password" placeholder="Password" onChange={onChangePassword} />
                 </Form.Item>
 
                 <Form.Item
@@ -318,10 +311,6 @@ function SignIn() {
               <Link to="#">{<GithubOutlined />}</Link>
             </Menu.Item>
           </Menu>
-          <p className="copyright">
-            {" "}
-            Copyright © 2021 Muse by <a href="#pablo">Creative Tim</a>.{" "}
-          </p>
         </Footer>
       </Layout>
     </>

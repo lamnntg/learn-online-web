@@ -25,7 +25,7 @@ import {
   DownOutlined,
 } from "@ant-design/icons";
 
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import avtar from "../../assets/images/team-2.jpg";
 
@@ -192,28 +192,6 @@ const profile = [
   </svg>,
 ];
 
-const menuUser = (
-  <Menu>
-    <Menu.Item key="1">
-      <Link to="/profile" className="btn-sign-in">
-        <span>Profile</span>
-      </Link>
-    </Menu.Item>
-    <Menu.Item icon={<DownOutlined />} disabled  key="2">
-      <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-        2nd menu item (disabled)
-      </a>
-    </Menu.Item>
-    <Menu.Item disabled  key="3">
-      <a target="_blank" rel="noopener noreferrer" href="https://www.luohanacademy.com">
-        3rd menu item (disabled)
-      </a>
-    </Menu.Item>
-    <Menu.Item danger key="4" onClick={() => {
-      authService.logout();
-    }}>Log out</Menu.Item>
-  </Menu>
-);
 
 const logsetting = [
   <svg
@@ -276,6 +254,7 @@ function Header({
   const { Title, Text } = Typography;
   const [visible, setVisible] = useState(false);
   const [sidenavType, setSidenavType] = useState("transparent");
+  const history = useHistory();
 
   useEffect(() => window.scrollTo(0, 0));
 
@@ -284,6 +263,8 @@ function Header({
 
   const logOut = () => {
     authService.logout();
+    history.push("/sign-in");
+    window.location.reload();
   };
   return (
     <>
@@ -413,7 +394,7 @@ function Header({
                   <Title level={5}>Navbar Fixed </Title>
                   <Switch onChange={(e) => handleFixedNavbar(e)} />
                 </div>
-                <div className="ant-docment">
+                {/* <div className="ant-docment">
                   <ButtonContainer>
                     <Button type="black" size="large">
                       FREE DOWNLOAD
@@ -434,14 +415,23 @@ function Header({
                     <Button type="black">{<TwitterOutlined />}TWEET</Button>
                     <Button type="black">{<FacebookFilled />}SHARE</Button>
                   </ButtonContainer>
-                </div>
+                </div> */}
               </div>
             </div>
           </Drawer>
           {
             currentUser
             ?
-            <Dropdown overlay={menuUser} placement="bottomLeft">
+            <Dropdown overlay={
+                <Menu>
+                  <Menu.Item key="1">
+                    <Link to="/profile" className="btn-sign-in">
+                      <span>Profile</span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item danger key="2" onClick={logOut}>Log out</Menu.Item>
+                </Menu>
+            } placement="bottomLeft">
               <a className="btn-sign-in">
                 {profile}
                 <span>{currentUser.username}</span>
