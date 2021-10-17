@@ -118,6 +118,7 @@ export default class SignUp extends Component {
 
   render() {
     const onFinish = (values) => {
+      
       console.log("Success:", values);
     };
 
@@ -215,7 +216,7 @@ export default class SignUp extends Component {
                 <Form.Item
                   name="email"
                   rules={[
-                    { required: true, message: "Please input your email!" },
+                    { required: true, message: "Please input your email!", type: 'email' },
                   ]}
                 >
                   <Input placeholder="Email" />
@@ -230,7 +231,7 @@ export default class SignUp extends Component {
                     },
                     ({ getFieldValue }) => ({
                       validator(_, value) {
-                        if (!value || getFieldValue("password").length < 6) {
+                        if (!value || getFieldValue("password").length > 5) {
                           return Promise.resolve();
                         }
                         return Promise.reject(

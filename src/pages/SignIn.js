@@ -131,8 +131,7 @@ function SignIn() {
     setPassword(password);
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  const handleLogin = () => {
     setLoading(true);
 
     dispatch(login(username, password))
@@ -153,6 +152,7 @@ function SignIn() {
 
   const onFinish = (values) => {
     console.log("Success:", values);
+    handleLogin()
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -255,7 +255,6 @@ function SignIn() {
                     type="primary"
                     htmlType="submit"
                     style={{ width: "100%" }}
-                    onClick={handleLogin}
                   >
                     SIGN IN
                   </Button>
