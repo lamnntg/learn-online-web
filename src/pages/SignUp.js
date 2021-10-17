@@ -106,12 +106,12 @@ const signin = [
 export default class SignUp extends Component {
   scrollToBottom = () => {
     this.messagesEnd.scrollIntoView({ behavior: "smooth" });
-  }
-  
+  };
+
   componentDidMount() {
     this.scrollToBottom();
   }
-  
+
   componentDidUpdate() {
     this.scrollToBottom();
   }
@@ -166,8 +166,11 @@ export default class SignUp extends Component {
 
           <Content className="p-0">
             <div className="sign-up-header">
-              <div className="content"
-                ref={(el) => { this.messagesEnd = el; }}
+              <div
+                className="content"
+                ref={(el) => {
+                  this.messagesEnd = el;
+                }}
               >
                 <Title>Sign Up</Title>
                 <p className="text-lg">
@@ -215,15 +218,58 @@ export default class SignUp extends Component {
                     { required: true, message: "Please input your email!" },
                   ]}
                 >
-                  <Input placeholder="email" />
+                  <Input placeholder="Email" />
                 </Form.Item>
+
                 <Form.Item
                   name="password"
                   rules={[
-                    { required: true, message: "Please input your password!" },
+                    {
+                      required: true,
+                      message: "Please input your password!",
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue("password").length < 6) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error(
+                            "Password with at least 6 characters"
+                          )
+                        );
+                      },
+                    })
+                  ]}
+                  hasFeedback
+                >
+                  <Input.Password placeholder="Password" />
+                </Form.Item>
+
+                <Form.Item
+                  name="confirm"
+                  dependencies={["password"]}
+                  hasFeedback
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please confirm your password!",
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue("password") === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error(
+                            "The two passwords that you entered do not match!"
+                          )
+                        );
+                      },
+                    }),
                   ]}
                 >
-                  <Input placeholder="Password" />
+                  <Input.Password placeholder="Confirm Password" />
                 </Form.Item>
 
                 <Form.Item name="remember" valuePropName="checked">

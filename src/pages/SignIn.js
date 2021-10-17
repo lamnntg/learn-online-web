@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import React, { Component, useState, useRef } from "react";
-import { login } from "../actions/auth";
+import { login } from "../redux/auth/auth.actions";
 import { Link, Redirect, useHistory } from "react-router-dom";
 
 import {
@@ -13,6 +13,7 @@ import {
   Form,
   Input,
   Switch,
+  message as MessageAnt
 } from "antd";
 import signinbg from "../assets/images/img-signin.jpg";
 import {
@@ -140,6 +141,8 @@ function SignIn() {
         window.location.reload();
       })
       .catch(() => {
+        MessageAnt.error('Login fail ! Account is invalid');
+        setPassword('');
         setLoading(false);
       });
   };
@@ -221,7 +224,7 @@ function SignIn() {
                     },
                   ]}
                 >
-                  <Input placeholder="Email" onChange={onChangeUsername} />
+                  <Input placeholder="Email" value={username} onChange={onChangeUsername} />
                 </Form.Item>
 
                 <Form.Item
@@ -235,7 +238,7 @@ function SignIn() {
                     },
                   ]}
                 >
-                  <Input type="password" placeholder="Password" onChange={onChangePassword} />
+                  <Input type="password" placeholder="Password" onChange={onChangePassword}/>
                 </Form.Item>
 
                 <Form.Item
