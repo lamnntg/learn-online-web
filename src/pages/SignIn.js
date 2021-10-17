@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import React, { Component, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { login } from "../redux/auth/auth.actions";
 import { Link, Redirect, useHistory } from "react-router-dom";
 
@@ -140,7 +140,7 @@ function SignIn() {
         window.location.reload();
       })
       .catch(() => {
-        MessageAnt.error('Login fail ! Account is invalid');
+        MessageAnt.error(message);
         setPassword('');
         setLoading(false);
       });
