@@ -1,16 +1,5 @@
-/*!
-  =========================================================
-  * Muse Ant Design Dashboard - v1.0.0
-  =========================================================
-  * Product Page: https://www.creative-tim.com/product/muse-ant-design-dashboard
-  * Copyright 2021 Creative Tim (https://www.creative-tim.com)
-  * Licensed under MIT (https://github.com/creativetimofficial/muse-ant-design-dashboard/blob/main/LICENSE.md)
-  * Coded by Creative Tim
-  =========================================================
-  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 import { useState } from "react";
-
+import { authService } from "../services/auth.service";
 import {
   Row,
   Col,
@@ -44,6 +33,7 @@ import project2 from "../assets/images/home-decor-2.jpeg";
 import project3 from "../assets/images/home-decor-3.jpeg";
 
 function Profile() {
+  const user = authService.getCurrentUser();
   const [imageURL, setImageURL] = useState(false);
   const [, setLoading] = useState(false);
 
@@ -174,7 +164,7 @@ function Profile() {
                 <Avatar size={74} shape="square" src={profilavatar} />
 
                 <div className="avatar-info">
-                  <h4 className="font-semibold m-0">Sarah Jacob</h4>
+                  <h4 className="font-semibold m-0">{ user.name }</h4>
                   <p>CEO / Co-Founder</p>
                 </div>
               </Avatar.Group>
@@ -258,15 +248,15 @@ function Profile() {
               equality).{" "}
             </p>
             <hr className="my-25" />
-            <Descriptions title="Oliver Liam">
+            <Descriptions title={ user.username }>
               <Descriptions.Item label="Full Name" span={3}>
-                Sarah Emily Jacob
+                { user.name }
               </Descriptions.Item>
               <Descriptions.Item label="Mobile" span={3}>
                 (44) 123 1234 123
               </Descriptions.Item>
               <Descriptions.Item label="Email" span={3}>
-                sarahjacob@mail.com
+                { user.email }
               </Descriptions.Item>
               <Descriptions.Item label="Location" span={3}>
                 USA

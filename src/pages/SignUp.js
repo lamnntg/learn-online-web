@@ -10,7 +10,7 @@ import {
   Form,
   Input,
   Checkbox,
-  message as MessageAntd
+  message as MessageAntd,
 } from "antd";
 import logo1 from "../assets/images/logos-facebook.svg";
 import logo2 from "../assets/images/logo-apple.svg";
@@ -109,17 +109,23 @@ const signin = [
 function SignUp() {
   const history = useHistory();
   const dispatch = useDispatch();
+  const { isLoggedIn } = useSelector((state) => state.auth);
+
+  if (isLoggedIn) {
+    history.push("/dashboard");
+  }
 
   const onFinish = (values) => {
-    dispatch(register(values.name, values.username, values.email, values.password))
+    dispatch(
+      register(values.name, values.username, values.email, values.password)
+    )
       .then(() => {
         history.push("/sign-in");
         window.location.reload();
       })
       .catch((err) => {
         MessageAntd.error(err);
-      })
-    ;
+      });
     console.log("Success:", values);
   };
 
@@ -203,9 +209,7 @@ function SignUp() {
             >
               <Form.Item
                 name="name"
-                rules={[
-                  { required: true, message: "Please input your name!" },
-                ]}
+                rules={[{ required: true, message: "Please input your name!" }]}
               >
                 <Input placeholder="Name" />
               </Form.Item>
