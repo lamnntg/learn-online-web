@@ -36,7 +36,6 @@ function Profile() {
   const user = authService.getCurrentUser();
   const [imageURL, setImageURL] = useState(false);
   const [, setLoading] = useState(false);
-
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
     reader.addEventListener("load", () => callback(reader.result));
@@ -165,7 +164,13 @@ function Profile() {
 
                 <div className="avatar-info">
                   <h4 className="font-semibold m-0">{ user.name }</h4>
-                  <p>CEO / Co-Founder</p>
+                  {
+                    user.roles.map((role, index) => {
+                      return (
+                        <p>{role}</p>
+                      );
+                    })
+                  }
                 </div>
               </Avatar.Group>
             </Col>
