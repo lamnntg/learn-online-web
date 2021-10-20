@@ -23,7 +23,13 @@ function App() {
         <Route exact path="/" component={Landing} />
         <Route path="/sign-up" exact component={SignUp} />
         <Route path="/sign-in" exact component={SignIn} />
-        <Route exact path="/meeting-room" component={MeetingRoom} />
+        {
+          isLoggedIn
+          ?
+          <Route exact path="/meeting-room" component={MeetingRoom} />
+          :
+          <Redirect to="/sign-in" />
+        }
         {
           isLoggedIn
           ?
