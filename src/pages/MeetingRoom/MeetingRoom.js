@@ -1,7 +1,9 @@
 import React from "react";
 import "./MeetingRoom.scss";
 import { useHistory } from "react-router-dom";
+import { authService } from "../../services/auth.service";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ROLE_MODERATOR } from "../../utils/constants";
 import { 
   faVideo, 
   faKeyboard, 
@@ -12,6 +14,8 @@ import {
 import shortid from "shortid";
 
 export default function MeetingRoom() {
+  const currentUser = authService.getCurrentUser();
+  const isModerator = currentUser.roles.includes(ROLE_MODERATOR);
   const history = useHistory();
 
   const startCall = () => {
@@ -46,10 +50,16 @@ export default function MeetingRoom() {
               meetings, Google Meet, to make it free and available for all.
             </p>
             <div className="action-btn">
-              <button className="btn green" onClick={startCall}>
-                <FontAwesomeIcon className="icon-block" icon={faVideo} />
-                New Meeting
-              </button>
+              {
+                isModerator
+                ?
+                <button className="btn green" onClick={startCall}>
+                  <FontAwesomeIcon className="icon-block" icon={faVideo} />
+                  New Meeting
+                </button>
+                :
+                ''
+              }
               <div className="input-block">
                 <div className="input-section">
                   <FontAwesomeIcon className="icon-block" icon={faKeyboard} />
