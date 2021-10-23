@@ -12,7 +12,6 @@ import {
   Input,
   Anchor,
   Drawer,
-  Layout,
   BackTop,
 } from "antd";
 
@@ -26,7 +25,6 @@ import image6 from "../../assets/images/advanced-option.jpg";
 
 const { Meta } = Card;
 const { TextArea } = Input;
-const { Header, Content, Footer } = Layout;
 
 const items = [
   {
@@ -141,7 +139,7 @@ export default function Landing() {
             <div className="header">
               <div className="logo">
                 <i className="fas fa-bolt"></i>
-                <a href="http://google.com">Tech</a>
+                <a href="/">Learn</a>
               </div>
 
               <div className="mobileVisible">
@@ -374,7 +372,7 @@ export default function Landing() {
             <div className="footer">
               <div className="logo">
                 <i className="fas fa-bolt"></i>
-                <a href="http://google.com">Tech</a>
+                <a href="/">Learn Online</a>
               </div>
 
               <ul className="socials">
@@ -404,7 +402,7 @@ export default function Landing() {
                   </a>
                 </li>
               </ul>
-              <div className="copyright">Copyright © 2020 Tech</div>
+              <div className="copyright">Copyright © 2020 Learn Online</div>
               <BackTop>
                 <div>
                   <i
