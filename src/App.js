@@ -10,6 +10,7 @@ import SignIn from "./pages/SignIn";
 import Main from "./components/layout/Main";
 import Landing from "./pages/Landing/Landing";
 import MeetingRoom from "./pages/MeetingRoom/MeetingRoom";
+import NotFound from "./pages/NotFound";
 import "antd/dist/antd.css";
 import "./assets/styles/main.css";
 import "./assets/styles/responsive.css";
