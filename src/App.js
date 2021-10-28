@@ -9,7 +9,9 @@ import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import Main from "./components/layout/Main";
 import Landing from "./pages/Landing/Landing";
+import MeetingHome from "./pages/MeetingHome/MeetingHome";
 import MeetingRoom from "./pages/MeetingRoom/MeetingRoom";
+
 import NotFound from "./pages/NotFound";
 import "antd/dist/antd.css";
 import "./assets/styles/main.css";
@@ -27,7 +29,10 @@ function App() {
         {
           isLoggedIn
           ?
-          <Route exact path="/meeting-room" component={MeetingRoom} />
+          <>
+            <Route exact path="/meeting" component={MeetingHome} />
+            <Route exact path="/meeting/:id" component={MeetingRoom} />
+          </>
           :
           <Redirect to="/sign-in" />
         }

@@ -105,7 +105,7 @@ function Sidenav({ color }) {
           </NavLink>
         </Menu.Item>
          <Menu.Item key="7">
-          <NavLink to="/meeting-room">
+          <NavLink to="/meeting">
             <span className="icon">{<VideoCameraOutlined />}</span>
             <span className="label">Meeting</span>
           </NavLink>
