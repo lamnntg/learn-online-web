@@ -258,13 +258,13 @@ function Profile() {
                 { user.name }
               </Descriptions.Item>
               <Descriptions.Item label="Mobile" span={3}>
-                (44) 123 1234 123
+                (+84) 123 1234 123
               </Descriptions.Item>
               <Descriptions.Item label="Email" span={3}>
                 { user.email }
               </Descriptions.Item>
               <Descriptions.Item label="Location" span={3}>
-                USA
+                Việt Nam
               </Descriptions.Item>
               <Descriptions.Item label="Social" span={3}>
                 <a href="#pablo" className="mx-5 px-5">

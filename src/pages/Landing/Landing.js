@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
   Button,
   Carousel,
@@ -106,7 +106,7 @@ const itemsFeature = [
 
 export default function Landing() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const history = useHistory();
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -123,6 +123,11 @@ export default function Landing() {
     console.log(a, b, c);
   }
 
+  const handleLogin = () => {
+    history.push("/sign-in");
+    window.location.reload();
+  }
+  
   const { Link } = Anchor;
   const [visible, setVisible] = useState(false);
   const showDrawer = () => {
@@ -188,8 +193,8 @@ export default function Landing() {
                     <h3>{item.title}</h3>
                     <p>{item.content}</p>
                     <div className="btnHolder">
-                      <Button type="primary" size="large">
-                        Learn More
+                      <Button type="primary" size="large" onClick={handleLogin}>
+                        Login
                       </Button>
                       <Button size="large">
                         <i className="fas fa-desktop"></i> Watch a Demo

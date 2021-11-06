@@ -32,7 +32,7 @@ function Sidenav({ color }) {
     <>
       <div className="brand">
         <img src={logo} alt="" />
-        <span>Learn Online</span>
+        <span style={{paddingLeft: "10px"}}>Learn Online</span>
       </div>
       <hr />
       <Menu theme="light" mode="inline">
