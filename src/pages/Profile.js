@@ -163,14 +163,10 @@ function Profile() {
                 <Avatar size={74} shape="square" src={profilavatar} />
 
                 <div className="avatar-info">
-                  <h4 className="font-semibold m-0">{ user.name }</h4>
-                  {
-                    user.roles.map((role, index) => {
-                      return (
-                        <p>{role}</p>
-                      );
-                    })
-                  }
+                  <h4 className="font-semibold m-0">{user.name}</h4>
+                  {user.roles.map((role, index) => {
+                    return <p>{role}</p>;
+                  })}
                 </div>
               </Avatar.Group>
             </Col>
@@ -245,26 +241,20 @@ function Profile() {
             extra={<Button type="link">{pencil}</Button>}
             bodyStyle={{ paddingTop: 0, paddingBottom: 16 }}
           >
-            <p className="text-dark">
-              {" "}
-              Hi, I’m Alec Thompson, Decisions: If you can’t decide, the answer
-              is no. If two equally difficult paths, choose the one more painful
-              in the short term (pain avoidance is creating an illusion of
-              equality).{" "}
-            </p>
+            <p className="text-dark"> {user.description} </p>
             <hr className="my-25" />
-            <Descriptions title={ user.username }>
+            <Descriptions title={user.username}>
               <Descriptions.Item label="Full Name" span={3}>
-                { user.name }
+                {user.name}
               </Descriptions.Item>
               <Descriptions.Item label="Mobile" span={3}>
                 (+84) 123 1234 123
               </Descriptions.Item>
               <Descriptions.Item label="Email" span={3}>
-                { user.email }
+                {user.email}
               </Descriptions.Item>
-              <Descriptions.Item label="Location" span={3}>
-                Việt Nam
+              <Descriptions.Item label="Address" span={3}>
+                {user.address}
               </Descriptions.Item>
               <Descriptions.Item label="Social" span={3}>
                 <a href="#pablo" className="mx-5 px-5">
