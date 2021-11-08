@@ -5,6 +5,7 @@ import Alert from "../../components/UI/Alert/Alert";
 import MeetingInfo from "../../components/UI/MeetingInfo/MeetingInfo";
 import CallPageFooter from "../../components/UI/CallPageFooter/CallPageFooter";
 import CallPageHeader from "../../components/UI/CallPageHeader/CallPageHeader";
+import io from "socket.io-client";
 
 export default function MeetingRoom() {
   return (

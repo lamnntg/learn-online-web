@@ -110,6 +110,21 @@ function Sidenav({ color }) {
             <span className="label">Meeting</span>
           </NavLink>
         </Menu.Item>
+        <Menu.Item className="menu-item-header" key="8">
+          Classrooms
+        </Menu.Item>
+        <Menu.Item key="7">
+          <NavLink to="/meeting">
+            <span className="icon">C1</span>
+            <span className="label">Lớp học 1</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="10">
+          <NavLink to="/meeting">
+            <span className="icon">C2</span>
+            <span className="label">Lớp học 2</span>
+          </NavLink>
+        </Menu.Item>
         {/*<Menu.Item key="8">
           <NavLink to="/sign-up">
             <span className="icon">{signup}</span>
