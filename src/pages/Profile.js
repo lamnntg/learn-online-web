@@ -244,6 +244,9 @@ function Profile() {
             <p className="text-dark"> {user.description} </p>
             <hr className="my-25" />
             <Descriptions title={user.username}>
+              <Descriptions.Item label="Status" span={3}>
+                {user.status}
+              </Descriptions.Item>
               <Descriptions.Item label="Full Name" span={3}>
                 {user.name}
               </Descriptions.Item>

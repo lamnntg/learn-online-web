@@ -11,6 +11,7 @@ import Main from "./components/layout/Main";
 import Landing from "./pages/Landing/Landing";
 import MeetingHome from "./pages/MeetingHome/MeetingHome";
 import MeetingRoom from "./pages/MeetingRoom/MeetingRoom";
+import Classroom from "./pages/Classroom/Classroom";
 
 import NotFound from "./pages/NotFound";
 import "antd/dist/antd.css";
@@ -44,6 +45,7 @@ function App() {
               <Route exact path="/billing" component={Billing} />
               <Route exact path="/rtl" component={Rtl} />
               <Route exact path="/profile" component={Profile} />
+              <Route exact path="/classroom" component={Classroom} />
               <Redirect from="*" to="/dashboard" />
             </Main>
           </Switch>

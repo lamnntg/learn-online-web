@@ -36,7 +36,7 @@ function Sidenav({ color }) {
       </div>
       <hr />
       <Menu theme="light" mode="inline">
-        <Menu.Item key="1">
+        <Menu.Item key="db">
           <NavLink to="/dashboard">
             <span
               className="icon"
@@ -49,7 +49,7 @@ function Sidenav({ color }) {
             <span className="label">Dashboard</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="2">
+        <Menu.Item key="table">
           <NavLink to="/tables">
             <span
               className="icon"
@@ -62,7 +62,20 @@ function Sidenav({ color }) {
             <span className="label">Tables</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="3">
+        <Menu.Item key="classroom">
+          <NavLink to="/classroom">
+            <span
+              className="icon"
+              style={{
+                background: page === "classroom" ? color : "",
+              }}
+            >
+              {<TableOutlined />}
+            </span>
+            <span className="label">Classrooms</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="billing">
           <NavLink to="/billing">
             <span
               className="icon"
@@ -75,7 +88,7 @@ function Sidenav({ color }) {
             <span className="label">Billing</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="4">
+        <Menu.Item key="rtl">
           <NavLink to="/rtl">
             <span
               className="icon"
@@ -91,7 +104,7 @@ function Sidenav({ color }) {
         <Menu.Item className="menu-item-header" key="5">
           Account Pages
         </Menu.Item>
-        <Menu.Item key="6">
+        <Menu.Item key="profile">
           <NavLink to="/profile">
             <span
               className="icon"
@@ -104,7 +117,7 @@ function Sidenav({ color }) {
             <span className="label">Profile</span>
           </NavLink>
         </Menu.Item>
-         <Menu.Item key="7">
+         <Menu.Item key="meeting1">
           <NavLink to="/meeting">
             <span className="icon">{<VideoCameraOutlined />}</span>
             <span className="label">Meeting</span>
@@ -113,13 +126,13 @@ function Sidenav({ color }) {
         <Menu.Item className="menu-item-header" key="8">
           Classrooms
         </Menu.Item>
-        <Menu.Item key="7">
+        <Menu.Item key="meeting2">
           <NavLink to="/meeting">
             <span className="icon">C1</span>
             <span className="label">Lớp học 1</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="10">
+        <Menu.Item key="meeting3">
           <NavLink to="/meeting">
             <span className="icon">C2</span>
             <span className="label">Lớp học 2</span>

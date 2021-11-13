@@ -443,11 +443,7 @@ function Header({
               <span>Sign in</span>
             </Link>
           }
-          <Input
-            className="header-search"
-            placeholder="Type here..."
-            prefix={<SearchOutlined />}
-          />
+
         </Col>
       </Row>
     </>
