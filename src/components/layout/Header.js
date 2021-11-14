@@ -18,11 +18,13 @@ import {
 } from "antd";
 
 import {
-  SearchOutlined,
+  PlusOutlined,
+  BellOutlined,
   StarOutlined,
   TwitterOutlined,
   FacebookFilled,
   DownOutlined,
+  FileAddOutlined
 } from "@ant-design/icons";
 
 import { NavLink, Link, useHistory } from "react-router-dom";
@@ -192,7 +194,6 @@ const profile = [
   </svg>,
 ];
 
-
 const logsetting = [
   <svg
     width="20"
@@ -298,7 +299,7 @@ function Header({
                 className="ant-dropdown-link"
                 onClick={(e) => e.preventDefault()}
               >
-                {bell}
+                {<BellOutlined />}
               </a>
             </Dropdown>
           </Badge>
@@ -419,31 +420,33 @@ function Header({
               </div>
             </div>
           </Drawer>
-          {
-            currentUser
-            ?
-            <Dropdown overlay={
+          {currentUser ? (
+            <Dropdown
+              overlay={
                 <Menu>
                   <Menu.Item key="1">
                     <Link to="/profile" className="btn-sign-in">
                       <span>Profile</span>
                     </Link>
                   </Menu.Item>
-                  <Menu.Item danger key="2" onClick={logOut}>Log out</Menu.Item>
+                  <Menu.Item danger key="2" onClick={logOut}>
+                    Log out
+                  </Menu.Item>
                 </Menu>
-            } placement="bottomLeft">
+              }
+              placement="bottomLeft"
+            >
               <a className="btn-sign-in">
                 {profile}
                 <span>{currentUser.username}</span>
               </a>
             </Dropdown>
-            :
+          ) : (
             <Link to="/sign-in" className="btn-sign-in">
               {profile}
               <span>Sign in</span>
             </Link>
-          }
-
+          )}
         </Col>
       </Row>
     </>
