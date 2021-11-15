@@ -1,7 +1,7 @@
 import React from "react";
 import "./MeetingHome.scss";
 import { useHistory } from "react-router-dom";
- import { authService } from "../../services/auth.service";
+import { authService } from "../../services/auth.service";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ROLE_MODERATOR } from "../../utils/constants";
 import { 

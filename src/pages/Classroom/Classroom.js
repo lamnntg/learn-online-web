@@ -11,37 +11,56 @@ import {
   Space,
   Input,
   List,
+  Tooltip,
 } from "antd";
 import {
   EditOutlined,
   EllipsisOutlined,
   SettingOutlined,
+  PlusOutlined,
+  UsergroupAddOutlined,
+  UserOutlined,
+  InfoCircleOutlined,
+  FormOutlined,
 } from "@ant-design/icons";
+import { authService } from "../../services/auth.service";
+import { ROLE_MODERATOR } from "../../utils/constants";
+
 const { Meta } = Card;
 
 export default function Classroom() {
   let classrooms = [1, 2, 3, 4, 5];
   let loading = false;
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCreateModalVisible, setCreateIsModalVisible] = useState(false);
+  const [isJoinModalVisible, setIsJoinModalVisible] = useState(false);
 
-  const showModal = () => {
-    setIsModalVisible(true);
+  const currentUser = authService.getCurrentUser();
+  const isModerator = currentUser.roles.includes(ROLE_MODERATOR);
+
+  const showJoinModal = () => {
+    setIsJoinModalVisible(true);
+  };
+
+  const showCreateModal = () => {
+    setCreateIsModalVisible(true);
   };
 
   const handleOk = () => {
-    setIsModalVisible(false);
+    setCreateIsModalVisible(false);
+    setIsJoinModalVisible(false);
   };
 
   const handleCancel = () => {
-    setIsModalVisible(false);
+    setCreateIsModalVisible(false);
+    setIsJoinModalVisible(false);
   };
 
-  let modal = (
+  let joinClassModal = (
     <Modal
-      className="modal-create-classroom"
+      className="modal-join-classroom"
       title="Tham gia lớp học"
-      visible={isModalVisible}
+      visible={isJoinModalVisible}
       onOk={() => handleOk(false)}
       onCancel={() => handleCancel(false)}
       width={800}
@@ -49,7 +68,9 @@ export default function Classroom() {
       <div className="classroom-code">
         <div className="classroom-code-title">
           <h2>Mã Lớp</h2>
-          <p>Nhập mã lớp của bạn vào đây</p>
+          <p>
+            Đề nghị giáo viên của bạn cung cấp mã lớp rồi nhập mã đó vào đây.
+          </p>
         </div>
         <div className="classroom-code-input">
           <Space direction="vertical">
@@ -70,6 +91,62 @@ export default function Classroom() {
     </Modal>
   );
 
+  let createClassModal = (
+    <Modal
+      className="modal-create-classroom"
+      title="Tạo lớp học mới"
+      visible={isCreateModalVisible}
+      onOk={() => handleOk(false)}
+      onCancel={() => handleCancel(false)}
+      width={800}
+    >
+      <div className="input-infor-class">
+        <Input
+          placeholder="Nhập tên lớp học"
+          prefix={<FormOutlined className="site-form-item-icon" />}
+          suffix={
+            <Tooltip title="Nhập thông tin về tên lớp học">
+              <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+            </Tooltip>
+          }
+        />
+      </div>
+      <div className="input-infor-class">
+        <Input
+          placeholder="Nhập tên học phần"
+          prefix={<FormOutlined className="site-form-item-icon" />}
+          suffix={
+            <Tooltip title="Nhập thông tin về tên học phần">
+              <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+            </Tooltip>
+          }
+        />
+      </div>
+      <div className="input-infor-class">
+        <Input
+          placeholder="Nhập tên chủ đề"
+          prefix={<FormOutlined className="site-form-item-icon" />}
+          suffix={
+            <Tooltip title="Nhập thông tin về tên chủ đề">
+              <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+            </Tooltip>
+          }
+        />
+      </div>
+      <div className="input-infor-class">
+        <Input
+          placeholder="Nhập tên phòng học"
+          prefix={<FormOutlined className="site-form-item-icon" />}
+          suffix={
+            <Tooltip title="Nhập thông tin về tên phòng học">
+              <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+            </Tooltip>
+          }
+        />
+      </div>
+    </Modal>
+  );
+
   return (
     <div className="main">
       <div className="main__header">
@@ -80,17 +157,29 @@ export default function Classroom() {
           extra={
             <>
               <div className="list-action-btn">
-                <Button type="primary" onClick={() => showModal(true)}>
-                  Join Class
-                </Button>
+                {isModerator ? (
+                  <>
+                    <Button
+                      type="primary"
+                      ghost
+                      icon={<PlusOutlined />}
+                      onClick={() => showCreateModal(true)}
+                    >
+                      Tạo lớp học
+                    </Button>
+                    {createClassModal}
+                  </>
+                ) : null}
 
-                <Button type="primary" onClick={() => showModal(true)}>
-                  Join Class
+                <Button
+                  type="primary"
+                  icon={<UsergroupAddOutlined />}
+                  onClick={() => showJoinModal(true)}
+                >
+                  Tham gia lớp học
                 </Button>
+                {joinClassModal}
               </div>
-             
-
-              {modal}
             </>
           }
         ></Card>
