@@ -75,6 +75,7 @@ const profile = [
     ></path>
   </svg>,
 ];
+
 const signup = [
   <svg
     data-v-4ebdc598=""

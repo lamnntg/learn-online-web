@@ -25,14 +25,24 @@ import {
 } from "@ant-design/icons";
 import { authService } from "../../services/auth.service";
 import { ROLE_MODERATOR } from "../../utils/constants";
+import { classroomService } from "../../services/classroom.service";
+import { useHistory } from "react-router-dom";
+import shortid from "shortid";
 
 const { Meta } = Card;
 
 export default function Classroom() {
   let classrooms = [1, 2, 3, 4, 5];
   let loading = false;
-  const onChange = (e) => console.log(`radio checked:${e.target.value}`);
-  const [isCreateModalVisible, setCreateIsModalVisible] = useState(false);
+  const history = useHistory();
+  //attribute of classroom
+  const [classroomName, setClassroomName] = useState('');
+  const [subject, setSubject] = useState('');
+  const [room, setRoom] = useState('');
+
+
+  //modal create classroom
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isJoinModalVisible, setIsJoinModalVisible] = useState(false);
 
   const currentUser = authService.getCurrentUser();
@@ -43,16 +53,36 @@ export default function Classroom() {
   };
 
   const showCreateModal = () => {
-    setCreateIsModalVisible(true);
+    setIsCreateModalVisible(true);
   };
 
+  const createClassroom = async () => {
+    const data = {
+      "name": classroomName,
+      "subject": subject,
+      "code": shortid.generate(),
+      "room": room,
+      "owner": currentUser.id,
+    };
+    try {
+      let result = await classroomService.createClassroom(data);
+      
+      const uid = result.result.code;
+      history.push(`classroom/${uid}`);
+      setIsJoinModalVisible(false);
+
+    } catch (error) {
+      console.log(error);
+    }   
+  }
+
   const handleOk = () => {
-    setCreateIsModalVisible(false);
+    setIsCreateModalVisible(false);
     setIsJoinModalVisible(false);
   };
 
   const handleCancel = () => {
-    setCreateIsModalVisible(false);
+    setIsCreateModalVisible(false);
     setIsJoinModalVisible(false);
   };
 
@@ -96,7 +126,7 @@ export default function Classroom() {
       className="modal-create-classroom"
       title="Tạo lớp học mới"
       visible={isCreateModalVisible}
-      onOk={() => handleOk(false)}
+      onOk={() => createClassroom()}
       onCancel={() => handleCancel(false)}
       width={800}
     >
@@ -109,6 +139,8 @@ export default function Classroom() {
               <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
             </Tooltip>
           }
+          value={classroomName}
+          onChange={(e) => setClassroomName(e.target.value)}
         />
       </div>
       <div className="input-infor-class">
@@ -120,6 +152,8 @@ export default function Classroom() {
               <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
             </Tooltip>
           }
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
         />
       </div>
       <div className="input-infor-class">
@@ -142,6 +176,8 @@ export default function Classroom() {
               <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
             </Tooltip>
           }
+          value={room}
+          onChange={(e) => setRoom(e.target.value)}
         />
       </div>
     </Modal>
