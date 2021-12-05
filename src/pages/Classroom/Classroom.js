@@ -1,5 +1,6 @@
 import "./Classroom.scss";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Skeleton,
   Card,
@@ -25,21 +26,27 @@ import {
 } from "@ant-design/icons";
 import { authService } from "../../services/auth.service";
 import { ROLE_MODERATOR } from "../../utils/constants";
-import { classroomService } from "../../services/classroom.service";
+import {
+  createClassroom,
+  getClassroom,
+} from "../../services/classroom.service";
 import { useHistory } from "react-router-dom";
 import shortid from "shortid";
 
 const { Meta } = Card;
 
 export default function Classroom() {
-  let classrooms = [1, 2, 3, 4, 5];
+  const [classrooms, setClassrooms] = useState([]);
+  const { user } = useSelector((state) => state.auth);
+  console.log(user);
+
   let loading = false;
   const history = useHistory();
   //attribute of classroom
-  const [classroomName, setClassroomName] = useState('');
-  const [subject, setSubject] = useState('');
-  const [room, setRoom] = useState('');
+  const [classroomName, setClassroomName] = useState("");
 
+  const [subject, setSubject] = useState("");
+  const [room, setRoom] = useState("");
 
   //modal create classroom
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
@@ -47,6 +54,17 @@ export default function Classroom() {
 
   const currentUser = authService.getCurrentUser();
   const isModerator = currentUser.roles.includes(ROLE_MODERATOR);
+
+  useEffect(() => {
+    getClassroom(user.id)
+      .then((res) => {
+        setClassrooms(res.result);
+      })
+      .catch((err) => {
+        console.log("server error");
+      });
+
+  }, [user]);
 
   const showJoinModal = () => {
     setIsJoinModalVisible(true);
@@ -56,25 +74,24 @@ export default function Classroom() {
     setIsCreateModalVisible(true);
   };
 
-  const createClassroom = async () => {
+  const handleCreateClassroom = async () => {
     const data = {
-      "name": classroomName,
-      "subject": subject,
-      "code": shortid.generate(),
-      "room": room,
-      "owner": currentUser.id,
+      name: classroomName,
+      subject: subject,
+      code: shortid.generate(),
+      room: room,
+      owner: currentUser.id,
     };
     try {
-      let result = await classroomService.createClassroom(data);
-      
+      let result = await createClassroom(data);
+
       const uid = result.result.code;
       history.push(`classroom/${uid}`);
       setIsJoinModalVisible(false);
-
     } catch (error) {
       console.log(error);
-    }   
-  }
+    }
+  };
 
   const handleOk = () => {
     setIsCreateModalVisible(false);
@@ -126,7 +143,7 @@ export default function Classroom() {
       className="modal-create-classroom"
       title="Tạo lớp học mới"
       visible={isCreateModalVisible}
-      onOk={() => createClassroom()}
+      onOk={() => handleCreateClassroom()}
       onCancel={() => handleCancel(false)}
       width={800}
     >
@@ -242,8 +259,8 @@ export default function Classroom() {
                       avatar={
                         <Avatar src="https://joeschmoe.io/api/v1/random" />
                       }
-                      title="Card title"
-                      description="This is the description"
+                      title={classroom.name}
+                      description={classroom.subject + " - " + classroom.room}
                     />
                   </Skeleton>
                 </Card>

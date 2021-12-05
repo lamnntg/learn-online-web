@@ -23,7 +23,7 @@ function Main({ children }) {
 
   let { pathname } = useLocation();
   pathname = pathname.replace("/", "");
-
+  console.log(pathname);
   useEffect(() => {
     if (pathname === "rtl") {
       setPlacement("left");
