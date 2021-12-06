@@ -4,6 +4,7 @@ import { Layout, Drawer, Affix } from "antd";
 import Sidenav from "./Sidenav";
 import Header from "./Header";
 import Footer from "./Footer";
+import { handle } from "../../helpers/handle";
 import { authService } from "../../services/auth.service"
 
 const { Header: AntHeader, Content, Sider } = Layout;
@@ -24,6 +25,9 @@ function Main({ children }) {
   let { pathname } = useLocation();
   pathname = pathname.replace("/", "");
   console.log(pathname);
+  //chang pathname to match with the pathname of the route
+  pathname = handle.handlePathName(pathname);
+
   useEffect(() => {
     if (pathname === "rtl") {
       setPlacement("left");

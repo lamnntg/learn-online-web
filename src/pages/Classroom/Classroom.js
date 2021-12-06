@@ -63,7 +63,6 @@ export default function Classroom() {
       .catch((err) => {
         console.log("server error");
       });
-
   }, [user]);
 
   const showJoinModal = () => {
@@ -243,6 +242,32 @@ export default function Classroom() {
             return (
               <Col span={8}>
                 <Card
+                  style={{ width: 300 }}
+                  cover={
+                    <img
+                      alt="example"
+                      src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                    />
+                  }
+                  
+                  actions={[
+                    <SettingOutlined key="setting" />,
+                    <EditOutlined key="edit" />,
+                    <EllipsisOutlined key="ellipsis" />,
+                  ]}
+                >
+                  <Meta
+                    avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+                    title={"Tên lớp học: " + classroom.name}
+                    description={
+                      "Môn học: " +
+                      classroom.subject +
+                      " - Phòng: " +
+                      classroom.room
+                    }
+                  />
+                </Card>
+                <Card
                   hoverable
                   style={{ width: 300, marginTop: 16 }}
                   actions={[
@@ -251,16 +276,22 @@ export default function Classroom() {
                     <EllipsisOutlined key="ellipsis" />,
                   ]}
                   onClick={() => {
-                    console.log("click");
+                    console.log(classroom);
+                    history.push(`/classroom/${classroom._id}`);
                   }}
                 >
                   <Skeleton loading={loading} avatar active>
                     <Meta
-                      avatar={
-                        <Avatar src="https://joeschmoe.io/api/v1/random" />
+                      // avatar={
+                      //   <Avatar src="https://joeschmoe.io/api/v1/random" />
+                      // }
+                      title={"Tên lớp học: " + classroom.name}
+                      description={
+                        "Môn học: " +
+                        classroom.subject +
+                        " - Phòng: " +
+                        classroom.room
                       }
-                      title={classroom.name}
-                      description={classroom.subject + " - " + classroom.room}
                     />
                   </Skeleton>
                 </Card>
