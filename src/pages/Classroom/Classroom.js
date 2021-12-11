@@ -55,6 +55,7 @@ export default function Classroom() {
   const currentUser = authService.getCurrentUser();
   const isModerator = currentUser.roles.includes(ROLE_MODERATOR);
 
+  //get data class room
   useEffect(() => {
     getClassroom(user.id)
       .then((res) => {
@@ -73,6 +74,7 @@ export default function Classroom() {
     setIsCreateModalVisible(true);
   };
 
+  //create classroom
   const handleCreateClassroom = async () => {
     const data = {
       name: classroomName,

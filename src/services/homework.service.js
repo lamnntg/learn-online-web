@@ -7,7 +7,7 @@ export const createClassroom = async (data) => {
   return req.data;
 };
 
-export const getClassroom = async (userId) => {
+export const getHomework = async (userId) => {
   const req = await axios.get(`${API_ROOT}/classroom/get/by-user/${userId}`, { headers: authHeader() });
   return req.data;
 };
