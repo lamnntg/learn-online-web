@@ -4,7 +4,7 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Home from "./pages/Home";
 import Tables from "./pages/Tables";
 import Billing from "./pages/Billing";
@@ -20,7 +20,9 @@ import Classroom from "./pages/Classroom/Classroom";
 import ClassroomDetail from "./pages/ClassroomDetail/ClassroomDetail";
 import Classwork from "./pages/ClassroomDetail/Classwork";
 import People from "./pages/ClassroomDetail/People";
-
+import { history } from "./helpers/history";
+import { logout } from "./redux/auth/auth.actions";
+import AuthVerify from "./common/AuthVerify";
 import NotFound from "./pages/NotFound";
 import "antd/dist/antd.css";
 import "./assets/styles/main.css";
@@ -28,10 +30,14 @@ import "./assets/styles/responsive.css";
 
 function App() {
   const { isLoggedIn } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const logOut = () => {
+    dispatch(logout());
+  };
 
   return (
     <div className="App">
-      <Router>
+      <Router history={history}>
         {!isLoggedIn ? (
           <Switch>
             <Route exact path="/" component={Landing} />
@@ -53,12 +59,12 @@ function App() {
               <Route exact path="/classroom" component={Classroom} />
               <Route exact path="/classroom/:id/" component={ClassroomDetail} />
               <Route exact path="/classroom/:id/homework" component={Classwork} />
-              <Route exact path="/classroom/:id/people" component = {People} />
-
+              <Route exact path="/classroom/:id/people" component={People} />
               <Redirect from="*" to="/dashboard" />
             </Main>
           </Switch>
         )}
+        <AuthVerify logOut={logOut} />
       </Router>
     </div>
   );
