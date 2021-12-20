@@ -11,13 +11,17 @@ function Footer() {
           <div className="copyright">
             © 2021, made with
             {<HeartFilled />} by
-            <a href="#pablo" className="font-weight-bold" target="_blank">
-              Creative Tim
+            <a
+              href="https://www.facebook.com/laamtaamnhuw"
+              className="font-weight-bold"
+              target="_blank" rel="noreferrer"
+            >
+              LamNguyen
             </a>
             for a better web.
           </div>
         </Col>
-        <Col xs={24} md={12} lg={12}>
+        {/* <Col xs={24} md={12} lg={12}>
           <div className="footer-menu">
             <ul>
               <li className="nav-item">
@@ -58,7 +62,7 @@ function Footer() {
               </li>
             </ul>
           </div>
-        </Col>
+        </Col> */}
       </Row>
     </AntFooter>
   );

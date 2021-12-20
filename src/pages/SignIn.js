@@ -15,7 +15,7 @@ import {
   Switch,
   message as MessageAnt
 } from "antd";
-import signinbg from "../assets/images/img-signin.jpg";
+import loginbg from "../assets/images/login.png";
 import {
   DribbbleOutlined,
   TwitterOutlined,
@@ -137,18 +137,18 @@ function SignIn() {
 
     dispatch(login(username, password))
       .then(() => {
-        history.push("/profile");
+        history.push("/dashboard");
         window.location.reload();
       })
-      .catch(() => {
-        MessageAnt.error(message);
+      .catch((error) => {
+        MessageAnt.error(error);
         setPassword('');
         setLoading(false);
       });
   };
 
   if (isLoggedIn) {
-    return <Redirect to="/profile" />;
+    return <Redirect to="/dashboard" />;
   }
 
   const onFinish = (values) => {
@@ -204,9 +204,9 @@ function SignIn() {
               lg={{ span: 6, offset: 2 }}
               md={{ span: 12 }}
             >
-              <Title className="mb-15">Sign In</Title>
+              <Title className="mb-15">Đăng nhập</Title>
               <Title className="font-regular text-muted" level={5}>
-                Enter your email and password to sign in
+                Nhập tài khoản và mật khẩu để đăng nhập
               </Title>
               <Form
                 onFinish={onFinish}
@@ -275,7 +275,7 @@ function SignIn() {
               lg={{ span: 12 }}
               md={{ span: 12 }}
             >
-              <img src={signinbg} alt="" />
+              <img src={loginbg} alt="" />
             </Col>
           </Row>
         </Content>
