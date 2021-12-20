@@ -7,7 +7,7 @@ export const createClassroom = async (data) => {
   return req.data;
 };
 
-export const getClassroom = async (userId) => {
+export const getClassrooms = async (userId) => {
   const req = await axios.get(`${API_ROOT}/classroom/get/by-user/${userId}`, { headers: authHeader() });
   return req.data;
 };
@@ -16,3 +16,8 @@ export const getClassroomById = async (id) => {
   const req = await axios.get(`${API_ROOT}/classroom/${id}`, { headers: authHeader() });
   return req.data;
 };
+
+export const getClassroomPeople = async (id) => {
+  const req = await axios.get(`${API_ROOT}/classroom/${id}/people`, { headers: authHeader() });
+  return req.data;
+}

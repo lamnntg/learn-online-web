@@ -2,9 +2,10 @@ import React from "react";
 import { Tabs, Menu } from "antd";
 import { NavLink } from "react-router-dom";
 import {
-  MailOutlined,
-  AppstoreOutlined,
+  ReadOutlined,
+  HomeOutlined,
   SettingOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 const { SubMenu } = Menu;
 
@@ -16,10 +17,11 @@ export default function NavBar(props) {
   };
 
   const selectedKeys = props.tab;
-  
-  let news = '/classroom/' + props.id;
-  let homeworks = '/classroom/' + props.id + '/homework';
-  let people = '/classroom/' + props.id + '/people';
+
+  let news = "/classroom/" + props.id;
+  let homeworks = "/classroom/" + props.id + "/homework";
+  let people = "/classroom/" + props.id + "/people";
+
   return (
     <div>
       <Menu
@@ -28,15 +30,15 @@ export default function NavBar(props) {
         mode="horizontal"
         style={centerStyle}
       >
-        <Menu.Item key="news" icon={<MailOutlined />}>
+        <Menu.Item key="news" icon={<HomeOutlined />}>
           <NavLink to={news}>Bảng tin</NavLink>
         </Menu.Item>
 
-        <Menu.Item key="homeworks" icon={<AppstoreOutlined />}>
+        <Menu.Item key="homeworks" icon={<ReadOutlined />}>
           <NavLink to={homeworks}>Bài tập trên lớp</NavLink>
         </Menu.Item>
 
-        <Menu.Item key="people">
+        <Menu.Item key="people" icon={<UserOutlined />}>
           <NavLink to={people}>Mọi người</NavLink>
         </Menu.Item>
 

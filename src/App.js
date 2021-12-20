@@ -54,13 +54,14 @@ function App() {
               <Route exact path="/dashboard" component={Home} />
               <Route exact path="/tables" component={Tables} />
               <Route exact path="/billing" component={Billing} />
-              <Route exact path="/rtl" component={Rtl} />
+              {/* <Route exact path="/rtl" component={Rtl} /> */}
               <Route exact path="/profile" component={Profile} />
-              <Route exact path="/classroom" component={Classroom} />
               <Route exact path="/classroom/:id/" component={ClassroomDetail} />
               <Route exact path="/classroom/:id/homework" component={Classwork} />
               <Route exact path="/classroom/:id/people" component={People} />
-              <Redirect from="*" to="/dashboard" />
+              <Route exact path="/classroom" component={Classroom} />
+
+              {/* <Redirect from="*" to="/dashboard" /> */}
             </Main>
           </Switch>
         )}

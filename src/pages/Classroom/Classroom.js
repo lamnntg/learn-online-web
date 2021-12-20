@@ -28,7 +28,7 @@ import { authService } from "../../services/auth.service";
 import { ROLE_MODERATOR } from "../../utils/constants";
 import {
   createClassroom,
-  getClassroom,
+  getClassrooms,
 } from "../../services/classroom.service";
 import { useHistory } from "react-router-dom";
 import shortid from "shortid";
@@ -57,7 +57,7 @@ export default function Classroom() {
 
   //get data class room
   useEffect(() => {
-    getClassroom(user.id)
+    getClassrooms(user.id)
       .then((res) => {
         setClassrooms(res.result);
       })
@@ -86,7 +86,8 @@ export default function Classroom() {
     try {
       let result = await createClassroom(data);
 
-      const uid = result.result.code;
+      console.log(result);
+      const uid = result.result._id;
       history.push(`classroom/${uid}`);
       setIsJoinModalVisible(false);
     } catch (error) {
@@ -243,7 +244,7 @@ export default function Classroom() {
           {classrooms.map((classroom, index) => {
             return (
               <Col span={8}>
-                <Card
+                {/* <Card
                   style={{ width: 300 }}
                   cover={
                     <img
@@ -268,7 +269,7 @@ export default function Classroom() {
                       classroom.room
                     }
                   />
-                </Card>
+                </Card> */}
                 <Card
                   hoverable
                   style={{ width: 300, marginTop: 16 }}
@@ -277,10 +278,7 @@ export default function Classroom() {
                     <EditOutlined key="edit" />,
                     <EllipsisOutlined key="ellipsis" />,
                   ]}
-                  onClick={() => {
-                    console.log(classroom);
-                    history.push(`/classroom/${classroom._id}`);
-                  }}
+                 
                 >
                   <Skeleton loading={loading} avatar active>
                     <Meta
@@ -294,6 +292,10 @@ export default function Classroom() {
                         " - Phòng: " +
                         classroom.room
                       }
+                      onClick={() => {
+                        console.log(classroom);
+                        history.push(`/classroom/${classroom._id}`);
+                      }}
                     />
                   </Skeleton>
                 </Card>

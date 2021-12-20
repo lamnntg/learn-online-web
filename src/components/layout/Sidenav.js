@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Menu, Button } from "antd";
 import { NavLink, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
-import { VideoCameraOutlined, UserOutlined, CreditCardOutlined, DashboardOutlined, TableOutlined } from "@ant-design/icons";
+import { VideoCameraOutlined, UserOutlined, CreditCardOutlined, DashboardOutlined, TableOutlined, BookOutlined, BulbOutlined, ProjectOutlined } from "@ant-design/icons";
 
 function Sidenav({ color }) {
   const { pathname } = useLocation();
@@ -46,7 +46,7 @@ function Sidenav({ color }) {
             >
               {<DashboardOutlined />}
             </span>
-            <span className="label">Dashboard</span>
+            <span className="label">Trang chủ</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="table">
@@ -59,7 +59,7 @@ function Sidenav({ color }) {
             >
               {<TableOutlined />}
             </span>
-            <span className="label">Tables</span>
+            <span className="label">Câu hỏi</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="classroom">
@@ -70,9 +70,9 @@ function Sidenav({ color }) {
                 background: page === "classroom" ? color : "",
               }}
             >
-              {<TableOutlined />}
+              {<BookOutlined />}
             </span>
-            <span className="label">Classrooms</span>
+            <span className="label">Lớp học</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="billing">
@@ -83,12 +83,25 @@ function Sidenav({ color }) {
                 background: page === "billing" ? color : "",
               }}
             >
-              {<CreditCardOutlined />}
+              {<BulbOutlined />}
             </span>
-            <span className="label">Billing</span>
+            <span className="label">Học</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="rtl">
+        <Menu.Item key="blog">
+          <NavLink to="/blog">
+            <span
+              className="icon"
+              style={{
+                background: page === "blog" ? color : "",
+              }}
+            >
+              {<ProjectOutlined />}
+            </span>
+            <span className="label">Blog</span>
+          </NavLink>
+        </Menu.Item>
+        {/* <Menu.Item key="rtl">
           <NavLink to="/rtl">
             <span
               className="icon"
@@ -100,7 +113,7 @@ function Sidenav({ color }) {
             </span>
             <span className="label">RTL</span>
           </NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item className="menu-item-header" key="5">
           Account Pages
         </Menu.Item>
@@ -114,7 +127,7 @@ function Sidenav({ color }) {
             >
               {<UserOutlined />}
             </span>
-            <span className="label">Profile</span>
+            <span className="label">Trang cá nhân</span>
           </NavLink>
         </Menu.Item>
          <Menu.Item key="meeting1">

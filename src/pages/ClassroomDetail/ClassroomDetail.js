@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useContext } from "react";
 import { Row, Col, Card, Typography, List, Avatar } from "antd";
-
 import { useParams } from "react-router-dom";
 import NavBar from "../../components/Classroom/Navbar";
 import card from "../../assets/images/info-card-1.jpg";
-import { getClassroomById } from "../../services/classroom.service";
+import useClassroom from "../../hooks/useClassroom";
 
 const data = [
   {
@@ -23,19 +22,10 @@ const data = [
 export default function ClassroomDetail(props) {
   let { id } = useParams();
   const { Title, Text, Paragraph } = Typography;
-  const [classroom, setClassroom] = useState({});
   const [classworks, setClassworks] = useState([]);
   const [authorInfo, setAuthorInfo] = useState({});
 
-  useEffect(() => {
-    getClassroomById(id)
-      .then((res) => {
-        setClassroom(res.result);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [id]);
+  const classroom = useClassroom(id); 
 
   const onChange = (event) => {
     // Implement custom event logic...
