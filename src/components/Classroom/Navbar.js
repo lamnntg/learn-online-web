@@ -1,11 +1,14 @@
 import React from "react";
 import { Tabs, Menu } from "antd";
 import { NavLink } from "react-router-dom";
+import { authService } from "../../services/auth.service";
+import { ROLE_MODERATOR } from "../../utils/constants";
+
 import {
   ReadOutlined,
   HomeOutlined,
   SettingOutlined,
-  UserOutlined
+  UserOutlined,
 } from "@ant-design/icons";
 const { SubMenu } = Menu;
 
@@ -21,6 +24,10 @@ export default function NavBar(props) {
   let news = "/classroom/" + props.id;
   let homeworks = "/classroom/" + props.id + "/homework";
   let people = "/classroom/" + props.id + "/people";
+  let setting = "/classroom/" + props.id + "/setting";
+
+  const currentUser = authService.getCurrentUser();
+  const isModerator = currentUser.roles.includes(ROLE_MODERATOR);
 
   return (
     <div>
@@ -42,7 +49,17 @@ export default function NavBar(props) {
           <NavLink to={people}>Mọi người</NavLink>
         </Menu.Item>
 
-        <SubMenu key="SubMenu" icon={<SettingOutlined />} title="Cài đặt">
+        {isModerator ?? isModerator ? (
+          <Menu.Item key="setting" icon={<SettingOutlined />}>
+            <NavLink to={setting}>Cài đặt</NavLink>
+          </Menu.Item>
+        ) : (
+          <Menu.Item disabled key="setting" icon={<SettingOutlined />}>
+            <NavLink to={setting}>Cài đặt</NavLink>
+          </Menu.Item>
+        )}
+        
+        {/* <SubMenu disabled key="SubMenu" icon={<SettingOutlined />} title="Cài đặt">
           <Menu.ItemGroup title="Item 1">
             <Menu.Item key="setting:1">Option 1</Menu.Item>
             <Menu.Item key="setting:2">Option 2</Menu.Item>
@@ -51,7 +68,7 @@ export default function NavBar(props) {
             <Menu.Item key="setting:3">Option 3</Menu.Item>
             <Menu.Item key="setting:4">Option 4</Menu.Item>
           </Menu.ItemGroup>
-        </SubMenu>
+        </SubMenu> */}
       </Menu>
     </div>
   );

@@ -12,6 +12,12 @@ export const getClassrooms = async (userId) => {
   return req.data;
 };
 
+export const getClassroomManage = async (userId) => {
+  const req = await axios.get(`${API_ROOT}/classroom/get/by-moderator/${userId}`, { headers: authHeader() });
+  return req.data;
+};
+
+
 export const getClassroomById = async (id) => {
   const req = await axios.get(`${API_ROOT}/classroom/${id}`, { headers: authHeader() });
   return req.data;

@@ -29,6 +29,7 @@ import { ROLE_MODERATOR } from "../../utils/constants";
 import {
   createClassroom,
   getClassrooms,
+  getClassroomManage,
 } from "../../services/classroom.service";
 import { useHistory } from "react-router-dom";
 import shortid from "shortid";
@@ -37,13 +38,13 @@ const { Meta } = Card;
 
 export default function Classroom() {
   const [classrooms, setClassrooms] = useState([]);
-  const { user } = useSelector((state) => state.auth);
-  console.log(user);
+  const [classroomManage, setClassroomManage] = useState([]);
 
+  const { user } = useSelector((state) => state.auth);
   let loading = false;
   const history = useHistory();
   //attribute of classroom
-  const [classroomName, setClassroomName] = useState("");
+  const [classroomName, setClassroomName] = useState();
 
   const [subject, setSubject] = useState("");
   const [room, setRoom] = useState("");
@@ -64,7 +65,32 @@ export default function Classroom() {
       .catch((err) => {
         console.log("server error");
       });
+
+    return () => {
+      setClassrooms([]);
+    };
   }, [user]);
+
+  //get data classroom Manage
+  useEffect(() => {
+    if (isModerator) {
+      getClassroomManage(user.id)
+        .then((res) => {
+          setClassroomManage(res.result);
+        })
+        .catch((err) => {
+          console.log("server error");
+        });
+    }
+
+    return () => {
+      setClassroomManage([]);
+    };
+  }, [user, isModerator]);
+
+  const handleAccessClassroom = (classroomId) => {
+    history.push(`/classroom/${classroomId}`);
+  };
 
   const showJoinModal = () => {
     setIsJoinModalVisible(true);
@@ -239,70 +265,81 @@ export default function Classroom() {
           }
         ></Card>
       </div>
-      <div className="main-content">
-        <Row gutter={16}>
-          {classrooms.map((classroom, index) => {
-            return (
-              <Col span={8}>
-                {/* <Card
-                  style={{ width: 300 }}
-                  cover={
-                    <img
-                      alt="example"
-                      src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                    />
-                  }
-                  
-                  actions={[
-                    <SettingOutlined key="setting" />,
-                    <EditOutlined key="edit" />,
-                    <EllipsisOutlined key="ellipsis" />,
-                  ]}
-                >
-                  <Meta
-                    avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                    title={"Tên lớp học: " + classroom.name}
-                    description={
-                      "Môn học: " +
-                      classroom.subject +
-                      " - Phòng: " +
-                      classroom.room
-                    }
-                  />
-                </Card> */}
-                <Card
-                  hoverable
-                  style={{ width: 300, marginTop: 16 }}
-                  actions={[
-                    <SettingOutlined key="setting" />,
-                    <EditOutlined key="edit" />,
-                    <EllipsisOutlined key="ellipsis" />,
-                  ]}
-                 
-                >
-                  <Skeleton loading={loading} avatar active>
-                    <Meta
-                      // avatar={
-                      //   <Avatar src="https://joeschmoe.io/api/v1/random" />
-                      // }
-                      title={"Tên lớp học: " + classroom.name}
-                      description={
-                        "Môn học: " +
-                        classroom.subject +
-                        " - Phòng: " +
-                        classroom.room
-                      }
-                      onClick={() => {
-                        console.log(classroom);
-                        history.push(`/classroom/${classroom._id}`);
-                      }}
-                    />
-                  </Skeleton>
-                </Card>
-              </Col>
-            );
-          })}
-        </Row>
+      <div className="main-content-classroom">
+        <div className="member site-card-border-less-wrapper">
+          <h3>Thành viên lớp học :</h3>
+          <Row gutter={16}>
+            {classrooms.map((classroom, index) => {
+              return (
+                <Col span={8}>
+                  <Card
+                    hoverable
+                    style={{ width: 300, marginTop: 16 }}
+                    actions={[]}
+                    title={"Tên lớp: " + classroom.name}
+                    onClick={() => {
+                      console.log(classroom);
+                      history.push(`/classroom/${classroom._id}`);
+                    }}
+                  >
+                    <Skeleton loading={loading} avatar active>
+                      {/* <Meta
+                        avatar={
+                          <Avatar src="https://joeschmoe.io/api/v1/random" />
+                        }
+                        title={"Tên lớp học: " + classroom.name}
+                        description=""
+
+                      /> */}
+                      <p>{"Môn học: " + classroom.subject}</p>
+                      <p>{"Phòng: " + classroom.room}</p>
+                    </Skeleton>
+                  </Card>
+                </Col>
+              );
+            })}
+          </Row>
+        </div>
+        {isModerator ? (
+          <>
+            <div
+              className="manager site-card-border-less-wrapper"
+              style={{ paddingTop: "20px" }}
+            >
+              <h3>Quản lý lớp học :</h3>
+              <Row gutter={16}>
+                {classroomManage.map((classroom, index) => {
+                  return (
+                    <Col span={8}>
+                      <Card
+                        hoverable
+                        style={{ width: 300, marginTop: 16 }}
+                        actions={[]}
+                        title={"Tên lớp: " + classroom.name}
+                        onClick={() => {
+                          handleAccessClassroom(classroom._id);
+                        }}
+                      >
+                        <Skeleton loading={loading} avatar active>
+                          {/* <Meta
+                        avatar={
+                          <Avatar src="https://joeschmoe.io/api/v1/random" />
+                        }
+                        title={"Tên lớp học: " + classroom.name}
+                        description=""
+
+                      /> */}
+                          <p>{"Môn học: " + classroom.subject}</p>
+                          <p>{"Phòng: " + classroom.room}</p>
+                        </Skeleton>
+                      </Card>
+                    </Col>
+                  );
+                })}
+              </Row>
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );

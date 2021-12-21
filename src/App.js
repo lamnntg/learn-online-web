@@ -20,6 +20,7 @@ import Classroom from "./pages/Classroom/Classroom";
 import ClassroomDetail from "./pages/ClassroomDetail/ClassroomDetail";
 import Classwork from "./pages/ClassroomDetail/Classwork";
 import People from "./pages/ClassroomDetail/People";
+import Setting from "./pages/ClassroomDetail/Setting";
 import { history } from "./helpers/history";
 import { logout } from "./redux/auth/auth.actions";
 import AuthVerify from "./common/AuthVerify";
@@ -59,6 +60,8 @@ function App() {
               <Route exact path="/classroom/:id/" component={ClassroomDetail} />
               <Route exact path="/classroom/:id/homework" component={Classwork} />
               <Route exact path="/classroom/:id/people" component={People} />
+              <Route exact path="/classroom/:id/setting" component={Setting} />
+
               <Route exact path="/classroom" component={Classroom} />
 
               {/* <Redirect from="*" to="/dashboard" /> */}

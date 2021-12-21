@@ -24,19 +24,19 @@ const { Title } = Typography;
 // table code start
 const columns = [
   {
-    title: "NAME",
+    title: "Họ và tên",
     dataIndex: "name",
     key: "name",
     width: "32%",
   },
   {
-    title: "FUNCTION",
+    title: "Chức vụ",
     dataIndex: "function",
     key: "function",
   },
 
   {
-    title: "STATUS",
+    title: "Trạng thái",
     key: "status",
     dataIndex: "status",
   },
@@ -101,7 +101,6 @@ function People(params) {
   const classroom = useClassroom(params.match.params.id);
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
  
-  console.log(classroom);
   return (
     <div>
       <NavBar id={id} tab='people'/>

@@ -1,45 +1,50 @@
-import React, { useEffect, useState, useMemo, useContext } from "react";
-import { Row, Col, Card, Typography, List, Avatar } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Row,
+  Col,
+  Card,
+  Typography,
+  List,
+  Avatar,
+  Divider,
+  message,
+  Button,
+  Modal,
+} from "antd";
+import { PlusCircleOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import NavBar from "../../components/Classroom/Navbar";
 import card from "../../assets/images/info-card-1.jpg";
 import useClassroom from "../../hooks/useClassroom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
-const data = [
-  {
-    title: 'Ant Design Title 1',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-];
+const fakeDataUrl =
+  "https://randomuser.me/api/?results=20&inc=name,gender,email,nat,picture&noinfo";
+
 export default function ClassroomDetail(props) {
   let { id } = useParams();
   const { Title, Text, Paragraph } = Typography;
   const [classworks, setClassworks] = useState([]);
   const [authorInfo, setAuthorInfo] = useState({});
+  const [value, setValue] = useState("");
+  const [visible, setVisible] = useState(false);
 
-  const classroom = useClassroom(id); 
+  const classroom = useClassroom(id);
+  const [data, setData] = useState([]);
 
-  const onChange = (event) => {
-    // Implement custom event logic...
-    // When no value is returned, Slate will execute its own event handler when
-    // neither isDefaultPrevented nor isPropagationStopped was set on the event
+  const appendData = () => {
+    fetch(fakeDataUrl)
+      .then((res) => res.json())
+      .then((body) => {
+        setData(data.concat(body.results));
+        message.success(`${body.results.length} more items loaded!`);
+      });
   };
 
-  const onDrop = (event) => {
-    // Implement custom event logic...
-
-    // No matter the state of the event, treat it as being handled by returning
-    // true here, Slate will skip its own event handler
-    return true;
-  };
+  useEffect(() => {
+    appendData();
+  }, []);
 
   return (
     <div>
@@ -94,6 +99,17 @@ export default function ClassroomDetail(props) {
         </Row>
       </div>
 
+      <Divider orientation="left">
+        <Button
+          shape="circle"
+          icon={<PlusCircleOutlined />}
+          style={{ marginRight: "50px" }}
+          onClick={() => setVisible(true)}
+        >
+          Tạo thông báo
+        </Button>
+        Thông báo lớp học
+      </Divider>
       <List
         itemLayout="horizontal"
         dataSource={data}
@@ -101,13 +117,26 @@ export default function ClassroomDetail(props) {
           <List.Item>
             <List.Item.Meta
               avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-              title={<a href="https://ant.design">{item.title}</a>}
+              title={<a href="https://ant.design">Nguyen Tung Lam</a>}
               description="Ant Design, a design language for background applications, is refined by Ant UED Team"
             />
           </List.Item>
         )}
       />
-      {id}
+
+      <Modal
+        title="Tạo thông báo cho lớp học"
+        centered
+        visible={visible}
+        onOk={() => {
+          message.success("Thông báo đã được tạo thành công");
+          setVisible(false);
+        }}
+        onCancel={() => setVisible(false)}
+        width={1000}
+      >
+        <ReactQuill theme="snow" value={value} onChange={setValue} />
+      </Modal>
     </div>
   );
 }

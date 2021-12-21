@@ -3036,3 +3036,42 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile
   path {
   fill: #8c8c8c;
 }
+
+.main-content-classroom .ant-card-head{
+  background-color: whitesmoke;
+}
+
+.main-content-classroom .ant-card-head-title {
+  font-weight: bold;
+}
+
+.main-content-classroom .ant-card {
+  border-radius: 10px;
+}
+
+
+/* Snow Theme */
+.ql-editor{
+  min-height: 100px !important;
+  max-height: 300px;
+  border-radius: 10px;
+}
+
+.ql-container {
+  border-bottom-left-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
+  background: #fefcfc;
+}
+
+.ql-snow.ql-toolbar {
+  display: block;
+  background: #eaecec;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+}
+
+/* Bubble Theme */
+.ql-bubble .ql-editor {
+  border: 1px solid #ccc;
+  border-radius: 0.5em;
+}
