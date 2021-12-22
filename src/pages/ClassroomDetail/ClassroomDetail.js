@@ -4,47 +4,92 @@ import {
   Col,
   Card,
   Typography,
-  List,
   Avatar,
   Divider,
   message,
   Button,
   Modal,
+  Descriptions,
 } from "antd";
-import { PlusCircleOutlined } from "@ant-design/icons";
+import {
+  PlusCircleOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import NavBar from "../../components/Classroom/Navbar";
 import card from "../../assets/images/info-card-1.jpg";
 import useClassroom from "../../hooks/useClassroom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-
-const fakeDataUrl =
-  "https://randomuser.me/api/?results=20&inc=name,gender,email,nat,picture&noinfo";
+import {
+  getClassroomNotifications,
+  createClassroomNotifications,
+} from "../../services/classroom.service";
+import Moment from "react-moment";
+import { authService } from "../../services/auth.service";
+const { confirm } = Modal;
 
 export default function ClassroomDetail(props) {
   let { id } = useParams();
   const { Title, Text, Paragraph } = Typography;
-  const [classworks, setClassworks] = useState([]);
-  const [authorInfo, setAuthorInfo] = useState({});
   const [value, setValue] = useState("");
   const [visible, setVisible] = useState(false);
-
   const classroom = useClassroom(id);
   const [data, setData] = useState([]);
+  const currentUser = authService.getCurrentUser();
 
-  const appendData = () => {
-    fetch(fakeDataUrl)
-      .then((res) => res.json())
-      .then((body) => {
-        setData(data.concat(body.results));
-        message.success(`${body.results.length} more items loaded!`);
+  useEffect(() => {
+    getClassroomNotifications(id)
+      .then((res) => {
+        setData(res.reverse());
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [id]);
+
+  const handleCreateNotification = async () => {
+    setVisible(false);
+    console.log(currentUser);
+    const notification = {
+      author_id: currentUser.id,
+      content: value,
+      author_name: currentUser.name,
+      avatar_url: currentUser.avatar_url,
+    };
+
+    createClassroomNotifications(id, notification)
+      .then((res) => {
+        data.unshift(res);
+        setData(data);
+        message.success("Thông báo đã được tạo thành công");
+        setValue("");
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        message.error("Thông báo đã được tạo thất bại");
       });
   };
 
-  useEffect(() => {
-    appendData();
-  }, []);
+  function showDeleteConfirm() {
+    confirm({
+      title: "Bạn chắc chắn muốn xóa thông báo này ?",
+      icon: <ExclamationCircleOutlined />,
+      content: "Thông báo này sẽ bị xóa vĩnh viễn",
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk() {
+        console.log("OK");
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
+  }
 
   return (
     <div>
@@ -99,38 +144,90 @@ export default function ClassroomDetail(props) {
         </Row>
       </div>
 
-      <Divider orientation="left">
-        <Button
-          shape="circle"
-          icon={<PlusCircleOutlined />}
-          style={{ marginRight: "50px" }}
-          onClick={() => setVisible(true)}
+      <Divider orientation="right"></Divider>
+      <Col span={24} md={24} className="mb-24">
+        <Card
+          className="header-solid h-full"
+          bordered={false}
+          title={[
+            <Row>
+              <Col span={8}>
+                <h6 className="font-semibold m-0">Thông báo lớp học</h6>
+              </Col>
+              <Col span={8} offset={8}>
+                <Row justify="end">
+                  <Button
+                    shape="circle"
+                    icon={<PlusCircleOutlined />}
+                    style={{ marginRight: "50px" }}
+                    onClick={() => setVisible(true)}
+                  >
+                    Tạo thông báo
+                  </Button>
+                </Row>
+              </Col>
+            </Row>,
+          ]}
+          bodyStyle={{ paddingTop: "0" }}
         >
-          Tạo thông báo
-        </Button>
-        Thông báo lớp học
-      </Divider>
-      <List
-        itemLayout="horizontal"
-        dataSource={data}
-        renderItem={(item) => (
-          <List.Item>
-            <List.Item.Meta
-              avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-              title={<a href="https://ant.design">Nguyen Tung Lam</a>}
-              description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-            />
-          </List.Item>
-        )}
-      />
-
+          <Row gutter={[24, 24]}>
+            {data.map((item, index) => (
+              <Col span={24} key={index}>
+                <Card className="card-billing-info" bordered="false">
+                  <div className="col-info">
+                    <Descriptions
+                      title={
+                        <div>
+                          <Avatar
+                            src={"https://joeschmoe.io/api/v1/random"}
+                            style={{ marginRight: "10px" }}
+                          />
+                          {item.author_name}
+                          <span
+                            style={{
+                              fontWeight: "lighter",
+                              marginLeft: "20px",
+                            }}
+                          >
+                            {
+                              <Moment format="YYYY-MM-DD HH:mm">
+                                {item.createdAt}
+                              </Moment>
+                            }
+                          </span>
+                        </div>
+                      }
+                    >
+                      <Descriptions.Item>
+                        <div
+                          dangerouslySetInnerHTML={{ __html: item.content }}
+                        />
+                      </Descriptions.Item>
+                    </Descriptions>
+                  </div>
+                  <div className="col-action">
+                    <Button type="link" danger onClick={showDeleteConfirm}>
+                      {<DeleteOutlined />}DELETE
+                    </Button>
+                    <Button type="link" className="darkbtn" onClick={() => {
+                      setVisible(true);
+                      setValue(item.content);
+                    }}>
+                      {<EditOutlined />} EDIT
+                    </Button>
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </Card>
+      </Col>
       <Modal
         title="Tạo thông báo cho lớp học"
         centered
         visible={visible}
         onOk={() => {
-          message.success("Thông báo đã được tạo thành công");
-          setVisible(false);
+          handleCreateNotification();
         }}
         onCancel={() => setVisible(false)}
         width={1000}

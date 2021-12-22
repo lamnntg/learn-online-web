@@ -27,3 +27,15 @@ export const getClassroomPeople = async (id) => {
   const req = await axios.get(`${API_ROOT}/classroom/${id}/people`, { headers: authHeader() });
   return req.data;
 }
+
+export const getClassroomNotifications = async (id) => {
+  const req = await axios.get(`${API_ROOT}/classroom/${id}/notifications`, { headers: authHeader() });
+  return req.data;
+}
+
+export const createClassroomNotifications = async (classroomId, data) => {
+  const req = await axios.post(`${API_ROOT}/classroom/${classroomId}/notification/create`, data, { headers: authHeader() });
+  return req.data;
+}
+
+

@@ -17,7 +17,6 @@ import {
 // Images
 import useClassroom from "../../hooks/useClassroom";
 import { isEmpty } from "lodash";
-import face2 from "../../assets/images/face-2.jpg";
 
 
 const { Title } = Typography;
