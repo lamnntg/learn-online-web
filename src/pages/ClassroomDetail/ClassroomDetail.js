@@ -19,16 +19,19 @@ import {
 } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import NavBar from "../../components/Classroom/Navbar";
-import card from "../../assets/images/info-card-1.jpg";
+import classroomImg from "../../assets/images/classroom.jpg";
 import useClassroom from "../../hooks/useClassroom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {
   getClassroomNotifications,
   createClassroomNotifications,
+  updateClassroomNotifications,
+  deleteClassroomNotifications,
 } from "../../services/classroom.service";
 import Moment from "react-moment";
 import { authService } from "../../services/auth.service";
+import { clone } from "lodash";
 const { confirm } = Modal;
 
 export default function ClassroomDetail(props) {
@@ -36,6 +39,10 @@ export default function ClassroomDetail(props) {
   const { Title, Text, Paragraph } = Typography;
   const [value, setValue] = useState("");
   const [visible, setVisible] = useState(false);
+  const [visibleEdit, setVisibleEdit] = useState(false);
+  const [valueEdit, setValueEdit] = useState("");
+  const [idEdit, setIdEdit] = useState("");
+
   const classroom = useClassroom(id);
   const [data, setData] = useState([]);
   const currentUser = authService.getCurrentUser();
@@ -52,7 +59,6 @@ export default function ClassroomDetail(props) {
 
   const handleCreateNotification = async () => {
     setVisible(false);
-    console.log(currentUser);
     const notification = {
       author_id: currentUser.id,
       content: value,
@@ -74,18 +80,54 @@ export default function ClassroomDetail(props) {
       });
   };
 
-  function showDeleteConfirm() {
+  const handleEditNotification = async () => {
+    setVisible(false);
+    const notification = {
+      content: valueEdit,
+    };
+    updateClassroomNotifications(idEdit, notification)
+      .then((res) => {
+        var newData = clone(data);
+        var foundIndex = newData.findIndex((x) => x._id === idEdit);
+        newData[foundIndex].content = notification.content;
+        setData(newData);
+        setVisibleEdit(false);
+        setIdEdit("");
+        message.success("Thông báo đã được cập nhật");
+      })
+      .catch((err) => {
+        console.log(err);
+        message.error("Cập nhật thông báo thất bại");
+      });
+  };
+
+  function showDeleteConfirm(item) {
     confirm({
       title: "Bạn chắc chắn muốn xóa thông báo này ?",
       icon: <ExclamationCircleOutlined />,
-      content: "Thông báo này sẽ bị xóa vĩnh viễn",
+      content: `Thông báo của ${item.author_name} sẽ bị xóa vĩnh viễn`,
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
       onOk() {
-        console.log("OK");
+        var deleteId = item._id;
+        deleteClassroomNotifications(item._id)
+          .then((res) => {
+            console.log(res);
+            var newData = data.filter(function (obj) {
+              return obj._id !== deleteId;
+            });
+            setData(newData);
+
+            message.success("Xóa thông báo thành công");
+          })
+          .catch((err) => {
+            console.log(err);
+            message.error("Xóa thông báo thất bại");
+          });
       },
       onCancel() {
+        console.log(item);
         console.log("Cancel");
       },
     });
@@ -96,7 +138,7 @@ export default function ClassroomDetail(props) {
       <NavBar id={id} tab="news" />
       <div>
         <Row gutter={[24, 0]} justify="center">
-          <Col className="mb-24">
+          <Col>
             <Card bordered={true} className="criclebox h-full">
               <Row gutter>
                 <Col
@@ -135,7 +177,7 @@ export default function ClassroomDetail(props) {
                   className="col-img"
                 >
                   <div className="ant-cret text-right">
-                    <img src={card} alt="" className="border10" />
+                    <img src={classroomImg} alt="" className="border10" />
                   </div>
                 </Col>
               </Row>
@@ -145,7 +187,7 @@ export default function ClassroomDetail(props) {
       </div>
 
       <Divider orientation="right"></Divider>
-      <Col span={24} md={24} className="mb-24">
+      <Col span={24} md={24}>
         <Card
           className="header-solid h-full"
           bordered={false}
@@ -190,9 +232,11 @@ export default function ClassroomDetail(props) {
                             }}
                           >
                             {
-                              <Moment format="YYYY-MM-DD HH:mm">
-                                {item.createdAt}
-                              </Moment>
+                              <i>
+                                <Moment format="YYYY-MM-DD HH:mm">
+                                  {item.createdAt}
+                                </Moment>
+                              </i>
                             }
                           </span>
                         </div>
@@ -206,13 +250,24 @@ export default function ClassroomDetail(props) {
                     </Descriptions>
                   </div>
                   <div className="col-action">
-                    <Button type="link" danger onClick={showDeleteConfirm}>
+                    <Button
+                      type="link"
+                      danger
+                      onClick={(e) => {
+                        showDeleteConfirm(item);
+                      }}
+                    >
                       {<DeleteOutlined />}DELETE
                     </Button>
-                    <Button type="link" className="darkbtn" onClick={() => {
-                      setVisible(true);
-                      setValue(item.content);
-                    }}>
+                    <Button
+                      type="link"
+                      className="darkbtn"
+                      onClick={() => {
+                        setVisibleEdit(true);
+                        setValueEdit(item.content);
+                        setIdEdit(item._id);
+                      }}
+                    >
                       {<EditOutlined />} EDIT
                     </Button>
                   </div>
@@ -233,6 +288,19 @@ export default function ClassroomDetail(props) {
         width={1000}
       >
         <ReactQuill theme="snow" value={value} onChange={setValue} />
+      </Modal>
+
+      <Modal
+        title="Chỉnh sửa thông báo cho lớp học"
+        centered
+        visible={visibleEdit}
+        onOk={() => {
+          handleEditNotification();
+        }}
+        onCancel={() => setVisibleEdit(false)}
+        width={1000}
+      >
+        <ReactQuill theme="snow" value={valueEdit} onChange={setValueEdit} />
       </Modal>
     </div>
   );

@@ -1,5 +1,6 @@
-import { db } from "./config";
+import { db, storage } from "./config";
 import { query, getDocs, where, addDoc, collection, updateDoc, arrayUnion, doc } from "firebase/firestore"; 
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 /**
  * 
@@ -105,4 +106,15 @@ export const findUserExist = async (collectionObject, uid) => {
   } catch (e) {
     console.error("Error adding document: ", e);
   }
+}
+
+export const uploadFile = async (file, path) => {
+  if (file) {
+    const storageRef = ref(storage, path);
+    const task = await uploadBytesResumable(storageRef, file);
+    const url = await getDownloadURL(task);
+    return url;
+  }
+  
+  return null;
 }

@@ -28,6 +28,7 @@ export const getClassroomPeople = async (id) => {
   return req.data;
 }
 
+// Classroom notificaitons
 export const getClassroomNotifications = async (id) => {
   const req = await axios.get(`${API_ROOT}/classroom/${id}/notifications`, { headers: authHeader() });
   return req.data;
@@ -37,5 +38,33 @@ export const createClassroomNotifications = async (classroomId, data) => {
   const req = await axios.post(`${API_ROOT}/classroom/${classroomId}/notification/create`, data, { headers: authHeader() });
   return req.data;
 }
+
+export const updateClassroomNotifications = async (id, data) => {
+  const req = await axios.put(`${API_ROOT}/classroom/notification/${id}/update`, data, { headers: authHeader() });
+  return req.data;
+}
+
+export const deleteClassroomNotifications = async (id) => {
+  const req = await axios.delete(`${API_ROOT}/classroom/notification/${id}/delete`, { headers: authHeader() });
+  return req.data;
+}
+
+// classroom Documents
+export const getClassroomDocuments = async (id) => {
+  const req = await axios.get(`${API_ROOT}/classroom/${id}/documents`, { headers: authHeader() });
+  return req.data;
+}
+
+export const createClassroomDocument = async (id, data) => {
+  const req = await axios.post(`${API_ROOT}/classroom/${id}/document/create`, data, { headers: authHeader() });
+  return req.data;
+}
+
+export const deleteClassroomDocument = async (id) => {
+  const req = await axios.delete(`${API_ROOT}/classroom/document/${id}/delete`, { headers: authHeader() });
+  return req.data;
+}
+
+
 
 
