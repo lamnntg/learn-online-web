@@ -32,6 +32,7 @@ import {
   getClassroomDocuments,
   createClassroomDocument,
   deleteClassroomDocument,
+  createClassroomNotifications,
 } from "../../services/classroom.service";
 import { authService } from "../../services/auth.service";
 import Moment from "react-moment";
@@ -44,9 +45,6 @@ const menu = (
   <Menu onClick={handleMenuClick}>
     <Menu.Item key="test" icon={<CarryOutOutlined />}>
       Bài kiểm tra
-    </Menu.Item>
-    <Menu.Item key="document" icon={<BookOutlined />}>
-      Tài liệu
     </Menu.Item>
     <Menu.Item key="question" icon={<BulbOutlined />}>
       Câu hỏi
@@ -94,8 +92,23 @@ export default function Classwork(params) {
     if (file) {
       uploadHandle(file);
       e.target.files = null;
-      message.success(`Upload thành công ${file.name}`);
       setFileName("");
+      //notification
+      const notification = {
+        author_id: currentUser.id,
+        content: `${currentUser.name} đã tải lên tài liệu: <b>${file.name}</b>`,
+        author_name: currentUser.name,
+        avatar_url: currentUser.avatar_url,
+      };
+
+      createClassroomNotifications(id, notification)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      message.success(`Upload thành công ${file.name}`);
     } else {
       message.error("Chưa chọn file");
     }
