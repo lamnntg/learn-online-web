@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../../components/Classroom/Navbar";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import useClassroom from "../../hooks/useClassroom";
 import {
   Menu,
@@ -41,28 +41,6 @@ import { clone } from "lodash";
 const { Meta } = Card;
 const { confirm } = Modal;
 
-const menu = (
-  <Menu onClick={handleMenuClick}>
-    <Menu.Item key="test" icon={<CarryOutOutlined />}>
-      Bài kiểm tra
-    </Menu.Item>
-    <Menu.Item key="question" icon={<BulbOutlined />}>
-      Câu hỏi
-    </Menu.Item>
-  </Menu>
-);
-
-const menuCard = (
-  <Dropdown overlay={menu}>
-    <Button type="link" icon={<MoreOutlined />} size="large"></Button>
-  </Dropdown>
-);
-
-function handleMenuClick(e) {
-  message.info("Click on menu item.");
-  console.log("click", e);
-}
-
 export default function Classwork(params) {
   let { id } = useParams();
   const currentUser = authService.getCurrentUser();
@@ -71,6 +49,30 @@ export default function Classwork(params) {
   const [progress, setProgress] = useState(0);
   const [documents, setDocuments] = useState([]);
   const [fileName, setFileName] = useState("");
+  const history = useHistory();
+
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="exam" icon={<CarryOutOutlined />}>
+        Bài kiểm tra
+      </Menu.Item>
+      <Menu.Item key="question" icon={<BulbOutlined />}>
+        Câu hỏi
+      </Menu.Item>
+    </Menu>
+  );
+
+  const menuCard = (
+    <Dropdown overlay={menu}>
+      <Button type="link" icon={<MoreOutlined />} size="large"></Button>
+    </Dropdown>
+  );
+
+  function handleMenuClick(e) {
+    message.info("Click on menu item.");
+    console.log("click", e);
+    history.push(`/classroom/${id}/exam/create/${e.key}`);
+  }
 
   useEffect(() => {
     getClassroomDocuments(params.match.params.id)

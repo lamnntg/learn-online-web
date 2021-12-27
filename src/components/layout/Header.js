@@ -24,7 +24,7 @@ import {
   TwitterOutlined,
   FacebookFilled,
   DownOutlined,
-  FileAddOutlined
+  FileAddOutlined,
 } from "@ant-design/icons";
 
 import { NavLink, Link, useHistory } from "react-router-dom";
@@ -251,6 +251,7 @@ function Header({
   handleSidenavType,
   handleFixedNavbar,
   currentUser,
+  breakcrumbUrl,
 }) {
   const { Title, Text } = Typography;
   const [visible, setVisible] = useState(false);
@@ -267,6 +268,7 @@ function Header({
     history.push("/sign-in");
     window.location.reload();
   };
+  console.log(breakcrumbUrl);
   return (
     <>
       <div className="setting-drwer" onClick={showDrawer}>
@@ -279,7 +281,7 @@ function Header({
               <NavLink to="/">Trang chủ</NavLink>
             </Breadcrumb.Item>
             <Breadcrumb.Item style={{ textTransform: "capitalize" }}>
-              {name.replace("/", "")}
+              <NavLink to={breakcrumbUrl}>{name.replace("/", "")}</NavLink>
             </Breadcrumb.Item>
           </Breadcrumb>
           <div className="ant-page-header-heading">
