@@ -71,7 +71,7 @@ export default function Classwork(params) {
   function handleMenuClick(e) {
     message.info("Click on menu item.");
     console.log("click", e);
-    history.push(`/classroom/${id}/exam/create/${e.key}`);
+    history.push(`/classroom/${id}/${e.key}/create`);
   }
 
   useEffect(() => {
