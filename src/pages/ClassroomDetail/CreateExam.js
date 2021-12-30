@@ -1,20 +1,33 @@
 import React, { useState } from "react";
 import moment from "moment";
 import { DatePicker, Space } from "antd";
-import { Card, Col, Row, Typography, Collapse, Button, Input } from "antd";
+import {
+  Card,
+  Col,
+  Row,
+  Typography,
+  Collapse,
+  Button,
+  Input,
+  Form,
+  Divider,
+} from "antd";
+
 import {
   MenuUnfoldOutlined,
   DragOutlined,
   DeleteOutlined,
-  EditOutlined,
-  PlusOutlined  
+  MinusCircleOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
+
 import Paragraph from "antd/lib/typography/Paragraph";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 const { Panel } = Collapse;
+const { TextArea } = Input;
 
 function range(start, end) {
   const result = [];
@@ -28,8 +41,41 @@ const getItems = (count) =>
     id: `item-${k}`,
     content: `item ${k}`,
   }));
+
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 2 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 24 },
+  },
+};
+
+const deleteIcon = [
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    key={0}
+  >
+    <path
+      d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"
+      className="fill-gray-7"
+    ></path>
+    <path
+      d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"
+      className="fill-gray-7"
+    ></path>
+  </svg>,
+];
+
 export default function CreateExam() {
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
+  const [form] = Form.useForm();
 
   const [questions, setQuestions] = React.useState(getItems(10));
   const [openUploadImagePop, setOpenUploadImagePop] = React.useState(false);
@@ -82,53 +128,135 @@ export default function CreateExam() {
     };
   }
 
+  const onFinish = (values) => {
+    console.log("Received values of form:", values);
+  };
+
+  const listAnswers = ["A", "B", "C", "D", "E"];
+
   function questionsUI() {
     return questions.map((ques, i) => (
-      <Draggable key={i} draggableId={i + "id"} index={i}>
-        {(provided, snapshot) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-          >
-            <div>
-              <div style={{ marginBottom: "15px" }}>
-                <div style={{ width: "100%" }}>
-                  <DragOutlined
-                    style={{
-                      transform: "rotate(-90deg)",
-                      color: "#DAE0E2",
-                      width: "100%",
-                    }}
-                    fontSize="small"
-                  />
-                  <Row span={24}>
-                    <Col span={24}>
-                      <Card
-                        onClick={() => {
-                          console.log("click");
+      <div>
+        <div style={{ marginBottom: "15px" }}>
+          <div style={{ width: "100%" }}>
+            <Row span={24}>
+              <Col span={24}>
+                <Card
+                  onClick={() => {
+                    console.log("click");
+                  }}
+                  className=" full-width"
+                  style={{
+                    backgroundColor: "rgb(250, 250, 250)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <Row className="ph-24">
+                    <Col xs={24} md={16}>
+                      <h6 className="font-semibold">Câu hỏi số {i + 1}</h6>
+                    </Col>
+                    <Col xs={24} md={6} className="d-flex">
+                      Điểm :{``}
+                      <Input
+                        style={{
+                          width: "40px",
+                          height: "30px",
+                          borderColor: "transparent",
                         }}
-                        className=" full-width"
-                      >
-                        <Row>
-                          <Col xs={24} md={10} className="m-10">
-                            <h6 className="font-semibold">
-                              Câu hỏi số {ques.id}
-                            </h6>
-                          </Col>
-                          <Col xs={24} md={10} className="d-flex">
-                            Điểm: <Input style={{ "width": "30px", "border-color":"none"}} />
-                          </Col>
-                        </Row>
-                      </Card>
+                      />
                     </Col>
                   </Row>
-                </div>
-              </div>
-            </div>
+
+                  <Row span={24}>
+                    <Col xs={24} md={24}>
+                      <div>
+                        <Form
+                          name="dynamic_form_item"
+                          {...formItemLayout}
+                          onFinish={onFinish}
+                        >
+                          <Form.List name="names">
+                            {(fields, { add, remove }, { errors }) => (
+                              <>
+                                <Form.Item style={{ textAlign: "center" }}>
+                                  <TextArea
+                                    placeholder="Nhập nội dung câu hỏi"
+                                    allowClear
+                                    onChange={onChange}
+                                    style={{ width: "90%" }}
+                                  />
+                                </Form.Item>
+                                {fields.map((field, index) => (
+                                  <Form.Item
+                                    {...formItemLayout}
+                                    label={<b>{listAnswers[index]}</b>}
+                                    required={false}
+                                    key={field.key}
+                                  >
+                                    <Form.Item
+                                      {...field}
+                                      validateTrigger={["onChange", "onBlur"]}
+                                      rules={[
+                                        {
+                                          required: true,
+                                          whitespace: true,
+                                          message: "Vui lòng nhập câu trả lời",
+                                        },
+                                      ]}
+                                      noStyle
+                                    >
+                                      <Input
+                                        placeholder="Đáp án"
+                                        style={{ width: "80%" }}
+                                      />
+                                    </Form.Item>
+                                    {fields.length > 1 ? (
+                                      <Button
+                                        type="link"
+                                        className="ant-edit-link"
+                                        onClick={() => remove(field.name)}
+                                      >
+                                        {deleteIcon}
+                                      </Button>
+                                    ) : null}
+                                  </Form.Item>
+                                ))}
+                                <Divider orientation="right"></Divider>
+
+                                <div
+                                  className="controller"
+                                  style={{ width: "90%" }}
+                                >
+                                  <Form.Item>
+                                    <Button
+                                      disabled={fields.length >= 5}
+                                      type="dashed"
+                                      onClick={() => add()}
+                                      icon={<PlusOutlined />}
+                                    >
+                                      Thêm đáp án
+                                    </Button>
+                                    <Form.ErrorList errors={errors} />
+                                  </Form.Item>
+                                </div>
+                              </>
+                            )}
+                          </Form.List>
+                          {/* <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                              Submit
+                            </Button>
+                          </Form.Item> */}
+                        </Form>
+                      </div>
+                    </Col>
+                  </Row>
+                </Card>
+              </Col>
+            </Row>
           </div>
-        )}
-      </Draggable>
+        </div>
+      </div>
     ));
   }
 
@@ -144,16 +272,7 @@ export default function CreateExam() {
                   Cấu hình<span className="blue">40%</span>
                 </Paragraph>
 
-                <DragDropContext onDragEnd={onDragEnd}>
-                  <Droppable droppableId="droppable">
-                    {(provided, snapshot) => (
-                      <div {...provided.droppableProps} ref={provided.innerRef}>
-                        {questionsUI()}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
+                <div>{questionsUI()}</div>
               </div>
             </div>
             <div className="ant-list-box table-responsive"></div>
