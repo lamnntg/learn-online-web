@@ -11,6 +11,7 @@ import {
   Input,
   Form,
   Divider,
+  Checkbox,
 } from "antd";
 
 import {
@@ -20,9 +21,10 @@ import {
   MinusCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-
+import shortid from "shortid";
 import Paragraph from "antd/lib/typography/Paragraph";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { clone } from "lodash";
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -36,11 +38,6 @@ function range(start, end) {
   }
   return result;
 }
-const getItems = (count) =>
-  Array.from({ length: count }, (v, k) => k).map((k) => ({
-    id: `item-${k}`,
-    content: `item ${k}`,
-  }));
 
 const formItemLayout = {
   labelCol: {
@@ -77,7 +74,7 @@ export default function CreateExam() {
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
   const [form] = Form.useForm();
 
-  const [questions, setQuestions] = React.useState(getItems(10));
+  const [questions, setQuestions] = React.useState([]);
   const [openUploadImagePop, setOpenUploadImagePop] = React.useState(false);
   const [imageContextData, setImageContextData] = React.useState({
     question: null,
@@ -134,6 +131,49 @@ export default function CreateExam() {
 
   const listAnswers = ["A", "B", "C", "D", "E"];
 
+  const onChangeQuestion = (ques, value) => {
+    var foundIndex = questions.findIndex((x) => x.id === ques.id);
+    var newQuestions = clone(questions);
+
+    newQuestions[foundIndex] = {
+      id: ques.id,
+      question: value,
+      answers: ques.answers ? ques.answers : [],
+    };
+
+    setQuestions(newQuestions);
+  };
+
+  const onchangeAnswer = (ques, index, value) => {
+    var foundIndex = questions.findIndex((x) => x.id === ques.id);
+    var newQuestions = clone(questions);
+
+    if (newQuestions[foundIndex].answers.length > index - 1) {
+      newQuestions[foundIndex].answers[index].answer = value;
+    } else {
+      newQuestions[foundIndex].answers.push({
+        answer: value,
+        isCorrect: false,
+      });
+    }
+
+    setQuestions(newQuestions);
+    console.log(questions);
+  };
+
+  const handleAddQuestion = (ques) => {
+    var foundIndex = questions.findIndex((x) => x.id === ques.id);
+    questions[foundIndex].answers.push({
+      answer: "",
+      isCorrect: false,
+    });
+    setQuestions(questions);
+  };
+
+  const checkTrueAnswer = (field, index) => {
+    console.log(field, index);
+  };
+
   function questionsUI() {
     return questions.map((ques, i) => (
       <div>
@@ -156,14 +196,34 @@ export default function CreateExam() {
                       <h6 className="font-semibold">Câu hỏi số {i + 1}</h6>
                     </Col>
                     <Col xs={24} md={6} className="d-flex">
-                      Điểm :{``}
-                      <Input
-                        style={{
-                          width: "40px",
-                          height: "30px",
-                          borderColor: "transparent",
-                        }}
-                      />
+                      <Row justify="space-around">
+                        <Col xs={12} md={12}>
+                          <Input
+                            label="Điểm"
+                            style={{
+                              width: "40px",
+                              height: "30px",
+                              borderColor: "transparent",
+                            }}
+                          />
+                        </Col>
+                        <Col xs={12} md={12}>
+                          <Button
+                            onClick={() => {
+                              var questionsClone = clone(questions);
+                              var newQuestions = questionsClone.filter(
+                                function (obj) {
+                                  return obj.id !== ques.id;
+                                }
+                              );
+                              setQuestions(newQuestions);
+                              console.log(newQuestions);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </Col>
+                      </Row>
                     </Col>
                   </Row>
 
@@ -182,7 +242,10 @@ export default function CreateExam() {
                                   <TextArea
                                     placeholder="Nhập nội dung câu hỏi"
                                     allowClear
-                                    onChange={onChange}
+                                    onChange={(e) => {
+                                      onChangeQuestion(ques, e.target.value);
+                                    }}
+                                    value={ques.question}
                                     style={{ width: "90%" }}
                                   />
                                 </Form.Item>
@@ -208,8 +271,16 @@ export default function CreateExam() {
                                       <Input
                                         placeholder="Đáp án"
                                         style={{ width: "80%" }}
+                                        onChange={(e) => {
+                                          onchangeAnswer(
+                                            ques,
+                                            index,
+                                            e.target.value
+                                          );
+                                        }}
                                       />
                                     </Form.Item>
+
                                     {fields.length > 1 ? (
                                       <Button
                                         type="link"
@@ -218,6 +289,13 @@ export default function CreateExam() {
                                       >
                                         {deleteIcon}
                                       </Button>
+                                    ) : null}
+                                    {fields.length > 1 ? (
+                                      <Checkbox
+                                        onChange={() => {
+                                          checkTrueAnswer(ques, field.name);
+                                        }}
+                                      ></Checkbox>
                                     ) : null}
                                   </Form.Item>
                                 ))}
@@ -231,7 +309,10 @@ export default function CreateExam() {
                                     <Button
                                       disabled={fields.length >= 5}
                                       type="dashed"
-                                      onClick={() => add()}
+                                      onClick={() => {
+                                        add();
+                                        handleAddQuestion(ques);
+                                      }}
                                       icon={<PlusOutlined />}
                                     >
                                       Thêm đáp án
@@ -243,9 +324,7 @@ export default function CreateExam() {
                             )}
                           </Form.List>
                           {/* <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                              Submit
-                            </Button>
+
                           </Form.Item> */}
                         </Form>
                       </div>
@@ -273,6 +352,21 @@ export default function CreateExam() {
                 </Paragraph>
 
                 <div>{questionsUI()}</div>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    setQuestions([
+                      ...questions,
+                      {
+                        id: shortid.generate(),
+                        question: "",
+                        answers: [],
+                      },
+                    ]);
+                  }}
+                >
+                  Add Question
+                </Button>
               </div>
             </div>
             <div className="ant-list-box table-responsive"></div>

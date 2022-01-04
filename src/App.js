@@ -20,7 +20,7 @@ import ClassroomDetail from "./pages/ClassroomDetail/ClassroomDetail";
 import Classwork from "./pages/ClassroomDetail/Classwork";
 import People from "./pages/ClassroomDetail/People";
 import Setting from "./pages/ClassroomDetail/Setting";
-import CreateExam from "./pages/ClassroomDetail/CreateExam";
+import CreateExam2 from "./pages/ClassroomDetail/CreateExam2";
 import { history } from "./helpers/history";
 import { logout } from "./redux/auth/auth.actions";
 import AuthVerify from "./common/AuthVerify";
@@ -60,7 +60,7 @@ function App() {
               <Route exact path="/classroom/:id/homework" component={Classwork} />
               <Route exact path="/classroom/:id/people" component={People} />
               <Route exact path="/classroom/:id/setting" component={Setting} />
-              <Route exact path="/classroom/:id/exam/create" component={CreateExam} />
+              <Route exact path="/classroom/:id/exam/create" component={CreateExam2} />
 
               <Route exact path="/classroom" component={Classroom} />
 
