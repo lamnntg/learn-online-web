@@ -1,6 +1,6 @@
 import React from "react";
 import useClassroom from "../../hooks/useClassroom";
-
+import moment from "moment";
 //import QuestionHeader from './QuestionHeader';
 import { Grid } from "@material-ui/core";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -28,6 +28,7 @@ import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import ImageUploadModal from "./ImageUploadModal";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SaveIcon from "@material-ui/icons/Save";
+import Checkbox from "@material-ui/core/Checkbox";
 
 function CreateExam2(params) {
   const [questions, setQuestions] = React.useState([]);
@@ -62,6 +63,11 @@ function CreateExam2(params) {
 
   function saveQuestions() {
     console.log("auto saving questions initiated");
+    setFormData({
+      _id: 12121,
+      name: "Test Exam",
+      description: "Test Exam",
+    });
     var data = {
       formId: formData._id,
       name: formData.name,
@@ -106,13 +112,13 @@ function CreateExam2(params) {
   }
 
   function addMoreQuestionField() {
-    expandCloseAll(); //I AM GOD
+    expandCloseAll();
 
     setQuestions((questions) => [
       ...questions,
       {
         questionText: "Câu hỏi",
-        options: [{ optionText: "Câu trả lời 1" }],
+        options: [{ optionText: "Câu trả lời 1", isCorrect: false }],
         open: true,
       },
     ]);
@@ -224,6 +230,7 @@ function CreateExam2(params) {
     if (optionsOfQuestion[i].options.length < 5) {
       optionsOfQuestion[i].options.push({
         optionText: "Câu trả lời " + (optionsOfQuestion[i].options.length + 1),
+        isCorrect: false,
       });
     } else {
       console.log("Max  5 options ");
@@ -260,11 +267,15 @@ function CreateExam2(params) {
     }
     setQuestions(qs);
   }
-  const text = `
-  A dog is a type of domesticated animal.
-  Known for its loyalty and faithfulness,
-  it can be found as a welcome guest in many households across the world.
-`;
+
+  const chooseTrueQuesion = (i, j) => {
+    var optionsOfQuestion = [...questions];
+    optionsOfQuestion[i].options[j].isCorrect =
+      !optionsOfQuestion[i].options[j].isCorrect;
+    //newMembersEmail[i]= email;
+    setQuestions(optionsOfQuestion);
+  };
+
   function questionsUI() {
     return questions.map((ques, i) => (
       <Draggable key={i} draggableId={i + "id"} index={i}>
@@ -277,7 +288,6 @@ function CreateExam2(params) {
             <div>
               <div style={{ marginBottom: "15px" }}>
                 <div style={{ width: "100%", marginBottom: "-7px" }}></div>
-
                 <Accordion
                   onChange={() => {
                     handleExpand(i);
@@ -297,8 +307,8 @@ function CreateExam2(params) {
                           flexDirection: "column",
                           alignItems: "flex-start",
                           marginLeft: "3px",
-                          paddingTop: "15px",
-                          paddingBottom: "15px",
+                          paddingTop: "10px",
+                          paddingBottom: "10px",
                         }}
                       >
                         {/* <TextField id="standard-basic" label=" " value="Question" InputProps={{ disableUnderline: true }} />  */}
@@ -317,7 +327,6 @@ function CreateExam2(params) {
                               width="400px"
                               height="auto"
                             />
-                            <br></br>
                             <br></br>
                           </div>
                         ) : (
@@ -377,13 +386,13 @@ function CreateExam2(params) {
                           justifyContent: "space-between",
                         }}
                       >
-                        <Typography style={{ marginTop: "20px" }}>
+                        <Typography style={{ marginTop: "10px" }}>
                           {`${i + 1}.  `}
                         </Typography>
                         <TextField
                           fullWidth={true}
                           placeholder="Nhập câu hỏi"
-                          style={{ marginBottom: "18px" }}
+                          style={{ marginBottom: "10px" }}
                           minRows={2}
                           maxRows={20}
                           multiline={true}
@@ -451,13 +460,24 @@ function CreateExam2(params) {
                               style={{
                                 display: "flex",
                                 flexDirection: "row",
-                                marginLeft: "-12.5px",
+                                marginLeft: "-10px",
                                 justifyContent: "space-between",
                                 paddingTop: "5px",
                                 paddingBottom: "5px",
                               }}
                             >
-                              <Radio />
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={op.isCorrect}
+                                    onChange={() => {
+                                      chooseTrueQuesion(i, j);
+                                    }}
+                                  />
+                                }
+                              />
+
+                              {/* <Radio onClick={chooseTrueQuesion(ques, op ,j)} /> */}
                               <TextField
                                 fullWidth={true}
                                 placeholder="Nhập câu trả lời"
@@ -469,7 +489,7 @@ function CreateExam2(params) {
                               />
 
                               <IconButton
-                                aria-label="upload image"
+                                aria-label="Tải ảnh lên"
                                 onClick={() => {
                                   uploadImage(i, j);
                                 }}
@@ -550,7 +570,7 @@ function CreateExam2(params) {
                                   marginLeft: "-5px",
                                 }}
                               >
-                                Add Option
+                                Thêm câu trả lời
                               </Button>
                             }
                           />
@@ -563,8 +583,8 @@ function CreateExam2(params) {
                       <br></br>
 
                       <Typography variant="body2" style={{ color: "grey" }}>
-                        Bạn có thể thêm tối đa 5 tùy chọn. Nếu muốn tạo câu hỏi
-                        riêng biệt xin mời chọn cấu hình cho bài kiểm tra.
+                        Bạn có thể thêm tối đa 5 tùy chọn. Chọn
+                        vào tích ở đầu câu để đánh dấu đáp án đúng.
                       </Typography>
                     </div>
                   </AccordionDetails>
@@ -628,29 +648,69 @@ function CreateExam2(params) {
             <div>
               <div>
                 <Paper elevation={2} style={{ width: "100%" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      marginLeft: "15px",
-                      paddingTop: "20px",
-                      paddingBottom: "20px",
-                    }}
-                  >
-                    <Typography
-                      variant="h4"
-                      style={{
-                        fontFamily: "sans-serif Roboto",
-                        marginBottom: "15px",
-                      }}
-                    >
-                      {formData.name}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      {formData.description}
-                    </Typography>
-                  </div>
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          paddingLeft: "20px",
+                        }}
+                      >
+                        <TextField
+                          id="standard-basic"
+                          label="Tên bài kiểm tra"
+                          required
+                          style={{
+                            fontFamily: "sans-serif Roboto",
+                            marginBottom: "15px",
+                          }}
+                        />
+
+                        <TextField
+                          id="standard-basic"
+                          label="Mô tả"
+                          size="small"
+                          style={{
+                            fontFamily: "sans-serif Roboto",
+                            marginBottom: "15px",
+                          }}
+                        />
+                      </div>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          padding: "0 20px",
+                        }}
+                      >
+                        <TextField
+                          id="datetime-local"
+                          label="Thời gian bắt đầu làm bài"
+                          type="datetime-local"
+                          defaultValue={moment().format("YYYY-MM-DDTHH:mm")}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          style={{
+                            fontFamily: "sans-serif Roboto",
+                            marginBottom: "15px",
+                          }}
+                        />
+                        <TextField
+                          id="standard-number"
+                          label="Thời gian (phút)"
+                          type="number"
+                          defaultValue={60}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </div>
+                    </Grid>
+                  </Grid>
                 </Paper>
               </div>
             </div>
