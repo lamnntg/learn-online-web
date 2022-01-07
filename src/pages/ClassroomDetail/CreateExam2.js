@@ -1,6 +1,8 @@
 import React from "react";
 import useClassroom from "../../hooks/useClassroom";
 import moment from "moment";
+import { useHistory } from "react-router-dom";
+import { message } from "antd";
 //import QuestionHeader from './QuestionHeader';
 import { Grid } from "@material-ui/core";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -29,6 +31,7 @@ import ImageUploadModal from "./ImageUploadModal";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SaveIcon from "@material-ui/icons/Save";
 import Checkbox from "@material-ui/core/Checkbox";
+import { createHomework } from "../../services/homework.service";
 
 function CreateExam2(params) {
   const [questions, setQuestions] = React.useState([]);
@@ -37,9 +40,16 @@ function CreateExam2(params) {
     question: null,
     option: null,
   });
-  const [formData, setFormData] = React.useState({});
-  const [loadingFormData, setLoadingFormData] = React.useState(true);
 
+  const [formData, setFormData] = React.useState({
+    title: "",
+    description: "",
+    time: 60,
+    startTime: moment().format("YYYY-MM-DDTHH:mm"),
+  });
+  const history = useHistory();
+
+  const [loadingFormData, setLoadingFormData] = React.useState(true);
   const classroom = useClassroom(params.match.params.id);
 
   // React.useEffect(() => {
@@ -62,35 +72,32 @@ function CreateExam2(params) {
   // }, [props.formData]);
 
   function saveQuestions() {
-    console.log("auto saving questions initiated");
-    setFormData({
-      _id: 12121,
-      name: "Test Exam",
-      description: "Test Exam",
-    });
     var data = {
-      formId: formData._id,
-      name: formData.name,
+      title: formData.title,
       description: formData.description,
+      time: formData.time,
+      startTime: formData.startTime,
       questions: questions,
+      classroom: params.match.params.id,
     };
     console.log(data);
 
-    // formService.autoSave(data).then(
-    //   (result) => {
-    //     console.log(result);
-    //     setQuestions(result.questions);
-    //   },
-    //   (error) => {
-    //     const resMessage =
-    //       (error.response &&
-    //         error.response.data &&
-    //         error.response.data.message) ||
-    //       error.message ||
-    //       error.toString();
-    //     console.log(resMessage);
-    //   }
-    // );
+    createHomework(data).then(
+      (result) => {
+        console.log(result);
+        history.push(`/classroom/${params.match.params.id}/homework`);
+        message.success("Tạo bài tập thành công !");
+      },
+      (error) => {
+        const resMessage =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
+        console.log(resMessage);
+      }
+    );
   }
 
   function checkImageHereOrNotForQuestion(gg) {
@@ -339,7 +346,10 @@ function CreateExam2(params) {
                               <FormControlLabel
                                 disabled
                                 control={
-                                  <Radio style={{ marginRight: "3px" }} />
+                                  <Radio
+                                    checked={op.isCorrect}
+                                    style={{ marginRight: "3px" }}
+                                  />
                                 }
                                 label={
                                   <Typography style={{ color: "#555555" }}>
@@ -583,8 +593,8 @@ function CreateExam2(params) {
                       <br></br>
 
                       <Typography variant="body2" style={{ color: "grey" }}>
-                        Bạn có thể thêm tối đa 5 tùy chọn. Chọn
-                        vào tích ở đầu câu để đánh dấu đáp án đúng.
+                        Bạn có thể thêm tối đa 5 tùy chọn. Chọn vào tích ở đầu
+                        câu để đánh dấu đáp án đúng.
                       </Typography>
                     </div>
                   </AccordionDetails>
@@ -665,12 +675,23 @@ function CreateExam2(params) {
                             fontFamily: "sans-serif Roboto",
                             marginBottom: "15px",
                           }}
+                          value={formData.title}
+                          onChange={(e) => {
+                            setFormData({ ...formData, title: e.target.value });
+                          }}
                         />
 
                         <TextField
                           id="standard-basic"
                           label="Mô tả"
                           size="small"
+                          value={formData.description}
+                          onChange={(e) => {
+                            setFormData({
+                              ...formData,
+                              description: e.target.value,
+                            });
+                          }}
                           style={{
                             fontFamily: "sans-serif Roboto",
                             marginBottom: "15px",
@@ -690,7 +711,13 @@ function CreateExam2(params) {
                           id="datetime-local"
                           label="Thời gian bắt đầu làm bài"
                           type="datetime-local"
-                          defaultValue={moment().format("YYYY-MM-DDTHH:mm")}
+                          value={formData.startTime}
+                          onChange={(e) => {
+                            setFormData({
+                              ...formData,
+                              startTime: e.target.value,
+                            });
+                          }}
                           InputLabelProps={{
                             shrink: true,
                           }}
@@ -703,9 +730,12 @@ function CreateExam2(params) {
                           id="standard-number"
                           label="Thời gian (phút)"
                           type="number"
-                          defaultValue={60}
+                          value={formData.time}
                           InputLabelProps={{
                             shrink: true,
+                          }}
+                          onChange={(e) => {
+                            setFormData({ ...formData, time: e.target.value });
                           }}
                         />
                       </div>

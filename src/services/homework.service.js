@@ -16,3 +16,9 @@ export const getClassroomById = async (id) => {
   const req = await axios.get(`${API_ROOT}/classroom/${id}`, { headers: authHeader() });
   return req.data;
 };
+
+export const createHomework = async (data) => {
+  const req = await axios.post(`${API_ROOT}/homework/create`, data, { headers: authHeader() });
+
+  return req.data;
+}
