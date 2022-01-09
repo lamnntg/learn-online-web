@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { DatePicker, Space } from "antd";
 import {
@@ -23,9 +23,9 @@ import {
 } from "@ant-design/icons";
 import shortid from "shortid";
 import Paragraph from "antd/lib/typography/Paragraph";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { clone } from "lodash";
-
+import { clone, set } from "lodash";
+import useClassroom from "../../hooks/useClassroom";
+import { getHomeworkDetail } from "../../services/homework.service";
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 const { Panel } = Collapse;
@@ -70,8 +70,11 @@ const deleteIcon = [
   </svg>,
 ];
 
-export default function CreateExam() {
+export default function CreateExam(params) {
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
+  const classroom = useClassroom(params.match.params.id);
+  const homeworkId = params.match.params.homeworkId;
+
   const [form] = Form.useForm();
 
   const [questions, setQuestions] = React.useState([]);
@@ -83,27 +86,14 @@ export default function CreateExam() {
   const [formData, setFormData] = React.useState({});
   const [loadingFormData, setLoadingFormData] = React.useState(true);
 
-  function onDragEnd(result) {
-    if (!result.destination) {
-      return;
-    }
-    var itemgg = [...questions];
-
-    const itemF = reorder(
-      itemgg,
-      result.source.index,
-      result.destination.index
+  useEffect(() => {
+    getHomeworkDetail(homeworkId).then(
+      (res) => {
+        console.log(res);
+      }
     );
-
-    setQuestions(itemF);
-  }
-
-  const reorder = (list, startIndex, endIndex) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
-  };
+    return () => {};
+  }, [homeworkId]);
 
   function disabledDate(current) {
     // Can not select days before today and today

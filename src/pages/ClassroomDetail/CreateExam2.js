@@ -105,7 +105,7 @@ function CreateExam2(params) {
     }
 
     questions.forEach((question, i) => {
-      if (question.type === "") {
+      if (question.type === "" || question.point === "") {
         errorQuestion = i;
         return;
       }
@@ -187,10 +187,14 @@ function CreateExam2(params) {
         var opn1new = {
           optionText: opn.optionText,
           optionImage: opn.optionImage,
+          type: opn.type,
+          point: opn.point,
         };
       } else {
         var opn1new = {
           optionText: opn.optionText,
+          type: opn.type,
+          point: opn.point,
         };
       }
       myNewOptions.push(opn1new);

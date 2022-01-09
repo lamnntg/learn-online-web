@@ -34,9 +34,11 @@ import {
   deleteClassroomDocument,
   createClassroomNotifications,
 } from "../../services/classroom.service";
+import { getHomework } from "../../services/homework.service";
 import { authService } from "../../services/auth.service";
 import Moment from "react-moment";
 import { clone } from "lodash";
+import { Spin, Space } from "antd";
 
 const { Meta } = Card;
 const { confirm } = Modal;
@@ -46,6 +48,9 @@ export default function Classwork(params) {
   const currentUser = authService.getCurrentUser();
 
   const classroom = useClassroom(params.match.params.id);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [homeworks, setHomeworks] = useState([]);
   const [progress, setProgress] = useState(0);
   const [documents, setDocuments] = useState([]);
   const [fileName, setFileName] = useState("");
@@ -78,6 +83,17 @@ export default function Classwork(params) {
     getClassroomDocuments(params.match.params.id)
       .then((res) => {
         setDocuments(res.reverse());
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    getHomework(params.match.params.id)
+      .then((res) => {
+        console.log(res);
+        setHomeworks(res.result.reverse());
+        setIsLoading(false);
+        console.log(homeworks);
       })
       .catch((err) => {
         console.log(err);
@@ -198,156 +214,206 @@ export default function Classwork(params) {
       },
     });
   }
+
+  const redirectToHomwork = (id) => {
+    history.push(`/classroom/${classroom._id}/homework/${id}`);
+  }
+
   return (
     <div>
-      <NavBar id={id} tab="homeworks" />
-      <div className="">
-        <Row gutter={[24, 0]}>
-          <Col xs={24} md={16}>
+      {!isLoading ? (
+        <>
+          <NavBar id={id} tab="homeworks" />
+          <div className="">
             <Row gutter={[24, 0]}>
-              <Col xs={24} className="mb-24">
-                <Card
-                  className="header-solid h-full ant-card-p-0"
-                  title={
-                    <>
-                      <Row
-                        gutter={[24, 0]}
-                        className="ant-row-flex ant-row-flex-middle"
-                      >
-                        <Col xs={24} md={12}>
-                          <h6 className="font-semibold m-0">Bài tập lớp học</h6>
-                        </Col>
-                        <Col xs={24} md={12} className="d-flex">
-                          <Dropdown overlay={menu}>
-                            <Button
-                              type="primary"
-                              icon={<PlusOutlined />}
-                              size="large"
+              <Col xs={24} md={16}>
+                <Row gutter={[24, 0]}>
+                  <Col xs={24} className="mb-24">
+                    <Card
+                      className="header-solid h-full ant-card-p-0"
+                      title={
+                        <>
+                          <Row
+                            gutter={[24, 0]}
+                            className="ant-row-flex ant-row-flex-middle"
+                          >
+                            <Col xs={24} md={12}>
+                              <h6 className="font-semibold m-0">
+                                Bài tập lớp học
+                              </h6>
+                            </Col>
+                            <Col xs={24} md={12} className="d-flex">
+                              <Dropdown overlay={menu}>
+                                <Button
+                                  type="primary"
+                                  icon={<PlusOutlined />}
+                                  size="large"
+                                >
+                                  Tạo mới
+                                </Button>
+                              </Dropdown>
+                            </Col>
+                          </Row>
+                        </>
+                      }
+                    >
+                      <Row>
+                        <Col span={24} md={24}>
+                          {homeworks.map((homework, key) => (
+                            <Card
+                              key={key}
+                              onClick={() => {
+                                redirectToHomwork(homework._id);
+                              }}
+                              className="classwork-card"
+                              style={{ marginBottom: "10px" }}
                             >
-                              Tạo mới
-                            </Button>
-                          </Dropdown>
+                              <Row>
+                                <Col span={18}>
+                                  <Meta
+                                    avatar={
+                                      <Avatar src="https://joeschmoe.io/api/v1/random" />
+                                    }
+                                    title={
+                                      <div>
+                                        <p>
+                                          {homework.author.name} đăng bài tập :{" "}
+                                          <b>{homework.title}</b> (
+                                          <i>{homework.description}</i>)
+                                        </p>
+                                        <p></p>
+                                        <p>
+                                          Thời gian bắt đầu:{" "}
+                                          <b>
+                                            {" "}
+                                            <Moment format="YYYY-MM-DD HH:mm">
+                                              {homework.startTime}
+                                            </Moment>
+                                          </b>
+                                        </p>
+                                        <p>
+                                          Thời gian làm bài:{" "}
+                                          <b>
+                                            {" "}
+                                              {homework.time} phút
+                                          </b>
+                                        </p>
+                                      </div>
+                                    }
+                                    description={<i>Chú ý: Học sinh vào muộn quá 10 phút sẽ không được tham gia vào làm bài.</i>}
+                                  />
+                                </Col>
+                                <Col span={4} offset={2}>
+                                  <div>
+                                    <Button type="link">
+                                      {<EditOutlined />}
+                                    </Button>
+                                    <Button type="link">
+                                      {<DeleteOutlined />}
+                                    </Button>
+                                  </div>
+                                </Col>
+                              </Row>
+                            </Card>
+                          ))}
                         </Col>
                       </Row>
-                    </>
-                  }
+                    </Card>
+                  </Col>
+                </Row>
+              </Col>
+              <Col span={24} md={8} className="mb-24">
+                <Card
+                  bordered={false}
+                  className="header-solid h-full ant-invoice-card"
+                  title={[
+                    <h6 className="font-semibold m-0">Tài liệu lớp học</h6>,
+                  ]}
+                  extra={[
+                    <Button type="primary">
+                      <span>VIEW ALL</span>
+                    </Button>,
+                  ]}
                 >
-                  <Row>
-                    <Col span={24} md={24}>
-                      <Card
-                        onClick={() => {
-                          console.log("click");
-                        }}
-                        className="classwork-card"
+                  <List
+                    itemLayout="horizontal"
+                    className="invoice-list"
+                    dataSource={documents}
+                    renderItem={(item) => (
+                      <List.Item
+                        actions={[
+                          <Button
+                            type="link"
+                            onClick={(e) => {
+                              showDeleteConfirm(item);
+                            }}
+                          >
+                            {<DeleteOutlined />}
+                          </Button>,
+                          <Button
+                            type="link"
+                            onClick={() => {
+                              window.open(item.url, "_blank");
+                            }}
+                          >
+                            {<DownloadOutlined />}
+                          </Button>,
+                        ]}
                       >
-                        <Row>
-                          <Col span={18}>
-                            <Meta
-                              avatar={
-                                <Avatar src="https://joeschmoe.io/api/v1/random" />
-                              }
-                              title="Lam Nguyen vừa đăng bài tập mới"
-                              description={<i>This is the description</i>}
-                            />
-                          </Col>
-                          <Col span={4} offset={2}>
-                            <div>
-                              <Button type="link">{<EditOutlined />}</Button>
-                              <Button type="link">{<DeleteOutlined />}</Button>
-                            </div>
-                          </Col>
-                        </Row>
-                      </Card>
-                    </Col>
-                  </Row>
+                        <List.Item.Meta
+                          title={item.title}
+                          description={
+                            <Moment format="YYYY-MM-DD HH:mm">
+                              {item.createdAt}
+                            </Moment>
+                          }
+                        />
+                        <div className="amount" style={{ fontSize: "10px" }}>
+                          {" "}
+                          {item.type}
+                        </div>
+                      </List.Item>
+                    )}
+                  />
+                  <div className="uploadfile pb-15 shadow-none">
+                    <form onSubmit={formUploadHandler} className="ant-full-box">
+                      <input
+                        id="upload-input"
+                        type="file"
+                        onChange={handleFileSelected}
+                        className="input"
+                        name="file"
+                        style={{ display: "none" }}
+                      />
+                      <div
+                        onClick={() => {
+                          document.getElementById("upload-input").click();
+                        }}
+                      >
+                        <i>{fileName}</i>
+                        <Progress percent={progress} showInfo={false} />
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="btn-upload-file"
+                        disabled={!fileName}
+                        // icon={<ToTopOutlined />}
+                      >
+                        Upload tài liệu
+                      </button>
+                    </form>
+                  </div>
                 </Card>
               </Col>
             </Row>
-          </Col>
-          <Col span={24} md={8} className="mb-24">
-            <Card
-              bordered={false}
-              className="header-solid h-full ant-invoice-card"
-              title={[<h6 className="font-semibold m-0">Tài liệu lớp học</h6>]}
-              extra={[
-                <Button type="primary">
-                  <span>VIEW ALL</span>
-                </Button>,
-              ]}
-            >
-              <List
-                itemLayout="horizontal"
-                className="invoice-list"
-                dataSource={documents}
-                renderItem={(item) => (
-                  <List.Item
-                    actions={[
-                      <Button
-                        type="link"
-                        onClick={(e) => {
-                          showDeleteConfirm(item);
-                        }}
-                      >
-                        {<DeleteOutlined />}
-                      </Button>,
-                      <Button
-                        type="link"
-                        onClick={() => {
-                          window.open(item.url, "_blank");
-                        }}
-                      >
-                        {<DownloadOutlined />}
-                      </Button>,
-                    ]}
-                  >
-                    <List.Item.Meta
-                      title={item.title}
-                      description={
-                        <Moment format="YYYY-MM-DD HH:mm">
-                          {item.createdAt}
-                        </Moment>
-                      }
-                    />
-                    <div className="amount" style={{ fontSize: "10px" }}>
-                      {" "}
-                      {item.type}
-                    </div>
-                  </List.Item>
-                )}
-              />
-              <div className="uploadfile pb-15 shadow-none">
-                <form onSubmit={formUploadHandler} className="ant-full-box">
-                  <input
-                    id="upload-input"
-                    type="file"
-                    onChange={handleFileSelected}
-                    className="input"
-                    name="file"
-                    style={{ display: "none" }}
-                  />
-                  <div
-                    onClick={() => {
-                      document.getElementById("upload-input").click();
-                    }}
-                  >
-                    <i>{fileName}</i>
-                    <Progress percent={progress} showInfo={false} />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="btn-upload-file"
-                    disabled={!fileName}
-                    // icon={<ToTopOutlined />}
-                  >
-                    Upload tài liệu
-                  </button>
-                </form>
-              </div>
-            </Card>
-          </Col>
-        </Row>
-      </div>
+          </div>
+        </>
+      ) : (
+        <Space size="middle">
+          <Spin size="large" />
+        </Space>
+      )}
     </div>
   );
 }
