@@ -31,15 +31,36 @@ import ImageUploadModal from "./ImageUploadModal";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SaveIcon from "@material-ui/icons/Save";
 import Checkbox from "@material-ui/core/Checkbox";
+import Select from "@material-ui/core/Select";
+
 import { createHomework } from "../../services/homework.service";
+import { authService } from "../../services/auth.service";
+import { makeStyles } from "@material-ui/core/styles";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import FormHelperText from "@material-ui/core/FormHelperText";
+
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
 function CreateExam2(params) {
+  const classes = useStyles();
   const [questions, setQuestions] = React.useState([]);
+  const [enableSubmit, setEnableSubmit] = React.useState(false);
   const [openUploadImagePop, setOpenUploadImagePop] = React.useState(false);
   const [imageContextData, setImageContextData] = React.useState({
     question: null,
     option: null,
   });
+  const currentUser = authService.getCurrentUser();
 
   const [formData, setFormData] = React.useState({
     title: "",
@@ -72,6 +93,29 @@ function CreateExam2(params) {
   // }, [props.formData]);
 
   function saveQuestions() {
+    let errorQuestion = null;
+    if (formData.title === "" && formData.description === "") {
+      message.error("Vui lòng nhập tên bài kiểm tra và mô tả");
+      return;
+    }
+
+    if (questions.length === 0) {
+      message.error("Vui lòng thêm câu hỏi");
+      return;
+    }
+
+    questions.forEach((question, i) => {
+      if (question.type === "") {
+        errorQuestion = i;
+        return;
+      }
+    });
+
+    if (errorQuestion !== null) {
+      message.warn(`Vui lòng kiểm tra lại câu hỏi số ${errorQuestion + 1}`);
+      return
+    }
+      
     var data = {
       title: formData.title,
       description: formData.description,
@@ -79,6 +123,7 @@ function CreateExam2(params) {
       startTime: formData.startTime,
       questions: questions,
       classroom: params.match.params.id,
+      author: currentUser.id,
     };
     console.log(data);
 
@@ -127,6 +172,8 @@ function CreateExam2(params) {
         questionText: "Câu hỏi",
         options: [{ optionText: "Câu trả lời 1", isCorrect: false }],
         open: true,
+        point: 1,
+        type: "",
       },
     ]);
   }
@@ -275,12 +322,38 @@ function CreateExam2(params) {
     setQuestions(qs);
   }
 
-  const chooseTrueQuesion = (i, j) => {
-    var optionsOfQuestion = [...questions];
-    optionsOfQuestion[i].options[j].isCorrect =
-      !optionsOfQuestion[i].options[j].isCorrect;
-    //newMembersEmail[i]= email;
-    setQuestions(optionsOfQuestion);
+  const chooseTrueAnswer = (i, j) => {
+    if (questions[i].options[j].isCorrect === false) {
+      var optionsOfQuestion = [...questions];
+
+      var countAnswer = optionsOfQuestion[i].options.length;
+      var countTrueAnswer = optionsOfQuestion[i].options.filter((op) => {
+        return op.isCorrect === true;
+      }).length;
+
+      if (countTrueAnswer >= countAnswer - 1) {
+        message.error("Quá nhiều đáp án đúng");
+        return;
+      }
+    }
+    var newQuestions = [...questions];
+    newQuestions[i].options[j].isCorrect =
+      !newQuestions[i].options[j].isCorrect;
+
+    setQuestions(newQuestions);
+  };
+
+  const handleChangePoint = (i, point) => {
+    let qs = [...questions];
+    qs[i].point = point;
+    setQuestions(qs);
+  };
+
+  const handleChangeType = (i, type) => {
+    let qs = [...questions];
+    qs[i].type = type;
+
+    setQuestions(qs);
   };
 
   function questionsUI() {
@@ -324,7 +397,7 @@ function CreateExam2(params) {
                           variant="subtitle1"
                           style={{ marginLeft: "0px" }}
                         >
-                          {i + 1}. {ques.questionText}
+                         {<b> {i + 1}. {ques.questionText}</b>}
                         </Typography>
 
                         {ques.questionImage !== "" ? (
@@ -396,8 +469,8 @@ function CreateExam2(params) {
                           justifyContent: "space-between",
                         }}
                       >
-                        <Typography style={{ marginTop: "10px" }}>
-                          {`${i + 1}.  `}
+                        <Typography style={{ marginTop: "20px" }}>
+                          <b>{`${i + 1}. `}</b>
                         </Typography>
                         <TextField
                           fullWidth={true}
@@ -420,182 +493,239 @@ function CreateExam2(params) {
                         >
                           <CropOriginalIcon />
                         </IconButton>
+                        <FormControl
+                          variant="outlined"
+                          className={classes.formControl}
+                          style={{ marginLeft: "20px", minWidth: "150px" }}
+                          required
+                        >
+                          <InputLabel id="demo-simple-select-outlined-label">
+                            Loại
+                          </InputLabel>
+                          <Select
+                            labelId="demo-simple-select-outlined-label"
+                            id="demo-simple-select-outlined"
+                            value={ques.type ? ques.type : ""}
+                            onChange={(e) => {
+                              handleChangeType(i, e.target.value);
+                            }}
+                            displayEmpty
+                            label="Loại"
+                            inputProps={{ "aria-label": "Without label" }}
+                          >
+                            <MenuItem value={"choose"}>Trắc nghiệm</MenuItem>
+                            <MenuItem value={"answer"}>Trả lời</MenuItem>
+                          </Select>
+                          <FormHelperText>Bắt buộc</FormHelperText>
+                        </FormControl>
                       </div>
-
-                      <div>
-                        {checkImageHereOrNotForQuestion(ques.questionImage) ? (
+                      {ques.type === "choose" && (
+                        <div style={{ width: "100%" }}>
                           <div>
-                            <div
-                              style={{
-                                width: "150px",
-                                display: "flex",
-                                alignItems: "flex-start",
-                                paddingLeft: "20px",
-                              }}
-                            >
-                              <img
-                                src={ques.questionImage}
-                                width="150px"
-                                height="auto"
-                              />
-                              <IconButton
-                                style={{
-                                  marginLeft: "-15px",
-                                  marginTop: "-15px",
-                                  zIndex: 999,
-                                  backgroundColor: "lightgrey",
-                                  color: "grey",
-                                }}
-                                size="small"
-                                onClick={() => {
-                                  updateImageLink("", {
-                                    question: i,
-                                    option: null,
-                                  });
-                                }}
-                              >
-                                <CloseIcon />
-                              </IconButton>
-                            </div>
-                          </div>
-                        ) : (
-                          ""
-                        )}
-                      </div>
-
-                      <div style={{ width: "100%" }}>
-                        {ques.options.map((op, j) => (
-                          <div key={j}>
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                marginLeft: "-10px",
-                                justifyContent: "space-between",
-                                paddingTop: "5px",
-                                paddingBottom: "5px",
-                              }}
-                            >
-                              <FormControlLabel
-                                control={
-                                  <Checkbox
-                                    checked={op.isCorrect}
-                                    onChange={() => {
-                                      chooseTrueQuesion(i, j);
-                                    }}
+                            {checkImageHereOrNotForQuestion(
+                              ques.questionImage
+                            ) ? (
+                              <div>
+                                <div
+                                  style={{
+                                    width: "150px",
+                                    display: "flex",
+                                    alignItems: "flex-start",
+                                    paddingLeft: "20px",
+                                  }}
+                                >
+                                  <img
+                                    src={ques.questionImage}
+                                    width="150px"
+                                    height="auto"
                                   />
-                                }
-                              />
-
-                              {/* <Radio onClick={chooseTrueQuesion(ques, op ,j)} /> */}
-                              <TextField
-                                fullWidth={true}
-                                placeholder="Nhập câu trả lời"
-                                style={{ marginTop: "5px" }}
-                                value={ques.options[j].optionText}
-                                onChange={(e) => {
-                                  handleOptionValue(e.target.value, i, j);
-                                }}
-                              />
-
-                              <IconButton
-                                aria-label="Tải ảnh lên"
-                                onClick={() => {
-                                  uploadImage(i, j);
-                                }}
-                              >
-                                <CropOriginalIcon />
-                              </IconButton>
-
-                              <IconButton
-                                aria-label="delete"
-                                onClick={() => {
-                                  removeOption(i, j);
-                                }}
-                              >
-                                <CloseIcon />
-                              </IconButton>
-                            </div>
-
-                            <div>
-                              {checkImageHereOrNotForOption(op.optionImage) ? (
-                                <div>
-                                  <div
+                                  <IconButton
                                     style={{
-                                      width: "150px",
-                                      display: "flex",
-                                      alignItems: "flex-start",
-                                      paddingLeft: "20px",
+                                      marginLeft: "-15px",
+                                      marginTop: "-15px",
+                                      zIndex: 999,
+                                      backgroundColor: "lightgrey",
+                                      color: "grey",
+                                    }}
+                                    size="small"
+                                    onClick={() => {
+                                      updateImageLink("", {
+                                        question: i,
+                                        option: null,
+                                      });
                                     }}
                                   >
-                                    <img
-                                      src={op.optionImage}
-                                      width="90px"
-                                      height="auto"
-                                    />
-
-                                    <IconButton
-                                      style={{
-                                        marginLeft: "-15px",
-                                        marginTop: "-15px",
-                                        zIndex: 999,
-                                        backgroundColor: "lightgrey",
-                                        color: "grey",
-                                      }}
-                                      size="small"
-                                      onClick={() => {
-                                        updateImageLink("", {
-                                          question: i,
-                                          option: j,
-                                        });
-                                      }}
-                                    >
-                                      <CloseIcon />
-                                    </IconButton>
-                                  </div>
-                                  <br></br>
-                                  <br></br>
+                                    <CloseIcon />
+                                  </IconButton>
                                 </div>
-                              ) : (
-                                ""
-                              )}
-                            </div>
+                              </div>
+                            ) : (
+                              ""
+                            )}
                           </div>
-                        ))}
-                      </div>
 
-                      {ques.options.length < 5 ? (
-                        <div>
-                          <FormControlLabel
-                            disabled
-                            control={<Radio />}
-                            label={
-                              <Button
-                                size="small"
-                                onClick={() => {
-                                  addOption(i);
-                                }}
-                                style={{
-                                  textTransform: "none",
-                                  marginLeft: "-5px",
-                                }}
-                              >
-                                Thêm câu trả lời
-                              </Button>
-                            }
-                          />
+                          <div style={{ width: "100%" }}>
+                            {ques.options.map((op, j) => (
+                              <div key={j}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    marginLeft: "-10px",
+                                    justifyContent: "space-between",
+                                    paddingTop: "5px",
+                                    paddingBottom: "5px",
+                                  }}
+                                >
+                                  <FormControlLabel
+                                    control={
+                                      <Checkbox
+                                        checked={op.isCorrect}
+                                        onChange={() => {
+                                          chooseTrueAnswer(i, j);
+                                        }}
+                                      />
+                                    }
+                                  />
+
+                                  {/* <Radio onClick={chooseTrueAnswer(ques, op ,j)} /> */}
+                                  <TextField
+                                    fullWidth={true}
+                                    placeholder="Nhập câu trả lời"
+                                    style={{ marginTop: "5px" }}
+                                    value={ques.options[j].optionText}
+                                    onChange={(e) => {
+                                      handleOptionValue(e.target.value, i, j);
+                                    }}
+                                  />
+
+                                  <IconButton
+                                    aria-label="Tải ảnh lên"
+                                    onClick={() => {
+                                      uploadImage(i, j);
+                                    }}
+                                  >
+                                    <CropOriginalIcon />
+                                  </IconButton>
+
+                                  <IconButton
+                                    aria-label="delete"
+                                    onClick={() => {
+                                      removeOption(i, j);
+                                    }}
+                                  >
+                                    <CloseIcon />
+                                  </IconButton>
+                                </div>
+
+                                <div>
+                                  {checkImageHereOrNotForOption(
+                                    op.optionImage
+                                  ) ? (
+                                    <div>
+                                      <div
+                                        style={{
+                                          width: "150px",
+                                          display: "flex",
+                                          alignItems: "flex-start",
+                                          paddingLeft: "20px",
+                                        }}
+                                      >
+                                        <img
+                                          src={op.optionImage}
+                                          width="90px"
+                                          height="auto"
+                                        />
+
+                                        <IconButton
+                                          style={{
+                                            marginLeft: "-15px",
+                                            marginTop: "-15px",
+                                            zIndex: 999,
+                                            backgroundColor: "lightgrey",
+                                            color: "grey",
+                                          }}
+                                          size="small"
+                                          onClick={() => {
+                                            updateImageLink("", {
+                                              question: i,
+                                              option: j,
+                                            });
+                                          }}
+                                        >
+                                          <CloseIcon />
+                                        </IconButton>
+                                      </div>
+                                      <br></br>
+                                      <br></br>
+                                    </div>
+                                  ) : (
+                                    ""
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {ques.options.length < 5 ? (
+                            <div>
+                              <FormControlLabel
+                                disabled
+                                control={<Radio />}
+                                label={
+                                  <Button
+                                    size="small"
+                                    onClick={() => {
+                                      addOption(i);
+                                    }}
+                                    style={{
+                                      textTransform: "none",
+                                      marginLeft: "-5px",
+                                    }}
+                                  >
+                                    Thêm câu trả lời
+                                  </Button>
+                                }
+                              />
+                            </div>
+                          ) : (
+                            ""
+                          )}
+
+                          <Grid
+                            container
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="flex-end"
+                          >
+                            <Typography
+                              variant="body2"
+                              style={{ color: "grey" }}
+                            >
+                              Bạn có thể thêm tối đa 5 tùy chọn. Chọn vào tích ở
+                              đầu câu để đánh dấu đáp án đúng.
+                            </Typography>
+                            <TextField
+                              id="standard-number"
+                              label="Điểm"
+                              type="number"
+                              value={ques.point}
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              onChange={(e) => {
+                                handleChangePoint(i, e.target.value);
+                              }}
+                            />
+                          </Grid>
                         </div>
-                      ) : (
-                        ""
                       )}
 
-                      <br></br>
-                      <br></br>
-
-                      <Typography variant="body2" style={{ color: "grey" }}>
-                        Bạn có thể thêm tối đa 5 tùy chọn. Chọn vào tích ở đầu
-                        câu để đánh dấu đáp án đúng.
-                      </Typography>
+                      {ques.type === "" && (
+                        <FormHelperText style={{ color: "red" }}>
+                          Xin vui lòng chọn loại câu hỏi
+                        </FormHelperText>
+                      )}
                     </div>
                   </AccordionDetails>
 
