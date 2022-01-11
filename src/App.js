@@ -22,11 +22,12 @@ import People from "./pages/ClassroomDetail/People";
 import Setting from "./pages/ClassroomDetail/Setting";
 import CreateExam2 from "./pages/ClassroomDetail/CreateExam2";
 import CreateExam from "./pages/ClassroomDetail/CreateExam";
-
+import Exam from "./pages/Exam/Exam";
 import { history } from "./helpers/history";
 import { logout } from "./redux/auth/auth.actions";
 import AuthVerify from "./common/AuthVerify";
 import NotFound from "./pages/NotFound";
+
 import "antd/dist/antd.css";
 import "./assets/styles/main.css";
 import "./assets/styles/responsive.css";
@@ -53,6 +54,8 @@ function App() {
             <Route exact path="/" component={Landing} />
             <Route exact path="/meeting" component={MeetingHome} />
             <Route exact path="/meeting/:id" component={MeetingRoom} />
+            <Route exact path="/exam" component={Exam} />
+
             <Main>
               <Route exact path="/dashboard" component={Home} />
               <Route exact path="/tables" component={Tables} />

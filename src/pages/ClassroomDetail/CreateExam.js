@@ -1,396 +1,293 @@
 import React, { useState, useEffect } from "react";
+import "./classroomDetail.css";
 import moment from "moment";
-import { DatePicker, Space } from "antd";
 import {
   Card,
   Col,
   Row,
   Typography,
-  Collapse,
   Button,
-  Input,
-  Form,
+  Skeleton,
   Divider,
   Checkbox,
+  Space,
+  Tag,
+  Spin,
+  Modal,
 } from "antd";
 
 import {
   MenuUnfoldOutlined,
-  DragOutlined,
-  DeleteOutlined,
-  MinusCircleOutlined,
-  PlusOutlined,
+  ExclamationCircleOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import shortid from "shortid";
 import Paragraph from "antd/lib/typography/Paragraph";
-import { clone, set } from "lodash";
+import { useHistory } from "react-router-dom";
 import useClassroom from "../../hooks/useClassroom";
 import { getHomeworkDetail } from "../../services/homework.service";
 const { Title, Text } = Typography;
-const { RangePicker } = DatePicker;
-const { Panel } = Collapse;
-const { TextArea } = Input;
-
-function range(start, end) {
-  const result = [];
-  for (let i = start; i < end; i++) {
-    result.push(i);
-  }
-  return result;
-}
-
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 2 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 24 },
-  },
-};
-
-const deleteIcon = [
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    key={0}
-  >
-    <path
-      d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"
-      className="fill-gray-7"
-    ></path>
-    <path
-      d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"
-      className="fill-gray-7"
-    ></path>
-  </svg>,
-];
+const { CheckableTag } = Tag;
+const listAnswers = ["A", "B", "C", "D", "E"];
+const { confirm } = Modal;
 
 export default function CreateExam(params) {
+  const history = useHistory();
+
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
   const classroom = useClassroom(params.match.params.id);
   const homeworkId = params.match.params.homeworkId;
-
-  const [form] = Form.useForm();
-
-  const [questions, setQuestions] = React.useState([]);
-  const [openUploadImagePop, setOpenUploadImagePop] = React.useState(false);
-  const [imageContextData, setImageContextData] = React.useState({
-    question: null,
-    option: null,
+  const [countDown, setCountDown] = useState({
+    minutes: null,
+    seconds: null,
   });
-  const [formData, setFormData] = React.useState({});
-  const [loadingFormData, setLoadingFormData] = React.useState(true);
+
+  const [questions, setQuestions] = useState([]);
+  const [isStart, setIsStart] = useState(false);
+  const [startModalVisiable, setStartModalVisiable] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [homeworkInfo, setHomeworkInfo] = useState({});
+  const [answers, setAnswers] = useState([]);
+
+  const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
   useEffect(() => {
-    getHomeworkDetail(homeworkId).then(
-      (res) => {
-        console.log(res);
+    const interval = setInterval(() => {
+      if (isStart === true) {
+        let minute = countDown.minutes;
+        let second = countDown.seconds;
+        if (minute === 0 && second === 1) {
+          clearInterval(interval);
+          // this.endTest();
+        } else {
+          if (second === 0) {
+            second = 59;
+            minute = minute - 1;
+          } else {
+            second = second - 1;
+          }
+          setCountDown({
+            minutes: minute,
+            seconds: second,
+          });
+        }
       }
-    );
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  });
+
+  useEffect(() => {
+    if (startModalVisiable === false && isStart === false) {
+      history.push(`/classroom/${classroom._id}`);
+    }
+  }, [startModalVisiable, isStart]);
+
+  useEffect(() => {
+    getHomeworkDetail(homeworkId)
+      .then((res) => {
+        const homeworkInfor = {
+          ...res,
+        };
+        delete homeworkInfor.questions;
+
+        setHomeworkInfo(homeworkInfor);
+        setQuestions(res.questions);
+        setCountDown({ minutes: homeworkInfor.time, seconds: 0 });
+
+        setIsLoading(false);
+        console.log(homeworkInfor);
+      })
+      .catch((err) => console.log(err));
+
     return () => {};
   }, [homeworkId]);
 
-  function disabledDate(current) {
-    // Can not select days before today and today
-    return current && current < moment().endOf("day");
-  }
-
-  function disabledRangeTime(_, type) {
-    if (type === "start") {
-      return {
-        disabledHours: () => range(0, 60).splice(4, 20),
-        disabledMinutes: () => range(30, 60),
-        disabledSeconds: () => [55, 56],
-      };
-    }
-    return {
-      disabledHours: () => range(0, 60).splice(20, 4),
-      disabledMinutes: () => range(0, 31),
-      disabledSeconds: () => [55, 56],
-    };
-  }
-
-  const onFinish = (values) => {
-    console.log("Received values of form:", values);
-  };
-
-  const listAnswers = ["A", "B", "C", "D", "E"];
-
-  const onChangeQuestion = (ques, value) => {
-    var foundIndex = questions.findIndex((x) => x.id === ques.id);
-    var newQuestions = clone(questions);
-
-    newQuestions[foundIndex] = {
-      id: ques.id,
-      question: value,
-      answers: ques.answers ? ques.answers : [],
-    };
-
-    setQuestions(newQuestions);
-  };
-
-  const onchangeAnswer = (ques, index, value) => {
-    var foundIndex = questions.findIndex((x) => x.id === ques.id);
-    var newQuestions = clone(questions);
-
-    if (newQuestions[foundIndex].answers.length > index - 1) {
-      newQuestions[foundIndex].answers[index].answer = value;
-    } else {
-      newQuestions[foundIndex].answers.push({
-        answer: value,
-        isCorrect: false,
-      });
-    }
-
-    setQuestions(newQuestions);
-    console.log(questions);
-  };
-
-  const handleAddQuestion = (ques) => {
-    var foundIndex = questions.findIndex((x) => x.id === ques.id);
-    questions[foundIndex].answers.push({
-      answer: "",
-      isCorrect: false,
-    });
-    setQuestions(questions);
-  };
-
-  const checkTrueAnswer = (field, index) => {
-    console.log(field, index);
+  const ModalStartUI = () => {
+    return (
+      <Modal
+        title={`Bắt đầu bài thi: `}
+        visible={startModalVisiable}
+        onOk={() => {
+          setTimeout(() => {
+            setIsStart(true);
+            setStartModalVisiable(false);
+          }, 3000);
+        }}
+        onCancel={() => {
+          setStartModalVisiable(false);
+        }}
+        okText={"Bắt đầu"}
+        cancelText="Quay lại"
+      >
+        <h3>
+          <ExclamationCircleOutlined /> Lưu ý:
+        </h3>
+        <p>+ Chuẩn bị đầy đủ dụng cụ để bắt đầu làm bài.</p>
+        <p>+ Bài thi sẽ được bắt đầu sau 3 giây.</p>
+        <p>+ Hết thời gian bài thi sẽ tự động nộp bài.</p>
+        <Spin indicator={loadingIcon} />
+      </Modal>
+    );
   };
 
   function questionsUI() {
-    return questions.map((ques, i) => (
-      <div>
-        <div style={{ marginBottom: "15px" }}>
-          <div style={{ width: "100%" }}>
-            <Row span={24}>
-              <Col span={24}>
-                <Card
-                  onClick={() => {
-                    console.log("click");
-                  }}
-                  className=" full-width"
-                  style={{
-                    backgroundColor: "rgb(250, 250, 250)",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <Row className="ph-24">
-                    <Col xs={24} md={16}>
-                      <h6 className="font-semibold">Câu hỏi số {i + 1}</h6>
-                    </Col>
-                    <Col xs={24} md={6} className="d-flex">
-                      <Row justify="space-around">
-                        <Col xs={12} md={12}>
-                          <Input
-                            label="Điểm"
-                            style={{
-                              width: "40px",
-                              height: "30px",
-                              borderColor: "transparent",
-                            }}
-                          />
-                        </Col>
-                        <Col xs={12} md={12}>
-                          <Button
-                            onClick={() => {
-                              var questionsClone = clone(questions);
-                              var newQuestions = questionsClone.filter(
-                                function (obj) {
-                                  return obj.id !== ques.id;
-                                }
-                              );
-                              setQuestions(newQuestions);
-                              console.log(newQuestions);
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Col>
-                  </Row>
-
-                  <Row span={24}>
-                    <Col xs={24} md={24}>
-                      <div>
-                        <Form
-                          name="dynamic_form_item"
-                          {...formItemLayout}
-                          onFinish={onFinish}
-                        >
-                          <Form.List name="names">
-                            {(fields, { add, remove }, { errors }) => (
+    return (
+      questions &&
+      questions.map((ques, i) => (
+        <div>
+          <div style={{ marginBottom: "15px" }}>
+            <div style={{ width: "100%" }}>
+              <Row span={24}>
+                <Col span={24}>
+                  <Card
+                    onClick={() => {
+                      console.log("click");
+                    }}
+                    className=" full-width"
+                    style={{
+                      backgroundColor: "rgb(250, 250, 250)",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <Row className="ph-24">
+                      <Col xs={24} md={16}>
+                        <h6 className="font-semibold">Câu hỏi số {i + 1} :</h6>
+                      </Col>
+                      <Col xs={24} md={6} className="d-flex"></Col>
+                    </Row>
+                    <b>{ques.question}</b>
+                    <Row span={24}>
+                      <Col xs={24} md={24}>
+                        <div>
+                          <div>
+                            {ques.answers.map((ans, j) => (
                               <>
-                                <Form.Item style={{ textAlign: "center" }}>
-                                  <TextArea
-                                    placeholder="Nhập nội dung câu hỏi"
-                                    allowClear
-                                    onChange={(e) => {
-                                      onChangeQuestion(ques, e.target.value);
-                                    }}
-                                    value={ques.question}
-                                    style={{ width: "90%" }}
-                                  />
-                                </Form.Item>
-                                {fields.map((field, index) => (
-                                  <Form.Item
-                                    {...formItemLayout}
-                                    label={<b>{listAnswers[index]}</b>}
-                                    required={false}
-                                    key={field.key}
-                                  >
-                                    <Form.Item
-                                      {...field}
-                                      validateTrigger={["onChange", "onBlur"]}
-                                      rules={[
-                                        {
-                                          required: true,
-                                          whitespace: true,
-                                          message: "Vui lòng nhập câu trả lời",
-                                        },
-                                      ]}
-                                      noStyle
-                                    >
-                                      <Input
-                                        placeholder="Đáp án"
-                                        style={{ width: "80%" }}
-                                        onChange={(e) => {
-                                          onchangeAnswer(
-                                            ques,
-                                            index,
-                                            e.target.value
-                                          );
-                                        }}
-                                      />
-                                    </Form.Item>
-
-                                    {fields.length > 1 ? (
-                                      <Button
-                                        type="link"
-                                        className="ant-edit-link"
-                                        onClick={() => remove(field.name)}
-                                      >
-                                        {deleteIcon}
-                                      </Button>
-                                    ) : null}
-                                    {fields.length > 1 ? (
-                                      <Checkbox
-                                        onChange={() => {
-                                          checkTrueAnswer(ques, field.name);
-                                        }}
-                                      ></Checkbox>
-                                    ) : null}
-                                  </Form.Item>
-                                ))}
-                                <Divider orientation="right"></Divider>
-
-                                <div
-                                  className="controller"
-                                  style={{ width: "90%" }}
-                                >
-                                  <Form.Item>
-                                    <Button
-                                      disabled={fields.length >= 5}
-                                      type="dashed"
-                                      onClick={() => {
-                                        add();
-                                        handleAddQuestion(ques);
-                                      }}
-                                      icon={<PlusOutlined />}
-                                    >
-                                      Thêm đáp án
-                                    </Button>
-                                    <Form.ErrorList errors={errors} />
-                                  </Form.Item>
-                                </div>
+                                {ans.answer}
+                                <br></br>
                               </>
-                            )}
-                          </Form.List>
-                          {/* <Form.Item>
-
-                          </Form.Item> */}
-                        </Form>
-                      </div>
-                    </Col>
-                  </Row>
-                </Card>
-              </Col>
-            </Row>
+                            ))}
+                            <Divider orientation="right"></Divider>
+                            <div
+                              className="controller"
+                              style={{ width: "90%" }}
+                            >
+                              Chọn câu trả lời:
+                              {ques.answers.map((ans, j) => (
+                                <>
+                                  <CheckableTag
+                                    key={ans}
+                                    checked={listAnswers[j].indexOf(ans) > -1}
+                                    onChange={(checked) => {}}
+                                  >
+                                    {listAnswers[j]}
+                                  </CheckableTag>
+                                  {/* <Button>{listAnswers[j]}</Button> */}
+                                </>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>
+                  </Card>
+                </Col>
+              </Row>
+            </div>
           </div>
         </div>
-      </div>
-    ));
+      ))
+    );
   }
 
   return (
     <div>
-      <Row gutter={[24, 0]}>
-        <Col xs={24} sm={24} md={16} lg={16} xl={18}>
-          <Card bordered={false} className="criclebox cardbody h-full">
-            <div className="project-ant">
-              <div className="width-100 hidden-overflow">
-                <Title level={5}>Nội dung bài kiểm tra</Title>
-                <Paragraph className="lastweek">
-                  Cấu hình<span className="blue">40%</span>
-                </Paragraph>
+      {!isLoading ? (
+        <>
+          <Skeleton loading={!isStart} active>
+            <Row gutter={[24, 0]}>
+              <Col xs={24} sm={24} md={16} lg={16} xl={18}>
+                <Card bordered={false} className="criclebox cardbody h-full">
+                  <div className="project-ant">
+                    <div className="width-100 hidden-overflow">
+                      <Title level={5}>Nội dung bài kiểm tra</Title>
+                      <Paragraph className="lastweek">
+                        Cấu hình<span className="blue">40%</span>
+                      </Paragraph>
 
-                <div>{questionsUI()}</div>
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    setQuestions([
-                      ...questions,
-                      {
-                        id: shortid.generate(),
-                        question: "",
-                        answers: [],
-                      },
-                    ]);
-                  }}
-                >
-                  Add Question
-                </Button>
-              </div>
-            </div>
-            <div className="ant-list-box table-responsive"></div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={24} md={8} lg={8} xl={6}>
-          <Card bordered={false} className="criclebox">
-            <div className="timeline-box">
-              <Title level={5}>Cấu hình bài kiểm tra</Title>
-              <Paragraph className="lastweek" style={{ marginBottom: 24 }}>
-                Ấn lưu để hoàn tất quá trình tạo bài kiểm tra
-              </Paragraph>
-              <Space direction="vertical" size={12}>
-                <RangePicker
-                  disabledDate={disabledDate}
-                  disabledTime={disabledRangeTime}
-                  showTime={{
-                    hideDisabledOptions: true,
-                    defaultValue: [
-                      moment("00:00:00", "HH:mm:ss"),
-                      moment("11:59:59", "HH:mm:ss"),
-                    ],
-                  }}
-                  format="YYYY-MM-DD HH:mm:ss"
-                />
-              </Space>
-              ,
-              <Button type="primary" className="width-100" onClick={() => {}}>
-                {<MenuUnfoldOutlined />} Lưu
-              </Button>
-            </div>
-          </Card>
-        </Col>
-      </Row>
+                      <div>{questionsUI()}</div>
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          setQuestions([
+                            ...questions,
+                            {
+                              id: shortid.generate(),
+                              question: "",
+                              answers: [],
+                            },
+                          ]);
+                        }}
+                      >
+                        Nộp bài
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="ant-list-box table-responsive"></div>
+                </Card>
+              </Col>
+              <Col xs={24} sm={24} md={8} lg={8} xl={6}>
+                <Card bordered={false} className="criclebox">
+                  <div className="timeline-box">
+                    <Title level={5}>{homeworkInfo.title}</Title>
+                    <Paragraph
+                      className="lastweek"
+                      style={{ marginBottom: 24 }}
+                    >
+                      {homeworkInfo.description}
+                    </Paragraph>
+                    <div className="clock-wrapper">
+                      <div className="clock-container">
+                        {countDown.minutes === 0 &&
+                        countDown.seconds === 0 ? null : (
+                          <h1>
+                            {" "}
+                            {countDown.minutes < 10
+                              ? `0${countDown.minutes}`
+                              : countDown.minutes}
+                            :
+                            {countDown.seconds < 10
+                              ? `0${countDown.seconds}`
+                              : countDown.seconds}
+                          </h1>
+                        )}
+                      </div>
+                    </div>
+                    <Space direction="vertical" size={12}></Space>
+
+                    <Button
+                      type="primary"
+                      className="width-100"
+                      onClick={() => {
+                        setIsStart(!isStart);
+                      }}
+                    >
+                      {<MenuUnfoldOutlined />} Nộp bài
+                    </Button>
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+          </Skeleton>
+          {ModalStartUI()}
+        </>
+      ) : (
+        <Space size="middle" className="loading">
+          <Spin size="large" />
+        </Space>
+      )}
     </div>
   );
 }

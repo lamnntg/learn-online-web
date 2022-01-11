@@ -113,9 +113,9 @@ function CreateExam2(params) {
 
     if (errorQuestion !== null) {
       message.warn(`Vui lòng kiểm tra lại câu hỏi số ${errorQuestion + 1}`);
-      return
+      return;
     }
-      
+
     var data = {
       title: formData.title,
       description: formData.description,
@@ -125,8 +125,9 @@ function CreateExam2(params) {
       classroom: params.match.params.id,
       author: currentUser.id,
     };
-    console.log(data);
 
+    console.log(questions);
+    // return;
     createHomework(data).then(
       (result) => {
         console.log(result);
@@ -355,6 +356,10 @@ function CreateExam2(params) {
 
   const handleChangeType = (i, type) => {
     let qs = [...questions];
+    if (type === "answer") {
+      qs[i].options = [];
+    }
+
     qs[i].type = type;
 
     setQuestions(qs);
@@ -401,7 +406,12 @@ function CreateExam2(params) {
                           variant="subtitle1"
                           style={{ marginLeft: "0px" }}
                         >
-                         {<b> {i + 1}. {ques.questionText}</b>}
+                          {
+                            <b>
+                              {" "}
+                              {i + 1}. {ques.questionText}
+                            </b>
+                          }
                         </Typography>
 
                         {ques.questionImage !== "" ? (
@@ -724,7 +734,49 @@ function CreateExam2(params) {
                           </Grid>
                         </div>
                       )}
-
+                      {ques.type === "answer" && (
+                        <div style={{ width: "100%" }}>
+                          <div>
+                            {ques.questionImage !== "" ? (
+                              <div>
+                                <img
+                                  src={ques.questionImage}
+                                  width="400px"
+                                  height="auto"
+                                />
+                                <br></br>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+                          <Grid
+                            container
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="flex-end"
+                          >
+                            <Typography
+                              variant="body2"
+                              style={{ color: "grey" }}
+                            >
+                              Câu hỏi tự luận học sinh sẽ tự trả lời.
+                            </Typography>
+                            <TextField
+                              id="standard-number"
+                              label="Điểm"
+                              type="number"
+                              value={ques.point}
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              onChange={(e) => {
+                                handleChangePoint(i, e.target.value);
+                              }}
+                            />
+                          </Grid>
+                        </div>
+                      )}
                       {ques.type === "" && (
                         <FormHelperText style={{ color: "red" }}>
                           Xin vui lòng chọn loại câu hỏi

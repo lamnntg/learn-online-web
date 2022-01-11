@@ -3140,3 +3140,25 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile
   cursor: not-allowed;
   opacity: 0.5;
 }
+.clock-wrapper{
+  width:100%;
+  background: rgb(255, 255, 255);
+  text-align: center;
+  padding:15px 10px
+}
+.clock-container{
+  font-size: 35px;
+  font-family: Orbitron;
+  letter-spacing: 7px;
+  color: rgb(0, 0, 0);
+}
+
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -50px;
+  width: 100px;
+  height: 100px;
+}

@@ -1,0 +1,12 @@
+.clock-wrapper{
+    width:100%;
+    background: rgb(255, 255, 255);
+    text-align: center;
+    padding:15px 10px
+}
+.clock-container{
+    font-size: 35px;
+    font-family: Orbitron;
+    letter-spacing: 7px;
+    color: rgb(0, 0, 0);
+}

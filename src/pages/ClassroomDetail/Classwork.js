@@ -74,8 +74,6 @@ export default function Classwork(params) {
   );
 
   function handleMenuClick(e) {
-    message.info("Click on menu item.");
-    console.log("click", e);
     history.push(`/classroom/${id}/${e.key}/create`);
   }
 
@@ -410,7 +408,7 @@ export default function Classwork(params) {
           </div>
         </>
       ) : (
-        <Space size="middle">
+        <Space size="middle" className="loading">
           <Spin size="large" />
         </Space>
       )}
