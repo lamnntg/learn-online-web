@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./classroomDetail.css";
+import Operations from "../../components/Exam/Operations";
+
 import moment from "moment";
 import {
   Card,
@@ -27,14 +29,11 @@ import { useHistory } from "react-router-dom";
 import useClassroom from "../../hooks/useClassroom";
 import { getHomeworkDetail } from "../../services/homework.service";
 const { Title, Text } = Typography;
-const { CheckableTag } = Tag;
 const listAnswers = ["A", "B", "C", "D", "E"];
 const { confirm } = Modal;
 
-export default function CreateExam(params) {
+export default function CreateExam(params, props) {
   const history = useHistory();
-
-  const onChange = (e) => console.log(`radio checked:${e.target.value}`);
   const classroom = useClassroom(params.match.params.id);
   const homeworkId = params.match.params.homeworkId;
   const [countDown, setCountDown] = useState({
@@ -48,6 +47,7 @@ export default function CreateExam(params) {
   const [isLoading, setIsLoading] = useState(true);
   const [homeworkInfo, setHomeworkInfo] = useState({});
   const [answers, setAnswers] = useState([]);
+  const [isBlocking, setIsBlocking] = useState(true);
 
   const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
@@ -85,6 +85,26 @@ export default function CreateExam(params) {
     }
   }, [startModalVisiable, isStart]);
 
+  //redirect to another page
+  useEffect(() => {
+    const unblock = history.block((location, action) => {
+      if (isBlocking) {
+        return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
+      }
+      return true;
+    });
+
+    window.onbeforeunload = function () {
+      if (isBlocking) {
+        return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
+      }
+    };
+
+    return () => {
+      unblock();
+    };
+  }, []);
+
   useEffect(() => {
     getHomeworkDetail(homeworkId)
       .then((res) => {
@@ -95,10 +115,23 @@ export default function CreateExam(params) {
 
         setHomeworkInfo(homeworkInfor);
         setQuestions(res.questions);
+
+        var newAnswers = [];
+        res.questions.forEach((ques, i) => {
+          newAnswers.push({
+            question_id: ques._id,
+            answers: Array.from(ques.answers, (element) => {
+              return {
+                ...element,
+                selected: false,
+              };
+            }),
+          });
+        });
+        setAnswers(newAnswers);
         setCountDown({ minutes: homeworkInfor.time, seconds: 0 });
 
         setIsLoading(false);
-        console.log(homeworkInfor);
       })
       .catch((err) => console.log(err));
 
@@ -154,42 +187,75 @@ export default function CreateExam(params) {
                   >
                     <Row className="ph-24">
                       <Col xs={24} md={16}>
-                        <h6 className="font-semibold">Câu hỏi số {i + 1} :</h6>
+                        <h6 className="font-semibold font-16">
+                          Câu hỏi số {i + 1} : {ques.question}
+                        </h6>
                       </Col>
-                      <Col xs={24} md={6} className="d-flex"></Col>
+                      {ques.url !== "" ? (
+                        <img
+                          src={ques.url}
+                          width="350px"
+                          height="auto"
+                          alt=""
+                        />
+                      ) : (
+                        ""
+                      )}
                     </Row>
-                    <b>{ques.question}</b>
-                    <Row span={24}>
-                      <Col xs={24} md={24}>
+                    <Row span={24} md={16}>
+                      <Col span={24} md={16}>
                         <div>
-                          <div>
-                            {ques.answers.map((ans, j) => (
-                              <>
-                                {ans.answer}
-                                <br></br>
-                              </>
-                            ))}
-                            <Divider orientation="right"></Divider>
-                            <div
-                              className="controller"
-                              style={{ width: "90%" }}
-                            >
-                              Chọn câu trả lời:
-                              {ques.answers.map((ans, j) => (
-                                <>
-                                  <CheckableTag
-                                    key={ans}
-                                    checked={listAnswers[j].indexOf(ans) > -1}
-                                    onChange={(checked) => {}}
-                                  >
+                          {ques.answers.map((ans, j) => (
+                            <>
+                              <div
+                                style={{
+                                  padding: "0px 15px",
+                                }}
+                              >
+                                <div>
+                                  <b>
                                     {listAnswers[j]}
-                                  </CheckableTag>
-                                  {/* <Button>{listAnswers[j]}</Button> */}
-                                </>
-                              ))}
-                            </div>
-                          </div>
+                                    {"  :  "}
+                                  </b>
+                                  {ans.answer}
+                                </div>
+                                {ans.url !== "" ? (
+                                  <img
+                                    style={{
+                                      display: "block",
+                                    }}
+                                    src={ans.url}
+                                    width="350px"
+                                    height="auto"
+                                    alt=""
+                                  />
+                                ) : (
+                                  ""
+                                )}
+                                <br></br>
+                              </div>
+                            </>
+                          ))}
                         </div>
+
+                        <Divider></Divider>
+
+                        <Row
+                          justify="start"
+                          align="middle"
+                          style={{ padding: "0 20px" }}
+                        >
+                          <b style={{ paddingRight: "30px" }}>
+                            Chọn câu trả lời:
+                          </b>
+                          {answers[i].answers.map((ans, j) => (
+                            <Col span={3}>
+                              <Button style={{ backgroundColor: "white" }}>
+                                {listAnswers[j]}
+                              </Button>
+                            </Col>
+                          ))}
+                        </Row>
                       </Col>
                     </Row>
                   </Card>
@@ -197,6 +263,7 @@ export default function CreateExam(params) {
               </Row>
             </div>
           </div>
+          <Divider></Divider>
         </div>
       ))
     );
@@ -209,7 +276,7 @@ export default function CreateExam(params) {
           <Skeleton loading={!isStart} active>
             <Row gutter={[24, 0]}>
               <Col xs={24} sm={24} md={16} lg={16} xl={18}>
-                <Card bordered={false} className="criclebox cardbody h-full">
+                <Card bordered={true} className="criclebox cardbody h-full">
                   <div className="project-ant">
                     <div className="width-100 hidden-overflow">
                       <Title level={5}>Nội dung bài kiểm tra</Title>
@@ -265,8 +332,21 @@ export default function CreateExam(params) {
                         )}
                       </div>
                     </div>
+                    {/* <div className="side-panel-in-exam-dashboard w-20"> */}
+                    <div className="loggedin-trainee-container">
+                      <div className="loggedin-trainee-inner">
+                        <img
+                          alt="User Icon"
+                          src="#"
+                          className="loggedin-trainee-logo"
+                        />
+                        <div className="loggedin-trainee-details-container">
+                          <p>Tên người làm bài</p>
+                        </div>
+                      </div>
+                    </div>
+                    <Operations questions={questions} setAnswers={setAnswers} />
                     <Space direction="vertical" size={12}></Space>
-
                     <Button
                       type="primary"
                       className="width-100"

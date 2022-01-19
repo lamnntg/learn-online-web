@@ -420,6 +420,7 @@ function CreateExam2(params) {
                               src={ques.questionImage}
                               width="400px"
                               height="auto"
+                              alt=""
                             />
                             <br></br>
                           </div>
@@ -452,6 +453,7 @@ function CreateExam2(params) {
                                   src={op.optionImage}
                                   width="160px"
                                   height="auto"
+                                  alt=""
                                 />
                               ) : (
                                 ""
@@ -552,6 +554,7 @@ function CreateExam2(params) {
                                     src={ques.questionImage}
                                     width="150px"
                                     height="auto"
+                                    alt=""
                                   />
                                   <IconButton
                                     style={{
@@ -649,6 +652,7 @@ function CreateExam2(params) {
                                           src={op.optionImage}
                                           width="90px"
                                           height="auto"
+                                          alt=""
                                         />
 
                                         <IconButton
@@ -743,6 +747,7 @@ function CreateExam2(params) {
                                   src={ques.questionImage}
                                   width="400px"
                                   height="auto"
+                                  alt=""
                                 />
                                 <br></br>
                               </div>
