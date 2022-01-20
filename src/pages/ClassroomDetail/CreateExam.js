@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./classroomDetail.css";
+// import "./classroomDetail.css";
 import Operations from "../../components/Exam/Operations";
 
 import moment from "moment";
@@ -11,11 +11,11 @@ import {
   Button,
   Skeleton,
   Divider,
-  Checkbox,
   Space,
-  Tag,
   Spin,
   Modal,
+  message,
+  Affix,
 } from "antd";
 
 import {
@@ -28,9 +28,9 @@ import Paragraph from "antd/lib/typography/Paragraph";
 import { useHistory } from "react-router-dom";
 import useClassroom from "../../hooks/useClassroom";
 import { getHomeworkDetail } from "../../services/homework.service";
+import { clone } from "lodash";
 const { Title, Text } = Typography;
 const listAnswers = ["A", "B", "C", "D", "E"];
-const { confirm } = Modal;
 
 export default function CreateExam(params, props) {
   const history = useHistory();
@@ -51,6 +51,38 @@ export default function CreateExam(params, props) {
 
   const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
+  const finishExam = () => {
+
+  }
+
+  const chooseAnswer = (ques, ans) => {
+    const newAnswers = clone(answers);
+
+    newAnswers[ques].answers[ans].selected =
+      !newAnswers[ques].answers[ans].selected;
+
+    var countChooseAnswersCount = 0;
+    const countAnswers = newAnswers[ques].answers.length;
+    newAnswers[ques].answers.forEach(function (answer) {
+      if (answer.selected) {
+        countChooseAnswersCount = countChooseAnswersCount + 1;
+      }
+    });
+
+    if (countChooseAnswersCount > 0) {
+      newAnswers[ques].completed = true;
+    } else {
+      newAnswers[ques].completed = false;
+    }
+
+    if (countChooseAnswersCount >= countAnswers) {
+      message.warning("Bạn đã chọn quá nhiều đáp án đúng");
+    } else {
+      setAnswers(newAnswers);
+    }
+    return;
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (isStart === true) {
@@ -58,7 +90,7 @@ export default function CreateExam(params, props) {
         let second = countDown.seconds;
         if (minute === 0 && second === 1) {
           clearInterval(interval);
-          // this.endTest();
+          finishExam();
         } else {
           if (second === 0) {
             second = 59;
@@ -126,6 +158,7 @@ export default function CreateExam(params, props) {
                 selected: false,
               };
             }),
+            completed: false,
           });
         });
         setAnswers(newAnswers);
@@ -176,9 +209,6 @@ export default function CreateExam(params, props) {
               <Row span={24}>
                 <Col span={24}>
                   <Card
-                    onClick={() => {
-                      console.log("click");
-                    }}
                     className=" full-width"
                     style={{
                       backgroundColor: "rgb(250, 250, 250)",
@@ -250,7 +280,23 @@ export default function CreateExam(params, props) {
                           </b>
                           {answers[i].answers.map((ans, j) => (
                             <Col span={3}>
-                              <Button style={{ backgroundColor: "white" }}>
+                              <Button
+                                className="btn-choose-answer"
+                                style={
+                                  ans.selected
+                                    ? {
+                                        backgroundColor: "#1890ff",
+                                        color: "white",
+                                        borderRadius: "50%",
+                                      }
+                                    : {
+                                        borderRadius: "50%",
+                                      }
+                                }
+                                onClick={() => {
+                                  chooseAnswer(i, j);
+                                }}
+                              >
                                 {listAnswers[j]}
                               </Button>
                             </Col>
@@ -279,85 +325,83 @@ export default function CreateExam(params, props) {
                 <Card bordered={true} className="criclebox cardbody h-full">
                   <div className="project-ant">
                     <div className="width-100 hidden-overflow">
-                      <Title level={5}>Nội dung bài kiểm tra</Title>
+                      <Title level={5}>Nội dung bài kiểm tra:</Title>
                       <Paragraph className="lastweek">
-                        Cấu hình<span className="blue">40%</span>
+                        Kiểm tra lại đáp án trước khi nộp bài
+                        {/* <span className="blue">40%</span> */}
                       </Paragraph>
 
                       <div>{questionsUI()}</div>
-                      <Button
-                        type="primary"
-                        onClick={() => {
-                          setQuestions([
-                            ...questions,
-                            {
-                              id: shortid.generate(),
-                              question: "",
-                              answers: [],
-                            },
-                          ]);
-                        }}
-                      >
-                        Nộp bài
-                      </Button>
+
                     </div>
                   </div>
                   <div className="ant-list-box table-responsive"></div>
                 </Card>
               </Col>
               <Col xs={24} sm={24} md={8} lg={8} xl={6}>
-                <Card bordered={false} className="criclebox">
-                  <div className="timeline-box">
-                    <Title level={5}>{homeworkInfo.title}</Title>
-                    <Paragraph
-                      className="lastweek"
-                      style={{ marginBottom: 24 }}
-                    >
-                      {homeworkInfo.description}
-                    </Paragraph>
-                    <div className="clock-wrapper">
-                      <div className="clock-container">
-                        {countDown.minutes === 0 &&
-                        countDown.seconds === 0 ? null : (
-                          <h1>
-                            {" "}
-                            {countDown.minutes < 10
-                              ? `0${countDown.minutes}`
-                              : countDown.minutes}
-                            :
-                            {countDown.seconds < 10
-                              ? `0${countDown.seconds}`
-                              : countDown.seconds}
-                          </h1>
-                        )}
+                <Affix
+                  offsetTop={0}
+                  onChange={(affixed) => console.log(affixed)}
+                >
+                  <Card bordered={false} className="criclebox">
+                    <div className="timeline-box">
+                      <Title level={5}>{homeworkInfo.title}</Title>
+                      <Paragraph
+                        className="lastweek"
+                        style={{ marginBottom: 24 }}
+                      >
+                        {homeworkInfo.description}
+                      </Paragraph>
+                      <div className="clock-wrapper">
+                        <div className="clock-container">
+                          {countDown.minutes === 0 &&
+                          countDown.seconds === 0 ? null : (
+                            <h1>
+                              {" "}
+                              {countDown.minutes < 10
+                                ? `0${countDown.minutes}`
+                                : countDown.minutes}
+                              :
+                              {countDown.seconds < 10
+                                ? `0${countDown.seconds}`
+                                : countDown.seconds}
+                            </h1>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    {/* <div className="side-panel-in-exam-dashboard w-20"> */}
-                    <div className="loggedin-trainee-container">
-                      <div className="loggedin-trainee-inner">
-                        <img
+                      {/* <div className="side-panel-in-exam-dashboard w-20"> */}
+                      <div className="loggedin-trainee-container">
+                        <div className="loggedin-trainee-inner">
+                          {/* <img
                           alt="User Icon"
                           src="#"
                           className="loggedin-trainee-logo"
-                        />
-                        <div className="loggedin-trainee-details-container">
-                          <p>Tên người làm bài</p>
+                        /> */}
+                          <div className="loggedin-trainee-details-container">
+                            <p style={{ color: "black" }}>
+                              Danh sách câu hỏi :
+                            </p>
+                          </div>
                         </div>
                       </div>
+                      <Operations
+                        questions={questions}
+                        setAnswers={setAnswers}
+                        answers={answers}
+                      />
+                      <Space direction="vertical" size={12}></Space>
+                      <Button
+                        type="primary"
+                        className="width-100"
+                        onClick={() => {
+                          setIsStart(!isStart);
+                        }}
+                      >
+                        {<MenuUnfoldOutlined />} Nộp bài
+                      </Button>
                     </div>
-                    <Operations questions={questions} setAnswers={setAnswers} />
-                    <Space direction="vertical" size={12}></Space>
-                    <Button
-                      type="primary"
-                      className="width-100"
-                      onClick={() => {
-                        setIsStart(!isStart);
-                      }}
-                    >
-                      {<MenuUnfoldOutlined />} Nộp bài
-                    </Button>
-                  </div>
-                </Card>
+                  </Card>
+                </Affix>
               </Col>
             </Row>
           </Skeleton>
