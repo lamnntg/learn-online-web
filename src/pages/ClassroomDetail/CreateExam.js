@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 // import "./classroomDetail.css";
 import Operations from "../../components/Exam/Operations";
-
+import ReactQuill from "react-quill";
+// import "react-quill/dist/quill.snow.css";
 import moment from "moment";
 import {
   Card,
@@ -31,6 +32,7 @@ import { getHomeworkDetail } from "../../services/homework.service";
 import { clone } from "lodash";
 const { Title, Text } = Typography;
 const listAnswers = ["A", "B", "C", "D", "E"];
+const { confirm } = Modal;
 
 export default function CreateExam(params, props) {
   const history = useHistory();
@@ -52,8 +54,39 @@ export default function CreateExam(params, props) {
   const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
   const finishExam = () => {
+    // var canSubmit = true;
+    // answers.forEach(ans => {
+    //   if (!ans.completed) {
+    //     canSubmit = false;
+    //   }
+    // });
 
+    showPromiseConfirm();
+  };
+
+  function showPromiseConfirm() {
+    confirm({
+      title: "Bạn có chắc chắn muốn nộp bài thi ?",
+      icon: <ExclamationCircleOutlined />,
+      content: "Kiểm tra lại đáp án trước khi nộp bài",
+      onOk() {
+        return new Promise((resolve, reject) => {
+          setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+        }).catch(() => console.log("Oops errors!"));
+      },
+      onCancel() {},
+    });
   }
+
+  const handleInputTypeAnswer = (i, value) => {
+    const newAnswers = clone(answers);
+    newAnswers[i].text_answer = value;
+    if (newAnswers[i].text_answer !== "<p>Nhập câu trả lời</p>") {
+      newAnswers[i].completed = true;
+    }
+
+    setAnswers(newAnswers);
+  };
 
   const chooseAnswer = (ques, ans) => {
     const newAnswers = clone(answers);
@@ -145,11 +178,16 @@ export default function CreateExam(params, props) {
         };
         delete homeworkInfor.questions;
 
-        setHomeworkInfo(homeworkInfor);
         setQuestions(res.questions);
 
         var newAnswers = [];
+        var totalPoint = 0;
         res.questions.forEach((ques, i) => {
+          totalPoint = totalPoint + ques.point;
+          var text_answer = null;
+          if (ques.type === "answer") {
+            text_answer = "Nhập câu trả lời";
+          }
           newAnswers.push({
             question_id: ques._id,
             answers: Array.from(ques.answers, (element) => {
@@ -158,11 +196,13 @@ export default function CreateExam(params, props) {
                 selected: false,
               };
             }),
+            text_answer: text_answer,
             completed: false,
           });
         });
         setAnswers(newAnswers);
         setCountDown({ minutes: homeworkInfor.time, seconds: 0 });
+        setHomeworkInfo({ ...homeworkInfor, totalPoint: totalPoint });
 
         setIsLoading(false);
       })
@@ -204,7 +244,7 @@ export default function CreateExam(params, props) {
       questions &&
       questions.map((ques, i) => (
         <div>
-          <div style={{ marginBottom: "15px" }}>
+          <div style={{ marginBottom: "10px" }}>
             <div style={{ width: "100%" }}>
               <Row span={24}>
                 <Col span={24}>
@@ -216,24 +256,28 @@ export default function CreateExam(params, props) {
                     }}
                   >
                     <Row className="ph-24">
-                      <Col xs={24} md={16}>
+                      <Col xs={24}>
                         <h6 className="font-semibold font-16">
-                          Câu hỏi số {i + 1} : {ques.question}
+                          Câu hỏi số {i + 1} : {ques.question} --
+                          <span className="blue">{ques.point} Điểm</span>
                         </h6>
                       </Col>
                       {ques.url !== "" ? (
-                        <img
-                          src={ques.url}
-                          width="350px"
-                          height="auto"
-                          alt=""
-                        />
+                        <div className="img-center">
+                          <img
+                            className="center"
+                            src={ques.url}
+                            width="350px"
+                            height="auto"
+                            alt=""
+                          />
+                        </div>
                       ) : (
                         ""
                       )}
                     </Row>
-                    <Row span={24} md={16}>
-                      <Col span={24} md={16}>
+                    <Row span={24}>
+                      <Col span={24}>
                         <div>
                           {ques.answers.map((ans, j) => (
                             <>
@@ -275,32 +319,46 @@ export default function CreateExam(params, props) {
                           align="middle"
                           style={{ padding: "0 20px" }}
                         >
-                          <b style={{ paddingRight: "30px" }}>
-                            Chọn câu trả lời:
-                          </b>
-                          {answers[i].answers.map((ans, j) => (
-                            <Col span={3}>
-                              <Button
-                                className="btn-choose-answer"
-                                style={
-                                  ans.selected
-                                    ? {
-                                        backgroundColor: "#1890ff",
-                                        color: "white",
-                                        borderRadius: "50%",
-                                      }
-                                    : {
-                                        borderRadius: "50%",
-                                      }
-                                }
-                                onClick={() => {
-                                  chooseAnswer(i, j);
+                          {ques.type === "choose" ? (
+                            <>
+                              <b style={{ paddingRight: "30px" }}>
+                                Chọn câu trả lời:
+                              </b>
+                              {answers[i].answers.map((ans, j) => (
+                                <Col span={3}>
+                                  <Button
+                                    className="btn-choose-answer"
+                                    style={
+                                      ans.selected
+                                        ? {
+                                            backgroundColor: "#1890ff",
+                                            color: "white",
+                                            borderRadius: "50%",
+                                          }
+                                        : {
+                                            borderRadius: "50%",
+                                          }
+                                    }
+                                    onClick={() => {
+                                      chooseAnswer(i, j);
+                                    }}
+                                  >
+                                    {listAnswers[j]}
+                                  </Button>
+                                </Col>
+                              ))}
+                            </>
+                          ) : (
+                            <>
+                              <ReactQuill
+                                className="editor"
+                                value={answers[i].text_answer}
+                                onChange={(value) => {
+                                  handleInputTypeAnswer(i, value);
                                 }}
-                              >
-                                {listAnswers[j]}
-                              </Button>
-                            </Col>
-                          ))}
+                              />
+                            </>
+                          )}
                         </Row>
                       </Col>
                     </Row>
@@ -332,7 +390,6 @@ export default function CreateExam(params, props) {
                       </Paragraph>
 
                       <div>{questionsUI()}</div>
-
                     </div>
                   </div>
                   <div className="ant-list-box table-responsive"></div>
@@ -352,6 +409,7 @@ export default function CreateExam(params, props) {
                       >
                         {homeworkInfo.description}
                       </Paragraph>
+                      <div><b>Tổng số điểm :</b>{' '} {homeworkInfo.totalPoint} điểm</div>
                       <div className="clock-wrapper">
                         <div className="clock-container">
                           {countDown.minutes === 0 &&
@@ -394,7 +452,7 @@ export default function CreateExam(params, props) {
                         type="primary"
                         className="width-100"
                         onClick={() => {
-                          setIsStart(!isStart);
+                          finishExam();
                         }}
                       >
                         {<MenuUnfoldOutlined />} Nộp bài

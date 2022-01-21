@@ -7,19 +7,19 @@ export default function CreateExam(props) {
   const { answers, questions, setAnswers } = props;
 
   return (
-    <div className="question-list-wrapper">
-      <div className="question-list-inner">
-        <Row style={{ padding: "5px" }}>
-          {answers.map((ans, i) => {
-            return (
-              <Col key={i} span={5} style={{ padding: "5px" }}>
-                {mark(ans, i)}
-              </Col>
-            );
-          })}
-        </Row>
-      </div>
-    </div>
+    // <div className="question-list-wrapper">
+    //   <div className="question-list-inner">
+    <Row>
+      {answers.map((ans, i) => {
+        return (
+          <Col key={i} span={4} style={{ paddingBottom: "12px" }}>
+            {mark(ans, i)}
+          </Col>
+        );
+      })}
+    </Row>
+    //   </div>
+    // </div>
   );
 }
 
@@ -30,7 +30,7 @@ function mark(ans, i) {
         className="qb"
         style={{ background: "gray", color: "white", borderRadius: "50%" }}
       >
-        {i+ 1}
+        {i + 1}
       </Button>
     );
   } else {
