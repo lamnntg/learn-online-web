@@ -22,3 +22,9 @@ export const createHomework = async (data) => {
 
   return req.data;
 }
+
+export const finishHomework = async (homeworkId, data) => {
+  const req = await axios.post(`${API_ROOT}/homework/${homeworkId}/finish`, data, { headers: authHeader() });
+
+  return req.data;
+}

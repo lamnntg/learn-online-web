@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
-// import "./classroomDetail.css";
 import Operations from "../../components/Exam/Operations";
 import ReactQuill from "react-quill";
-// import "react-quill/dist/quill.snow.css";
-import moment from "moment";
 import {
   Card,
   Col,
@@ -24,17 +21,21 @@ import {
   ExclamationCircleOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import shortid from "shortid";
 import Paragraph from "antd/lib/typography/Paragraph";
 import { useHistory } from "react-router-dom";
 import useClassroom from "../../hooks/useClassroom";
-import { getHomeworkDetail } from "../../services/homework.service";
+import {
+  getHomeworkDetail,
+  finishHomework,
+} from "../../services/homework.service";
+import { authService } from "../../services/auth.service";
 import { clone } from "lodash";
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const listAnswers = ["A", "B", "C", "D", "E"];
 const { confirm } = Modal;
 
-export default function CreateExam(params, props) {
+export default function Homework(params, props) {
+  const currentUser = authService.getCurrentUser();
   const history = useHistory();
   const classroom = useClassroom(params.match.params.id);
   const homeworkId = params.match.params.homeworkId;
@@ -70,9 +71,21 @@ export default function CreateExam(params, props) {
       icon: <ExclamationCircleOutlined />,
       content: "Kiểm tra lại đáp án trước khi nộp bài",
       onOk() {
+        const data = {
+          answers: answers,
+          homework: homeworkInfo,
+        };
         return new Promise((resolve, reject) => {
-          setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
-        }).catch(() => console.log("Oops errors!"));
+          finishHomework(homeworkId, data).then((result) => {
+            setIsStart(false);
+            resolve(result);
+          });
+        })
+          .then((result) => {
+            history.push(`/classroom/${classroom._id}`);
+            message.success("Nộp bài thành công");
+          })
+          .catch(() => console.log("Oops errors!"));
       },
       onCancel() {},
     });
@@ -81,7 +94,7 @@ export default function CreateExam(params, props) {
   const handleInputTypeAnswer = (i, value) => {
     const newAnswers = clone(answers);
     newAnswers[i].text_answer = value;
-    if (newAnswers[i].text_answer !== "<p>Nhập câu trả lời</p>") {
+    if (newAnswers[i].text_answer !== "") {
       newAnswers[i].completed = true;
     }
 
@@ -153,14 +166,14 @@ export default function CreateExam(params, props) {
   //redirect to another page
   useEffect(() => {
     const unblock = history.block((location, action) => {
-      if (isBlocking) {
+      if (isBlocking && isStart === true) {
         return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
       }
       return true;
     });
 
     window.onbeforeunload = function () {
-      if (isBlocking) {
+      if (isBlocking && isStart === true) {
         return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
       }
     };
@@ -186,7 +199,7 @@ export default function CreateExam(params, props) {
           totalPoint = totalPoint + ques.point;
           var text_answer = null;
           if (ques.type === "answer") {
-            text_answer = "Nhập câu trả lời";
+            text_answer = "";
           }
           newAnswers.push({
             question_id: ques._id,
@@ -198,11 +211,17 @@ export default function CreateExam(params, props) {
             }),
             text_answer: text_answer,
             completed: false,
+            point: ques.point,
+            type: ques.type,
           });
         });
         setAnswers(newAnswers);
         setCountDown({ minutes: homeworkInfor.time, seconds: 0 });
-        setHomeworkInfo({ ...homeworkInfor, totalPoint: totalPoint });
+        setHomeworkInfo({
+          ...homeworkInfor,
+          totalPoint: totalPoint,
+          user: currentUser.id,
+        });
 
         setIsLoading(false);
       })
@@ -356,6 +375,7 @@ export default function CreateExam(params, props) {
                                 onChange={(value) => {
                                   handleInputTypeAnswer(i, value);
                                 }}
+                                placeholder="Nhập câu trả lời..."
                               />
                             </>
                           )}
@@ -409,7 +429,9 @@ export default function CreateExam(params, props) {
                       >
                         {homeworkInfo.description}
                       </Paragraph>
-                      <div><b>Tổng số điểm :</b>{' '} {homeworkInfo.totalPoint} điểm</div>
+                      <div>
+                        <b>Tổng số điểm :</b> {homeworkInfo.totalPoint} điểm
+                      </div>
                       <div className="clock-wrapper">
                         <div className="clock-container">
                           {countDown.minutes === 0 &&

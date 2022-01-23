@@ -2,18 +2,18 @@ import auth from "./AuthServices";
 import authHeader from "./auth-header";
 const axios = require("axios");
 
-export const SecureGet = (p) => {
+export const get = (p) => {
   return axios({});
 };
 
-export const Get = (p) => {
+export const getWithAuth = (p) => {
   return axios({});
 };
 
-export const SecurePost = (p) => {
+export const post = (p) => {
   return axios({});
 };
 
-export const Post = (p) => {
+export const postWithAuth = (p) => {
   return axios({});
 };

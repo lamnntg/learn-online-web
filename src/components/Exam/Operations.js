@@ -1,7 +1,6 @@
 import React from "react";
 import { Button, Row, Col } from "antd";
 import "./portal.css";
-// import { switchQuestion } from "../../../actions/traineeAction";
 
 export default function CreateExam(props) {
   const { answers, questions, setAnswers } = props;
@@ -37,7 +36,7 @@ function mark(ans, i) {
     return (
       <Button
         className="qb"
-        style={{ background: "white", color: "black", borderRadius: "50%" }}
+        style={{ background: "#FFFFFF", color: "black", borderRadius: "50%" }}
       >
         {i + 1}
       </Button>
