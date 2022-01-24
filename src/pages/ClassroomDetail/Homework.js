@@ -166,14 +166,14 @@ export default function Homework(params, props) {
   //redirect to another page
   useEffect(() => {
     const unblock = history.block((location, action) => {
-      if (isBlocking && isStart === true) {
+      if (isBlocking === true && isStart === true) {
         return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
       }
       return true;
     });
 
     window.onbeforeunload = function () {
-      if (isBlocking && isStart === true) {
+      if (isBlocking === true && isStart === true) {
         return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
       }
     };

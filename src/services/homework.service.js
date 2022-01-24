@@ -28,3 +28,9 @@ export const finishHomework = async (homeworkId, data) => {
 
   return req.data;
 }
+
+export const getResultHomework = async (homeworkId) => {
+  const req = await axios.get(`${API_ROOT}/homework/${homeworkId}/result`, { headers: authHeader() });
+
+  return req.data;
+}

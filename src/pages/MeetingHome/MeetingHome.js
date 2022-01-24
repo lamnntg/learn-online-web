@@ -20,7 +20,7 @@ export default function MeetingHome() {
 
   const startCall = () => {
     const uid = shortid.generate();
-    history.push(`meeting/${uid}#init`);
+    history.push(`meeting/${uid}`);
   };
 
   return (

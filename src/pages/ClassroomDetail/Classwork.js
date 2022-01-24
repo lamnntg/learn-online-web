@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import "./classroom.css"
+import "./classroom.css";
 import NavBar from "../../components/Classroom/Navbar";
 import { useParams, useHistory } from "react-router-dom";
 import useClassroom from "../../hooks/useClassroom";
+import Detail from "../../components/homework/Detail";
 import {
   Menu,
   Dropdown,
@@ -19,7 +20,7 @@ import {
 import {
   PlusOutlined,
   BulbOutlined,
-  BookOutlined,
+  InfoCircleOutlined,
   CarryOutOutlined,
   MoreOutlined,
   EditOutlined,
@@ -49,7 +50,8 @@ export default function Classwork(params) {
   const currentUser = authService.getCurrentUser();
 
   const classroom = useClassroom(params.match.params.id);
-  
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [chooseHomework, setChooseHomework] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [homeworks, setHomeworks] = useState([]);
   const [progress, setProgress] = useState(0);
@@ -216,7 +218,7 @@ export default function Classwork(params) {
 
   const redirectToHomwork = (id) => {
     history.push(`/classroom/${classroom._id}/homework/${id}`);
-  }
+  };
 
   return (
     <div>
@@ -261,14 +263,16 @@ export default function Classwork(params) {
                           {homeworks.map((homework, key) => (
                             <Card
                               key={key}
-                              onClick={() => {
-                                redirectToHomwork(homework._id);
-                              }}
                               className="classwork-card"
                               style={{ marginBottom: "10px" }}
                             >
                               <Row>
-                                <Col span={18}>
+                                <Col
+                                  span={18}
+                                  onClick={() => {
+                                    redirectToHomwork(homework._id);
+                                  }}
+                                >
                                   <Meta
                                     avatar={
                                       <Avatar src="https://joeschmoe.io/api/v1/random" />
@@ -292,24 +296,36 @@ export default function Classwork(params) {
                                         </p>
                                         <p>
                                           Thời gian làm bài:{" "}
-                                          <b>
-                                            {" "}
-                                              {homework.time} phút
-                                          </b>
+                                          <b> {homework.time} phút</b>
                                         </p>
                                       </div>
                                     }
-                                    description={<i>Chú ý: Học sinh vào muộn quá 10 phút sẽ không được tham gia vào làm bài.</i>}
+                                    description={
+                                      <i>
+                                        Chú ý: Học sinh vào muộn quá 10 phút sẽ
+                                        không được tham gia vào làm bài.
+                                      </i>
+                                    }
                                   />
                                 </Col>
                                 <Col span={4} offset={2}>
                                   <div>
-                                    <Button type="link">
+                                    <Button
+                                      type="link"
+                                      size="large"
+                                      onClick={() => {
+                                        setDetailModalVisible(true);
+                                        setChooseHomework(homework);
+                                      }}
+                                    >
+                                      {<InfoCircleOutlined />}
+                                    </Button>
+                                    {/* <Button type="link">
                                       {<EditOutlined />}
                                     </Button>
                                     <Button type="link">
                                       {<DeleteOutlined />}
-                                    </Button>
+                                    </Button> */}
                                   </div>
                                 </Col>
                               </Row>
@@ -407,6 +423,31 @@ export default function Classwork(params) {
               </Col>
             </Row>
           </div>
+          <Modal
+            visible={detailModalVisible}
+            title="Chi tiết bài kiểm tra"
+            onOk={() => {
+              setDetailModalVisible(false);
+            }}
+            onCancel={() => {
+              setDetailModalVisible(false);
+              setChooseHomework({});
+            }}
+            afterClose={() => {
+              setDetailModalVisible(false);
+              setChooseHomework({});
+            }}
+            style={{
+              top: "20px",
+              padding: "0px",
+              backgroundColor: "rgb(155,175,190)",
+            }}
+            width="90%"
+            destroyOnClose={true}
+            footer={[]}
+          >
+            <Detail homework={chooseHomework} />
+          </Modal>
         </>
       ) : (
         <Space size="middle" className="loading">
