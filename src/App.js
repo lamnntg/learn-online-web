@@ -27,6 +27,7 @@ import { history } from "./helpers/history";
 import { logout } from "./redux/auth/auth.actions";
 import AuthVerify from "./common/AuthVerify";
 import NotFound from "./pages/NotFound";
+import Room from "./pages/MeetingRoom/Room";
 
 import "antd/dist/antd.css";
 import "./assets/styles/main.css";
@@ -53,7 +54,7 @@ function App() {
           <Switch>
             <Route exact path="/" component={Landing} />
             <Route exact path="/meeting" component={MeetingHome} />
-            <Route exact path="/meeting/:id" component={MeetingRoom} />
+            <Route exact path="/meeting/:id" component={Room} />
             <Route exact path="/exam" component={Exam} />
 
             <Main>

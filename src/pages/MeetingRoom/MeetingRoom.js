@@ -60,10 +60,10 @@ export default function MeetingRoom(props) {
   const userVideo = useRef();
   const peersRef = useRef([]);
   const roomID = props.match.params.id;
+  socketRef.current = io("http://localhost:8000");
 
   const history = useHistory();
   useEffect(() => {
-    socketRef.current = io("http://localhost:8000");
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
@@ -203,7 +203,7 @@ export default function MeetingRoom(props) {
       </Container> */}
       <div className="callpage-container">
         <Col span={6}>
-          <StyledVideo muted ref={userVideo} autoPlay playsInline />
+          <StyledVideo ref={userVideo} autoPlay playsInline />
         </Col>
         <Row gutter={[16, 16]}>
           {peers.map((peer, index) => {
