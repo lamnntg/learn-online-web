@@ -52,7 +52,7 @@ export default function Result(props) {
       key: "_id",
     },
     {
-      title: "Status",
+      title: "Ghi chú",
       dataIndex: "point",
       key: "_id",
       render: (tag) => (

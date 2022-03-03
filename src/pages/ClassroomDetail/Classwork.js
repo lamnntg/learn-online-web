@@ -27,6 +27,8 @@ import {
   DownloadOutlined,
   DeleteOutlined,
   ExclamationCircleOutlined,
+  FileProtectOutlined,
+  InfoOutlined,
 } from "@ant-design/icons";
 import { storage } from "../../firebase/config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -48,6 +50,7 @@ const { confirm } = Modal;
 export default function Classwork(params) {
   let { id } = useParams();
   const currentUser = authService.getCurrentUser();
+  const isMorderator = authService.checkModerator();
 
   const classroom = useClassroom(params.match.params.id);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -70,6 +73,43 @@ export default function Classwork(params) {
     </Menu>
   );
 
+  const menuHomework = (homework) => (
+    <Menu
+      onClick={(e) => {
+        handleMenuHomeworkClick(e, homework);
+      }}
+    >
+      <Menu.Item key="information" icon={<InfoCircleOutlined />}>
+        Thông tin
+      </Menu.Item>
+      {isMorderator && isMorderator === true ? (
+        <>
+          <Menu.Item key="mark" icon={<FileProtectOutlined />} disabled>
+            Chấm điểm tự luân
+          </Menu.Item>
+          <Menu.Item key="edit" icon={<EditOutlined />} disabled>
+            Chỉnh sửa
+          </Menu.Item>
+          <Menu.Item key="delete" icon={<DeleteOutlined />} disabled>
+            Xóa
+          </Menu.Item>
+        </>
+      ) : (
+        <>
+          <Menu.Item key="edit" icon={<EditOutlined />} disabled>
+            Chỉnh sửa
+          </Menu.Item>
+          <Menu.Item key="mark" icon={<FileProtectOutlined />} disabled>
+            Chấm điểm tự luân
+          </Menu.Item>
+          <Menu.Item key="delete" icon={<DeleteOutlined />} disabled>
+            Xóa
+          </Menu.Item>
+        </>
+      )}
+    </Menu>
+  );
+
   const menuCard = (
     <Dropdown overlay={menu}>
       <Button type="link" icon={<MoreOutlined />} size="large"></Button>
@@ -78,6 +118,13 @@ export default function Classwork(params) {
 
   function handleMenuClick(e) {
     history.push(`/classroom/${id}/${e.key}/create`);
+  }
+
+  function handleMenuHomeworkClick(e, homework) {
+    if (e.key === "information") {
+      setDetailModalVisible(true);
+      setChooseHomework(homework);
+    }
   }
 
   useEffect(() => {
@@ -216,8 +263,14 @@ export default function Classwork(params) {
     });
   }
 
-  const redirectToHomwork = (id) => {
-    history.push(`/classroom/${classroom._id}/homework/${id}`);
+  const redirectToHomwork = (homework) => {
+    if (Date.parse(homework.startTime) <= Date.parse(new Date())) {
+      history.push(`/classroom/${classroom._id}/homework/${homework._id}`);
+      return;
+    }
+    
+    return message.warn("Chưa đến thời gian làm bài");
+    
   };
 
   return (
@@ -242,6 +295,10 @@ export default function Classwork(params) {
                               <h6 className="font-semibold m-0">
                                 Bài tập lớp học
                               </h6>
+                              <i style={{ fontSize: "12px" }}>
+                                Chú ý: Học sinh vào muộn quá 10 phút sẽ không
+                                được tham gia vào làm bài.
+                              </i>
                             </Col>
                             <Col xs={24} md={12} className="d-flex">
                               <Dropdown overlay={menu}>
@@ -270,17 +327,17 @@ export default function Classwork(params) {
                                 <Col
                                   span={18}
                                   onClick={() => {
-                                    redirectToHomwork(homework._id);
+                                    redirectToHomwork(homework);
                                   }}
                                 >
                                   <Meta
-                                    avatar={
-                                      <Avatar src="https://joeschmoe.io/api/v1/random" />
-                                    }
+                                    // avatar={
+                                    //   <Avatar src="https://joeschmoe.io/api/v1/random" />
+                                    // }
                                     title={
                                       <div>
                                         <p>
-                                          {homework.author.name} đăng bài tập :{" "}
+                                          {/* {homework.author.name} đăng bài tập :{" "} */}
                                           <b>{homework.title}</b> (
                                           <i>{homework.description}</i>)
                                         </p>
@@ -300,17 +357,26 @@ export default function Classwork(params) {
                                         </p>
                                       </div>
                                     }
-                                    description={
-                                      <i>
-                                        Chú ý: Học sinh vào muộn quá 10 phút sẽ
-                                        không được tham gia vào làm bài.
-                                      </i>
-                                    }
+                                    // description={
+                                    //   <i>
+                                    //     Chú ý: Học sinh vào muộn quá 10 phút sẽ
+                                    //     không được tham gia vào làm bài.
+                                    //   </i>
+                                    // }
                                   />
                                 </Col>
                                 <Col span={4} offset={2}>
                                   <div>
-                                    <Button
+                                    <Dropdown overlay={menuHomework(homework)}>
+                                      <Button
+                                        type="link"
+                                        icon={<InfoCircleOutlined />}
+                                        size="large"
+                                      >
+                                        Thao tác
+                                      </Button>
+                                    </Dropdown>
+                                    {/* <Button
                                       type="link"
                                       size="large"
                                       onClick={() => {
@@ -319,7 +385,7 @@ export default function Classwork(params) {
                                       }}
                                     >
                                       {<InfoCircleOutlined />}
-                                    </Button>
+                                    </Button> */}
                                     {/* <Button type="link">
                                       {<EditOutlined />}
                                     </Button>

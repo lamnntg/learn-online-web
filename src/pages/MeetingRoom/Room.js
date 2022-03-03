@@ -9,7 +9,6 @@ import { authService } from "../../services/auth.service";
 
 const Room = (props) => {
   const currentUser = authService.getCurrentUser();
-  const currentUserName = currentUser.username;
   const [peers, setPeers] = useState([]);
   const [userVideoAudio, setUserVideoAudio] = useState({
     localUser: { video: true, audio: true },
@@ -33,6 +32,10 @@ const Room = (props) => {
 
     // Set Back Button Event
     window.addEventListener("popstate", goToBack);
+    window.addEventListener("beforeunload", (event) => {
+      event.preventDefault();
+      return (event.returnValue = "Are you sure you want to close?");
+    });
 
     // Connect Camera & Mic
     navigator.mediaDevices
@@ -116,7 +119,8 @@ const Room = (props) => {
           );
         });
       });
-
+      
+    // handle change device video 
     socket.on("FE-toggle-camera", ({ userId, switchTarget }) => {
       const peerIdx = findPeer(userId);
 
@@ -218,7 +222,7 @@ const Room = (props) => {
     e.preventDefault();
     socket.emit("BE-leave-room", { roomId, leaver: currentUser.username });
     sessionStorage.removeItem("user");
-    window.location.href = "/";
+    window.location.href = "/dashboard";
   };
 
   const toggleCameraAudio = (e) => {
@@ -365,7 +369,7 @@ const Room = (props) => {
               className={`width-peer${peers.length > 8 ? "" : peers.length}`}
             >
               {userVideoAudio["localUser"].video ? null : (
-                <UserName>{ currentUser.username }</UserName>
+                <UserName>{currentUser.username}</UserName>
               )}
               <FaIcon className="fas fa-expand" />
               <MyVideo
@@ -410,6 +414,7 @@ const AppContainer = styled.div`
   color: white;
   background-color: #454552;
   text-align: center;
+  overflow: hidden;
 `;
 
 const RoomContainer = styled.div`

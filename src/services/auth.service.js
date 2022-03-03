@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL } from "../utils/constants";
+import { API_URL, ROLE_MODERATOR } from "../utils/constants";
 
 const login = (username, password) => {
   return axios
@@ -30,7 +30,12 @@ const register = (name, username, email, password) => {
 }
 
 const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem('user'));;
+  return JSON.parse(localStorage.getItem('user'));
 }
 
-export const authService = { login, logout, register, getCurrentUser }
+const checkModerator = () => {
+  return JSON.parse(localStorage.getItem('user')).roles.includes(ROLE_MODERATOR);
+
+}
+
+export const authService = { login, logout, register, getCurrentUser, checkModerator }

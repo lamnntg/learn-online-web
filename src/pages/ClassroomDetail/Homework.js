@@ -169,14 +169,19 @@ export default function Homework(params, props) {
       if (isBlocking === true && isStart === true) {
         return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
       }
-      return true;
     });
 
-    window.onbeforeunload = function () {
-      if (isBlocking === true && isStart === true) {
-        return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
-      }
-    };
+    // window.onbeforeunload = function () {
+    //   if (isBlocking === true && isStart === true) {
+    //     return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
+    //   }
+    // };
+    
+    // window.onpopstate = function() {
+    //   if (isBlocking === true && isStart === true) {
+    //     return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
+    //   }
+    // };
 
     return () => {
       unblock();

@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import socket from '../../../socket';
+import { authService } from "../../../services/auth.service";
 
 const Chat = ({ display, roomId }) => {
-  const currentUser = sessionStorage.getItem('user');
+  const currentUser = authService.getCurrentUser().username;
+
+  console.log(currentUser);
   const [msg, setMsg] = useState([]);
   const messagesEndRef = useRef(null);
   const inputRef = useRef();
@@ -34,7 +37,7 @@ const Chat = ({ display, roomId }) => {
 
   return (
     <ChatContainer className={display ? '' : 'width0'}>
-      <TopHeader>Group Chat Room</TopHeader>
+      <TopHeader>Tin nhắn</TopHeader>
       <ChatArea>
         <MessageList>
           {msg &&
@@ -61,7 +64,7 @@ const Chat = ({ display, roomId }) => {
       <BottomInput
         ref={inputRef}
         onKeyUp={sendMessage}
-        placeholder="Enter your message"
+        placeholder="Nhập tin nhắn ..."
       />
     </ChatContainer>
   );
@@ -71,7 +74,6 @@ const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 25%;
-  hieght: 100%;
   background-color: white;
   transition: all 0.5s ease;
   overflow: hidden;
@@ -158,12 +160,13 @@ const UserMessage = styled.div`
 const BottomInput = styled.input`
   bottom: 0;
   width: 100%;
-  height: 8%;
+  height: 5%;
   padding: 15px;
-  border-top: 1px solid rgb(69, 69, 82, 0.25);
+  font-size: 16px;
+  border: 1px solid rgb(69, 69, 82, 0.25);
   box-sizing: border-box;
   opacity: 0.7;
-
+  color: black;
   :focus {
     outline: none;
   }

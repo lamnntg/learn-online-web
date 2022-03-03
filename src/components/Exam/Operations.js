@@ -6,8 +6,6 @@ export default function CreateExam(props) {
   const { answers, questions, setAnswers } = props;
 
   return (
-    // <div className="question-list-wrapper">
-    //   <div className="question-list-inner">
     <Row>
       {answers.map((ans, i) => {
         return (
@@ -17,8 +15,6 @@ export default function CreateExam(props) {
         );
       })}
     </Row>
-    //   </div>
-    // </div>
   );
 }
 

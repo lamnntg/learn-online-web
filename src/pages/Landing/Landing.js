@@ -22,6 +22,7 @@ import image3 from "../../assets/images/great-support.jpg";
 import image4 from "../../assets/images/easy-customise.jpg";
 import image5 from "../../assets/images/unlimited-features.jpg";
 import image6 from "../../assets/images/advanced-option.jpg";
+import { useSelector } from "react-redux";
 
 const { Meta } = Card;
 const { TextArea } = Input;
@@ -105,6 +106,8 @@ const itemsFeature = [
 ];
 
 export default function Landing() {
+  const { isLoggedIn } = useSelector((state) => state.auth);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const history = useHistory();
   const showModal = () => {
@@ -124,8 +127,13 @@ export default function Landing() {
   }
 
   const handleLogin = () => {
-    history.push("/sign-in");
-    window.location.reload();
+    if (isLoggedIn) {
+      history.push("/dashboard");
+      window.location.reload();
+    } else {
+      history.push("/sign-in");
+      window.location.reload();
+    }
   }
   
   const { Link } = Anchor;
@@ -194,7 +202,7 @@ export default function Landing() {
                     <p>{item.content}</p>
                     <div className="btnHolder">
                       <Button type="primary" size="large" onClick={handleLogin}>
-                        Login
+                        {isLoggedIn ? "Dashboard" : "Login"}
                       </Button>
                       <Button size="large">
                         <i className="fas fa-desktop"></i> Watch a Demo
