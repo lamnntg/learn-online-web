@@ -13,6 +13,7 @@ import {
   Input,
   List,
   Tooltip,
+  message,
 } from "antd";
 import {
   EditOutlined,
@@ -30,6 +31,7 @@ import {
   createClassroom,
   getClassrooms,
   getClassroomManage,
+  joinClassroom,
 } from "../../services/classroom.service";
 import { useHistory } from "react-router-dom";
 import shortid from "shortid";
@@ -39,6 +41,7 @@ const { Meta } = Card;
 export default function Classroom() {
   const [classrooms, setClassrooms] = useState([]);
   const [classroomManage, setClassroomManage] = useState([]);
+  const [classroomCode, setClassroomCode] = useState(null);
 
   const { user } = useSelector((state) => state.auth);
   let loading = false;
@@ -116,6 +119,26 @@ export default function Classroom() {
       const uid = result.result._id;
       history.push(`classroom/${uid}`);
       setIsJoinModalVisible(false);
+      message.success("Tạo lớp học thành công");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //join classroom
+  const handleJoinClassroom = async () => {
+    try {
+      let result = await joinClassroom({
+        classroomCode: classroomCode,
+        userId: currentUser.id,
+      });
+      if (result) {
+        message.error("Kiểm tra lãi mã lớp học của bạn");
+      } else {
+        const uid = result.result._id;
+        history.push(`classroom/${uid}`);
+        setIsJoinModalVisible(false);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -129,6 +152,7 @@ export default function Classroom() {
   const handleCancel = () => {
     setIsCreateModalVisible(false);
     setIsJoinModalVisible(false);
+    setClassroomCode("");
   };
 
   let joinClassModal = (
@@ -136,7 +160,7 @@ export default function Classroom() {
       className="modal-join-classroom"
       title="Tham gia lớp học"
       visible={isJoinModalVisible}
-      onOk={() => handleOk(false)}
+      onOk={() => handleJoinClassroom()}
       onCancel={() => handleCancel(false)}
       width={800}
     >
@@ -149,7 +173,14 @@ export default function Classroom() {
         </div>
         <div className="classroom-code-input">
           <Space direction="vertical">
-            <Input addonBefore="Mã lớp: " placeholder="Nhập mã lớp" />
+            <Input
+              addonBefore="Mã lớp: "
+              placeholder="Nhập mã lớp"
+              value={classroomCode}
+              onChange={(e) => {
+                setClassroomCode(e.target.value);
+              }}
+            />
           </Space>
         </div>
       </div>

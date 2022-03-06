@@ -159,24 +159,30 @@ export default function Homework(params, props) {
 
   useEffect(() => {
     if (startModalVisiable === false && isStart === false) {
-      history.push(`/classroom/${classroom._id}`);
+      history.push(`/classroom/${classroom._id}/homework`);
     }
-  }, [startModalVisiable, isStart]);
+  }, [startModalVisiable, isStart, history, classroom._id]);
 
   //redirect to another page
   useEffect(() => {
     const unblock = history.block((location, action) => {
-      if (isBlocking === true && isStart === true) {
-        return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
-      }
+      if (isStart === true) {
+          return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
+        }
+        return true;
     });
 
-    // window.onbeforeunload = function () {
+    // window.onpopstate = function () {
     //   if (isBlocking === true && isStart === true) {
-    //     return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
+    //     var continute = window.confirm("Bạn chắc chắn muốn nộp bài làm?");
+
+    //     if (continute) {
+    //       return true;
+    //     } else {
+    //     }
     //   }
     // };
-    
+
     // window.onpopstate = function() {
     //   if (isBlocking === true && isStart === true) {
     //     return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
@@ -186,7 +192,7 @@ export default function Homework(params, props) {
     return () => {
       unblock();
     };
-  }, []);
+  }, [history, isStart]);
 
   useEffect(() => {
     getHomeworkDetail(homeworkId)
@@ -229,11 +235,15 @@ export default function Homework(params, props) {
         });
 
         setIsLoading(false);
+        setIsBlocking(false);
+
       })
       .catch((err) => console.log(err));
 
-    return () => {};
-  }, [homeworkId]);
+    return () => {
+      setIsBlocking(false);
+    };
+  }, [currentUser.id, homeworkId]);
 
   const ModalStartUI = () => {
     return (

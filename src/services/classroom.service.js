@@ -7,6 +7,11 @@ export const createClassroom = async (data) => {
   return req.data;
 };
 
+export const joinClassroom = async (data) => {
+  const req = await axios.post(`${API_ROOT}/classroom/join`, data, { headers: authHeader() });
+  return req.data;
+};
+
 export const getClassrooms = async (userId) => {
   const req = await axios.get(`${API_ROOT}/classroom/get/by-user/${userId}`, { headers: authHeader() });
   return req.data;
@@ -64,7 +69,4 @@ export const deleteClassroomDocument = async (id) => {
   const req = await axios.delete(`${API_ROOT}/classroom/document/${id}/delete`, { headers: authHeader() });
   return req.data;
 }
-
-
-
 
