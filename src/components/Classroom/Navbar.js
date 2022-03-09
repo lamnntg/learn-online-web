@@ -9,6 +9,7 @@ import {
   HomeOutlined,
   SettingOutlined,
   UserOutlined,
+  WechatOutlined
 } from "@ant-design/icons";
 const { SubMenu } = Menu;
 
@@ -25,6 +26,7 @@ export default function NavBar(props) {
   let homeworks = "/classroom/" + props.id + "/homework";
   let people = "/classroom/" + props.id + "/people";
   let setting = "/classroom/" + props.id + "/setting";
+  let chatRoom = "/classroom/" + props.id + "/chat";
 
   const currentUser = authService.getCurrentUser();
   const isModerator = currentUser.roles.includes(ROLE_MODERATOR);
@@ -39,6 +41,10 @@ export default function NavBar(props) {
       >
         <Menu.Item key="news" icon={<HomeOutlined />}>
           <NavLink to={news}>Bảng tin</NavLink>
+        </Menu.Item>
+
+        <Menu.Item key="chats" icon={<WechatOutlined />}>
+          <NavLink to={chatRoom}>Phòng Chat</NavLink>
         </Menu.Item>
 
         <Menu.Item key="homeworks" icon={<ReadOutlined />}>

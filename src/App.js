@@ -23,6 +23,7 @@ import Setting from "./pages/ClassroomDetail/Setting";
 import CreateExam2 from "./pages/ClassroomDetail/CreateExam2";
 import Homework from "./pages/ClassroomDetail/Homework";
 import Exam from "./pages/Exam/Exam";
+import ClassroomChat from "./pages/ClassroomChat/ClassroomChat";
 import { history } from "./helpers/history";
 import { logout } from "./redux/auth/auth.actions";
 import AuthVerify from "./common/AuthVerify";
@@ -63,6 +64,7 @@ function App() {
               <Route exact path="/billing" component={Billing} />
               <Route exact path="/profile" component={Profile} />
               <Route exact path="/classroom/:id/" component={ClassroomDetail} />
+              <Route exact path="/classroom/:id/chat" component={ClassroomChat} />
               <Route exact path="/classroom/:id/homework" component={Classwork} />
               <Route exact path="/classroom/:id/people" component={People} />
               <Route exact path="/classroom/:id/setting" component={Setting} />
