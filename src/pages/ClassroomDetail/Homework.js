@@ -63,6 +63,7 @@ export default function Homework(params, props) {
     // });
 
     showPromiseConfirm();
+
   };
 
   function showPromiseConfirm() {
@@ -75,9 +76,10 @@ export default function Homework(params, props) {
           answers: answers,
           homework: homeworkInfo,
         };
+        setIsStart(false);
+
         return new Promise((resolve, reject) => {
           finishHomework(homeworkId, data).then((result) => {
-            setIsStart(false);
             resolve(result);
           });
         })
@@ -166,6 +168,7 @@ export default function Homework(params, props) {
   //redirect to another page
   useEffect(() => {
     const unblock = history.block((location, action) => {
+      console.log(isStart);
       if (isStart === true) {
           return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
         }
