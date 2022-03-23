@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./classroom.css";
+import "./classroom.scss";
 import NavBar from "../../components/Classroom/Navbar";
 import { useParams, useHistory } from "react-router-dom";
 import useClassroom from "../../hooks/useClassroom";
