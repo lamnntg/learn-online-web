@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
 import EditorToolbar, { formats, modules } from '../../../utils/ReactQuill.config';
 import 'react-quill/dist/quill.snow.css';
-import './index.style.scss';
-
 import '../question.style.scss';
 
 import { Row, Button, Col, Upload, Input } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+
+import CardQuestion from '../../../components/card/CardQuestion';
 
 function CreateQuestion() {
 	const [state, setState] = useState({ value: null });
@@ -34,42 +34,31 @@ function CreateQuestion() {
 		},
 	};
 
+	const posts = [
+		{ id: 1, title: 'Hello World', desc: 'Welcome to learning React!' },
+		{ id: 2, title: 'Installation', desc: 'You can install React from npm.' },
+		{ id: 1, title: 'Hello World', desc: 'Welcome to learning React!' },
+		{ id: 2, title: 'Installation', desc: 'You can install React from npm.' },
+		{ id: 1, title: 'Hello World', desc: 'Welcome to learning React!' },
+		{ id: 2, title: 'Installation', desc: 'You can install React from npm.' },
+		{ id: 1, title: 'Hello World', desc: 'Welcome to learning React!' },
+		{ id: 2, title: 'Installation', desc: 'You can install React from npm.' },
+		{ id: 1, title: 'Hello World', desc: 'Welcome to learning React!' },
+		{ id: 2, title: 'Installation', desc: 'You can install React from npm.' },
+	];
+
 	return (
 		<>
-			{/* <div className='question'>
-				<div className='question-init'>
-					<div className='question-header'>
-						<div className='question-title'>
-							<h3>Tiêu đề:</h3>
-							<h3>Mô tả:</h3>
-						</div>
-					</div>
-					<div className='question-info'>
-						<div>
-							<EditorToolbar />
-							<ReactQuill
-								theme='snow'
-								value={state.value}
-								onChange={handleChange}
-								placeholder={'Nội dung cần tạo ...'}
-								modules={modules}
-								formats={formats}
-							/>
-						</div>
-					</div>
-				</div>
-				<div className='question-history'></div>
-			</div> */}
-			<Row>
-				<Col span={18}>
+			<Row className='question' justify='space-between' style={{ height: '70vh' }}>
+				<Col span={16} value='middle'>
 					<Col>
-						<div className='question-title'>
+						<div>
 							<h3>Tiêu đề</h3>
 							<Input type='text' placeholder='Tiêu đề câu hỏi' />
 						</div>
 					</Col>
 					<Col>
-						<div className='question-title'>
+						<div>
 							<h3>Mô tả câu hỏi</h3>
 							<Input type='text' placeholder='Tiêu đề câu hỏi' />
 						</div>
@@ -80,7 +69,7 @@ function CreateQuestion() {
 							<Button icon={<UploadOutlined />}>Upload</Button>
 						</Upload>
 					</Col>
-					<div>
+					<div className='question_content'>
 						<EditorToolbar />
 						<ReactQuill
 							theme='snow'
@@ -92,13 +81,24 @@ function CreateQuestion() {
 						/>
 					</div>
 				</Col>
-				<Col span={6}>
-					<p>Danh sách câu hỏi của bạn</p>
+				<Col className='question_list' span={6} style={{ height: '100%' }}>
+					<h3>Danh sách câu hỏi của bạn</h3>
+					<div style={{ overflow: 'scroll', height: '100%' }}>
+						{posts.map((el) => (
+							<Row style={{ marginBottom: '20px' }}>
+								<CardQuestion key={el.id} title={el.title} desc={el.desc} />
+							</Row>
+						))}
+					</div>
 				</Col>
 			</Row>
-
-			<Row justify='end' style={{ marginTop: '20px' }}>
-				<Button type='primary'>Tạo câu hỏi</Button>
+			<Row>
+				<Col span={16}>
+					<Row justify='end' style={{ marginTop: '20px' }}>
+						<Button type='primary'>Tạo câu hỏi</Button>
+					</Row>
+				</Col>
+				<Col span={6}></Col>
 			</Row>
 		</>
 	);
