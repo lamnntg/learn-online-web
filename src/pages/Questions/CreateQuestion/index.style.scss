@@ -1,0 +1,22 @@
+.question {
+	display: grid;
+	grid-template-columns: 3fr 1fr;
+	grid-template-rows: repeat(3, 1fr);
+	// min-height: 100vh;
+
+	&-history {
+		grid-area: 1/2 / last-line/end;
+		border: 1px solid #ccc;
+	}
+
+	&-init {
+		grid-area: 1/1 / last-line/2;
+		display: grid;
+		grid-template-rows: 0.5fr 1.5fr;
+	}
+
+	&-header {
+		grid-area: 1/1/2/1;
+		border: 1px solid #ccc;
+	}
+}
