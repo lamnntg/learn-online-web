@@ -8,15 +8,36 @@ import { Row, Button, Col, Upload, Input } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
 import CardQuestion from '../../../components/card/CardQuestion';
+import { initial } from 'lodash';
 
 function CreateQuestion() {
-	const [state, setState] = useState({ value: null });
-	const handleChange = (value) => {
-		setState({ value });
+	const [questionValue, setQuestionValue] = useState({
+		title: 'ABC',
+		desc: '',
+		content: null,
+	});
+	const [images, setImages] = useState([]);
+
+	const handleChangeQuestionTitle = (title) => {
+		const val = title.target.value;
+		setQuestionValue({ ...questionValue, title: val });
+	};
+
+	const handleChangeQuestionDesc = (desc) => {
+		const val = desc.target.value;
+		setQuestionValue({ ...questionValue, desc: val });
+	};
+
+	const handleChangeQuestionImg = ({ fileList }) => {
+		setImages([...fileList]);
+	};
+
+	const handleChangeQuestionContent = (content) => {
+		setQuestionValue({ ...questionValue, content });
 	};
 
 	const props = {
-		action: '//jsonplaceholder.typicode.com/posts/',
+		action: '',
 		listType: 'picture',
 		previewFile(file) {
 			console.log('Your upload file:', file);
@@ -32,6 +53,22 @@ function CreateQuestion() {
 				.then((res) => res.json())
 				.then(({ thumbnail }) => thumbnail);
 		},
+	};
+
+	const beforeUpload = () => {
+		return false;
+	};
+
+	const handleSubmit = () => {
+		const { title, desc, content } = questionValue;
+		const data = {
+			title,
+			desc,
+			content,
+			images,
+		};
+
+		console.log(data);
 	};
 
 	const posts = [
@@ -54,18 +91,18 @@ function CreateQuestion() {
 					<Col>
 						<div>
 							<h3>Tiêu đề</h3>
-							<Input type='text' placeholder='Tiêu đề câu hỏi' />
+							<Input type='text' placeholder='Tiêu đề câu hỏi' value={questionValue.title.value} onChange={handleChangeQuestionTitle} />
 						</div>
 					</Col>
 					<Col>
 						<div>
 							<h3>Mô tả câu hỏi</h3>
-							<Input type='text' placeholder='Tiêu đề câu hỏi' />
+							<Input type='text' placeholder='Tiêu đề câu hỏi' value={questionValue.desc.value} onChange={handleChangeQuestionDesc} />
 						</div>
 					</Col>
 					<Col>
 						<h3>Hình ảnh</h3>
-						<Upload {...props}>
+						<Upload listType='picture' fileList={images} onChange={handleChangeQuestionImg} beforeUpload={beforeUpload}>
 							<Button icon={<UploadOutlined />}>Upload</Button>
 						</Upload>
 					</Col>
@@ -73,8 +110,8 @@ function CreateQuestion() {
 						<EditorToolbar />
 						<ReactQuill
 							theme='snow'
-							value={state.value}
-							onChange={handleChange}
+							value={questionValue.content}
+							onChange={handleChangeQuestionContent}
 							placeholder={'Nội dung cần tạo ...'}
 							modules={modules}
 							formats={formats}
@@ -95,7 +132,9 @@ function CreateQuestion() {
 			<Row>
 				<Col span={16}>
 					<Row justify='end' style={{ marginTop: '20px' }}>
-						<Button type='primary'>Tạo câu hỏi</Button>
+						<Button onClick={handleSubmit} type='primary'>
+							Tạo câu hỏi
+						</Button>
 					</Row>
 				</Col>
 				<Col span={6}></Col>
