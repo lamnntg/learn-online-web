@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import EditorToolbar, { formats, modules } from '../../../utils/ReactQuill.config';
+import { getAllQAByUserId, createQA } from '../../../services/questions.service';
+import { authService } from '../../../services/auth.service';
 import 'react-quill/dist/quill.snow.css';
 import '../question.style.scss';
 
-import { Row, Button, Col, Upload, Input } from 'antd';
+import { Row, Button, Col, Upload, Input, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
 import CardQuestion from '../../../components/card/CardQuestion';
 import { initial } from 'lodash';
 
 function CreateQuestion() {
+	const history = useHistory();
+	const user = authService.getCurrentUser();
+	const [listQuestions, setListQuestions] = useState([]);
 	const [questionValue, setQuestionValue] = useState({
 		title: 'ABC',
 		desc: '',
@@ -36,6 +42,32 @@ function CreateQuestion() {
 		setQuestionValue({ ...questionValue, content });
 	};
 
+	useEffect(() => {
+		getAllQAByUserId(user.id).then((res) => {
+			setListQuestions(res.result);
+		});
+	}, [])
+	 
+	const handleCreateQA = async () => {
+		const { title, desc, content } = questionValue;
+	
+		const data = {
+			title,
+			desc,
+			content,
+			images,
+		};
+console.log(data);
+		await	createQA(data).then((res) => {
+			if (res.status === 200) {
+				history.push('/questions');
+				message.success('Create question success');
+			} else {
+				message.error('Create question failed');
+			}
+		});
+	}
+
 	const props = {
 		action: '',
 		listType: 'picture',
@@ -57,18 +89,6 @@ function CreateQuestion() {
 
 	const beforeUpload = () => {
 		return false;
-	};
-
-	const handleSubmit = () => {
-		const { title, desc, content } = questionValue;
-		const data = {
-			title,
-			desc,
-			content,
-			images,
-		};
-
-		console.log(data);
 	};
 
 	const posts = [
@@ -132,7 +152,7 @@ function CreateQuestion() {
 			<Row>
 				<Col span={16}>
 					<Row justify='end' style={{ marginTop: '20px' }}>
-						<Button onClick={handleSubmit} type='primary'>
+						<Button onClick={handleCreateQA} type='primary'>
 							Tạo câu hỏi
 						</Button>
 					</Row>

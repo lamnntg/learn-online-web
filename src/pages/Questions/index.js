@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { authService } from '../../services/auth.service';
 import { Row, Col, Card, Button, Avatar, Upload, message } from 'antd';
-
+import { getAllQA } from '../../services/questions.service';
 import { VerticalAlignTopOutlined } from '@ant-design/icons';
 
 import BgProfile from '../../assets/images/bg-profile.jpg';
@@ -17,6 +17,7 @@ import project2 from '../../assets/images/home-decor-2.jpeg';
 import project3 from '../../assets/images/home-decor-3.jpeg';
 
 function Questions() {
+	const [questions, setQuestions] = useState([]);
 	const location = useLocation();
 	const user = authService.getCurrentUser();
 	const [imageURL, setImageURL] = useState(false);
@@ -27,6 +28,17 @@ function Questions() {
 		reader.readAsDataURL(img);
 	};
 	const createQuestionPath = `${location.pathname}/create`;
+
+	useEffect(() => {
+		getAllQA().then((res) => {
+			setQuestions(res);
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+
+	}, [])
+	
 
 	const beforeUpload = (file) => {
 		const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
