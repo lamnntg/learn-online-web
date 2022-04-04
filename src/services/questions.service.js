@@ -7,15 +7,13 @@ export const getAllQA = async () => {
   return req.data;
 };
 
-export const getAllQAByUserId = async (userId) => {
+export const getAllQAByUserId = async userId => {
   const req = await axios.get(`${API_ROOT}/qa/get/by-user/${userId}`, { headers: authHeader() });
   return req.data;
 };
 
-export const createQA = async (data) => {
-  const req = await axios.post(`${API_ROOT}/qa/create`, data, { headers: authHeader() });
-  return req.data;
+export const createQA = async data => {
+  const req = await axios.post(`${API_ROOT}/qa/create`, data, { headers: { ...authHeader(), 'Content-Type': 'application/json' } });
+  return req;
 };
-
-
 
