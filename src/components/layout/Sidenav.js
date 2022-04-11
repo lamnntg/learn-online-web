@@ -73,12 +73,12 @@ function Sidenav({ color }) {
 						<span className='label'>Lớp học</span>
 					</NavLink>
 				</Menu.Item>
-				<Menu.Item key='billing'>
-					<NavLink to='/billing'>
+				<Menu.Item key='learn'>
+					<NavLink to='/learn'>
 						<span
 							className='icon'
 							style={{
-								background: page === 'billing' ? color : '',
+								background: page === 'learn' ? color : '',
 							}}>
 							{<BulbOutlined />}
 						</span>

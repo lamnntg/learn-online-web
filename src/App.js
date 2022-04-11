@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Home from './pages/Home';
 import Questions from './pages/Questions';
 import CreateQuestion from './pages/Questions/CreateQuestion';
-import Billing from './pages/Billing';
+import Learn from './pages/Learn';
 import Profile from './pages/Profile';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
@@ -58,7 +58,7 @@ function App() {
 							<Route exact path='/dashboard' component={Home} />
 							<Route exact path='/questions' component={Questions} />
 							<Route exact path='/questions/create' component={CreateQuestion} />
-							<Route exact path='/billing' component={Billing} />
+							<Route exact path='/learn' component={Learn} />
 							<Route exact path='/profile' component={Profile} />
 							<Route exact path='/classroom/:id/' component={ClassroomDetail} />
 							<Route exact path='/classroom/:id/chat' component={ClassroomChat} />

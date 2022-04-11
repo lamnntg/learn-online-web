@@ -1,0 +1,55 @@
+.course {
+	cursor: pointer;
+	&-title {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		color: #fff;
+		font-size: 25px;
+		border-bottom: 2px solid #fff;
+		// width: 100%;
+		text-align: center;
+		font-weight: bold;
+		z-index: 10;
+		transition: all 0.2s ease-in-out;
+		opacity: 0;
+	}
+
+	&-img {
+		height: 200px;
+		border-radius: 15px;
+		overflow: hidden;
+
+		.img {
+			height: 100%;
+			width: 100%;
+			object-fit: cover;
+		}
+	}
+
+	&:hover {
+		.img {
+			filter: blur(2px) brightness(0.5);
+		}
+
+		.course-title {
+			opacity: 1;
+			animation: 0.5s hoverText alternate;
+		}
+	}
+}
+
+@keyframes hoverText {
+	0% {
+		font-size: 25px;
+	}
+
+	50% {
+		font-size: 27px;
+	}
+
+	100% {
+		font-size: 25px;
+	}
+}
