@@ -34,11 +34,18 @@ import {
   joinClassroom,
 } from "../../services/classroom.service";
 import { useHistory } from "react-router-dom";
+import { AppContext } from "../../contexts/AppProviderContext";
 import shortid from "shortid";
 
 const { Meta } = Card;
 
 export default function Classroom() {
+  const { setSellectedRoomId } = useContext(AppContext);
+
+  const sellectRoom = (classroomId) => {
+    setSellectedRoomId(classroomId);
+  };
+
   const [classrooms, setClassrooms] = useState([]);
   const [classroomManage, setClassroomManage] = useState([]);
   const [classroomCode, setClassroomCode] = useState(null);
@@ -92,6 +99,7 @@ export default function Classroom() {
   }, [user, isModerator]);
 
   const handleAccessClassroom = (classroomId) => {
+    sellectRoom(classroomId);
     history.push(`/classroom/${classroomId}`);
   };
 
