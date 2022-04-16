@@ -1,0 +1,33 @@
+.room-users {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    button {
+        margin-right: 10px;
+    }
+}
+.message {
+    padding: 0 10px;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    .message-list {
+        padding: 10px;
+    }
+}
+
+.message-input {
+    button {
+        display: inline-block;
+        width: 100px;
+    }
+    
+    display: flex;
+    justify-content: space-between;
+}
+
+.message-list {
+    max-height: 100%;
+    overflow-y: auto;
+}
