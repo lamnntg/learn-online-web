@@ -59,17 +59,17 @@ function App() {
             <Route exact path="/meeting" component={MeetingHome} />
             <Route exact path="/meeting/:id" component={Room} />
             <Route exact path="/exam" component={Exam} />
-            <AppProviderContext>
-              <Main>
-                <Route exact path="/dashboard" component={Home} />
-                <Route exact path="/questions" component={Questions} />
-                <Route
-                  exact
-                  path="/questions/create"
-                  component={CreateQuestion}
-                />
-                <Route exact path="/billing" component={Billing} />
-                <Route exact path="/profile" component={Profile} />
+            <Main>
+              <Route exact path="/dashboard" component={Home} />
+              <Route exact path="/questions" component={Questions} />
+              <Route
+                exact
+                path="/questions/create"
+                component={CreateQuestion}
+              />
+              <Route exact path="/billing" component={Billing} />
+              <Route exact path="/profile" component={Profile} />
+              <AppProviderContext>
                 <Route
                   exact
                   path="/classroom/:id/"
@@ -101,12 +101,12 @@ function App() {
                   path="/classroom/:id/homework/:homeworkId"
                   component={Homework}
                 />
+              </AppProviderContext>
 
-                <Route exact path="/classroom" component={Classroom} />
+              <Route exact path="/classroom" component={Classroom} />
 
-                {/* <Redirect from="*" to="/dashboard" /> */}
-              </Main>
-            </AppProviderContext>
+              {/* <Redirect from="*" to="/dashboard" /> */}
+            </Main>
           </Switch>
         )}
         <AuthVerify logOut={logOut} />

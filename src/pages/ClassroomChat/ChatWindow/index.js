@@ -7,16 +7,23 @@ import { AppContext } from "../../../contexts/AppProviderContext";
 import useFirestore from "../../../hooks/useFirestore";
 import { createMessage } from "../../../firebase/services";
 import { authService } from "../../../services/auth.service";
+import { useParams } from "react-router-dom";
 
 export default function ChatWindow() {
+  const { id } = useParams();
+  const sellectedRoomId = id;
   const [ message, setMessage ] = useState("");
-  const { sellectedRoom, usersRoom } = useContext(AppContext);
-  const { setIsInviteUsersVisible, sellectedRoomId } = useContext(AppContext);
-  const { user } = authService.getCurrentUser();
+  const { rooms } = useContext(AppContext);
+  const { setIsInviteUsersVisible } = useContext(AppContext);
+  const user = authService.getCurrentUser();
   
+  const sellectedRoom = rooms.find(
+    (room) => room.classroomId == sellectedRoomId
+  );
+
   const messageCondition = useMemo(() => {
     return {
-      fieldsName: "roomId",
+      fieldsName: "classroomId",
       operator: "==",
       compareValue: sellectedRoomId,
     };
@@ -27,14 +34,13 @@ export default function ChatWindow() {
   const handleInviteUser = () => {
     setIsInviteUsersVisible(true);
   };
-
   const sendMessage = async () => {
     const messageData = {
-      roomId: sellectedRoomId,
-      userId: user.uid,
+      classroomId: sellectedRoomId,
+      userId: user.id,
       message: message,
-      displayName: user.displayName,
-      photoURL: user.photoURL
+      displayName: user.name,
+      photoURL: user.avatar_url
     }
     await createMessage(messageData);
     setMessage('');
@@ -44,26 +50,14 @@ export default function ChatWindow() {
     <div>
       {sellectedRoom ? (
         <div>
-          <header>
+          {/* <header>
             <div className="room-infor">
               <p>
                 {sellectedRoom && sellectedRoom.name}
                 <span>{sellectedRoom && sellectedRoom.description}</span>
               </p>
             </div>
-            <div className="room-users">
-              <Button icon={<UserAddOutlined />} onClick={handleInviteUser}>
-                Add User
-              </Button>
-              <Avatar.Group maxCount={2}>
-                {usersRoom.map((user) => (
-                  <Tooltip title={user.displayName} key={user.uid}>
-                    <Avatar src={user.photoURL}>A</Avatar>
-                  </Tooltip>
-                ))}
-              </Avatar.Group>
-            </div>
-          </header>
+          </header> */}
 
           <div className="message">
             <div className="message-list">
@@ -101,7 +95,7 @@ export default function ChatWindow() {
           </div>
         </div>
       ) : (
-        <h2>Choose Room Chat, Please</h2>
+        <h2>Đang có lỗi xảy ra vui lòng thử lại</h2>
       )}
     </div>
   );

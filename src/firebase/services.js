@@ -55,6 +55,7 @@ export const findUserExist = async (collectionObject, uid) => {
  */
 export const addRoom = async (data) => {
   try {
+    console.log(data);
     const docRef = await addDoc(collection(db, "rooms"), {
       ...data,
       created_at: Date.now(),
@@ -84,13 +85,23 @@ export const getRoom = async (id) => {
  * @param {string} userId
  * @param {string} roomId
  */
-export const updateRoom = async (userId, roomId) => {
-  const roomRef = doc(db, "rooms", roomId);
+export const updateRoom = async (userId, classroomId) => {
+  const q = query(collection(db, "rooms"), where("classroomId", "==", classroomId));
+  const querySnapshot = await getDocs(q);
+  var classroomSellectedId = null;
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    if (doc.data().classroomId == classroomId) {
+      classroomSellectedId = doc.id;
+    }
+  });
+
+  const classroomRef = doc(db, "rooms", classroomSellectedId);
   try {
-    await updateDoc(roomRef, {
+    await updateDoc(classroomRef, {
       members: arrayUnion(userId),
     });
-    console.log("Document update with ID: ", roomId);
+    console.log("Document update with ID: ", classroomId);
   } catch (e) {
     console.error("Error adding document: ", e);
   }

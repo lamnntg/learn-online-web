@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, where, orderBy, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 
 const useFirestore = (collectionRef, condition) => {
