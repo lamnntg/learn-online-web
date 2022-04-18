@@ -1,0 +1,10 @@
+.question {
+	&-post {
+		padding: 10px;
+		cursor: pointer;
+		&:hover {
+			border: 2px solid rgb(235, 235, 235);
+			border-radius: 10px;
+		}
+	}
+}
