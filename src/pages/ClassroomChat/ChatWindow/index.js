@@ -1,6 +1,6 @@
 import "./style.scss";
 import { Avatar, Button, Tooltip, Input, Form } from "antd";
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState, useEffect, useRef } from "react";
 import { UserAddOutlined, SendOutlined } from "@ant-design/icons";
 import Message from "../Message";
 import { AppContext } from "../../../contexts/AppProviderContext";
@@ -8,42 +8,43 @@ import useFirestore from "../../../hooks/useFirestore";
 import { createMessage } from "../../../firebase/services";
 import { authService } from "../../../services/auth.service";
 import { useParams } from "react-router-dom";
+import moment from 'moment';
 
 export default function ChatWindow() {
   const { id } = useParams();
   const sellectedRoomId = id;
-  const [ message, setMessage ] = useState("");
+  const [message, setMessage] = useState("");
   const { rooms } = useContext(AppContext);
   const { setIsInviteUsersVisible } = useContext(AppContext);
   const user = authService.getCurrentUser();
-  
-  const sellectedRoom = rooms.find(
-    (room) => room.classroomId == sellectedRoomId
-  );
-
   const messageCondition = useMemo(() => {
     return {
       fieldsName: "classroomId",
       operator: "==",
       compareValue: sellectedRoomId,
+      limit: 10,
     };
   }, [sellectedRoomId]);
 
-  const messages = useFirestore("messages", messageCondition).reverse();
+  const messages = useFirestore("messages", messageCondition);
 
-  const handleInviteUser = () => {
-    setIsInviteUsersVisible(true);
-  };
+  const sellectedRoom = rooms.find(
+    (room) => room.classroomId == sellectedRoomId
+  );
+
   const sendMessage = async () => {
+    if (message === '') {
+      return;
+    }
     const messageData = {
       classroomId: sellectedRoomId,
       userId: user.id,
       message: message,
       displayName: user.name,
-      photoURL: user.avatar_url
-    }
+      photoURL: user.avatar_url,
+    };
     await createMessage(messageData);
-    setMessage('');
+    setMessage("");
   };
 
   return (
@@ -60,18 +61,35 @@ export default function ChatWindow() {
           </header> */}
 
           <div className="message">
-            <div className="message-list">
-              {
-                messages.slice(0).reverse().map((message) => 
-                  <Message
-                    key={ message.id }
-                    name={ message.displayName }
-                    avatarUrl={ message.photoURL }
-                    createdAt={ new Date( message.created_at).toString() }
-                    message={ message.message }
-                  />
-                )
-              }
+            <div className="message-list" >
+              {messages
+                .slice(0)
+                .reverse()
+                .map((message) => {
+                  if (message.userId === user.id) {
+                    return (
+                      <Message
+                        key={message.id}
+                        name={message.displayName}
+                        avatarUrl={message.photoURL}
+                        createdAt={moment(message.created_at).format('YYYY-MM-DD, hh:mm:ss')}
+                        message={message.message}
+                        isMe={true}
+                      />
+                    );
+                  } else {
+                    return (
+                      <Message
+                        key={message.id}
+                        name={message.displayName}
+                        avatarUrl={message.photoURL}
+                        createdAt={moment(message.created_at).format('YYYY-MM-DD, hh:mm:ss')}
+                        message={message.message}
+                        isMe={false}
+                      />
+                    );
+                  }
+                })}
             </div>
             <div>
               <Form className="message-input">
@@ -81,6 +99,11 @@ export default function ChatWindow() {
                     autoComplete="off"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        sendMessage();
+                      }
+                    }}
                   />
                 </Form.Item>
                 <Button
