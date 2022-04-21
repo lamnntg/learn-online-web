@@ -1,0 +1,46 @@
+.room-users {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  button {
+    margin-right: 10px;
+  }
+}
+.message {
+  padding: 0 10px;
+  max-height: calc(100vh - 220px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  .message-list {
+    padding: 10px;
+    background-color: rgb(245, 245, 245);
+  }
+
+  &-me {
+    display: flex;
+    flex-direction: column;
+    align-items: self-end;
+  }
+}
+
+.message-input {
+  margin-top: 10px !important;
+  button {
+    display: inline-block;
+    width: 100px;
+  }
+
+  display: flex;
+  justify-content: space-between;
+}
+
+.message-list {
+  max-height: 100%;
+  overflow-y: auto;
+
+  .message-right {
+    justify-items: end;
+  }
+}
+

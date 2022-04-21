@@ -27,9 +27,9 @@ import AuthVerify from './common/AuthVerify';
 import NotFound from './pages/NotFound';
 import Room from './pages/MeetingRoom/Room';
 
-import 'antd/dist/antd.css';
-import './assets/styles/main.css';
-import './assets/styles/responsive.css';
+import "antd/dist/antd.css";
+import "./assets/styles/main.css";
+import "./assets/styles/responsive.css";
 
 function App() {
   const { isLoggedIn } = useSelector(state => state.auth);

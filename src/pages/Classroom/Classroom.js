@@ -1,5 +1,5 @@
 import "./Classroom.scss";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Skeleton,
@@ -16,12 +16,8 @@ import {
   message,
 } from "antd";
 import {
-  EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined,
   PlusOutlined,
   UsergroupAddOutlined,
-  UserOutlined,
   InfoCircleOutlined,
   FormOutlined,
 } from "@ant-design/icons";
@@ -34,6 +30,7 @@ import {
   joinClassroom,
 } from "../../services/classroom.service";
 import { useHistory } from "react-router-dom";
+import { addRoom, updateRoom } from "../../firebase/services";
 import shortid from "shortid";
 
 const { Meta } = Card;
@@ -114,11 +111,10 @@ export default function Classroom() {
     };
     try {
       let result = await createClassroom(data);
-
-      console.log(result);
       const uid = result.result._id;
       history.push(`classroom/${uid}`);
       setIsJoinModalVisible(false);
+      addRoom({ classroomId: uid, members: [user.id] });
       message.success("Tạo lớp học thành công");
     } catch (error) {
       console.log(error);
@@ -133,11 +129,13 @@ export default function Classroom() {
         userId: currentUser.id,
       });
       if (result) {
-        message.error("Kiểm tra lãi mã lớp học của bạn");
-      } else {
         const uid = result.result._id;
+        updateRoom(user.id, uid);
+
         history.push(`classroom/${uid}`);
         setIsJoinModalVisible(false);
+      } else {
+        message.error("Kiểm tra lãi mã lớp học của bạn");
       }
     } catch (error) {
       console.log(error);

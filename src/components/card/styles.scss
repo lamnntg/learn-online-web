@@ -1,0 +1,34 @@
+.card {
+  width: 100%;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: all 0.5s;
+
+  &:hover {
+    background-color: rgba(151, 48, 0, 0.618);
+    background-blend-mode: soft-light;
+
+    .ant {
+      &-card {
+        &-meta {
+          &-title,
+          &-description {
+            color: #fff !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+.ant {
+  &-card {
+    &-meta {
+      &-title,
+      &-description {
+        color: #333 !important;
+      }
+    }
+  }
+}
+

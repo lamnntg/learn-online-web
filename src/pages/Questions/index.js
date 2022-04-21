@@ -1,20 +1,21 @@
-import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { authService } from '../../services/auth.service';
-import { Row, Col, Card, Button, Avatar, Upload, message } from 'antd';
+import { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { authService } from "../../services/auth.service";
+import { Row, Col, Card, Button, Avatar, Upload, message } from "antd";
+import { getAllQA } from "../../services/questions.service";
+import { VerticalAlignTopOutlined } from "@ant-design/icons";
+import { getAllQAByUserId } from "../../services/questions.service";
 
-import { VerticalAlignTopOutlined } from '@ant-design/icons';
-
-import BgProfile from '../../assets/images/bg-profile.jpg';
-import profilavatar from '../../assets/images/face-1.jpg';
-import convesionImg from '../../assets/images/face-3.jpg';
-import convesionImg2 from '../../assets/images/face-4.jpg';
-import convesionImg3 from '../../assets/images/face-5.jpeg';
-import convesionImg4 from '../../assets/images/face-6.jpeg';
-import convesionImg5 from '../../assets/images/face-2.jpg';
-import project1 from '../../assets/images/home-decor-1.jpeg';
-import project2 from '../../assets/images/home-decor-2.jpeg';
-import project3 from '../../assets/images/home-decor-3.jpeg';
+import BgProfile from "../../assets/images/bg-profile.jpg";
+import profilavatar from "../../assets/images/face-1.jpg";
+import convesionImg from "../../assets/images/face-3.jpg";
+import convesionImg2 from "../../assets/images/face-4.jpg";
+import convesionImg3 from "../../assets/images/face-5.jpeg";
+import convesionImg4 from "../../assets/images/face-6.jpeg";
+import convesionImg5 from "../../assets/images/face-2.jpg";
+import project1 from "../../assets/images/home-decor-1.jpeg";
+import project2 from "../../assets/images/home-decor-2.jpeg";
+import project3 from "../../assets/images/home-decor-3.jpeg";
 
 function Questions() {
   const location = useLocation();
