@@ -16,6 +16,7 @@ import {
   List,
   Progress,
   Modal,
+  Upload
 } from "antd";
 import {
   PlusOutlined,
@@ -28,7 +29,7 @@ import {
   DeleteOutlined,
   ExclamationCircleOutlined,
   FileProtectOutlined,
-  InfoOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import { storage } from "../../firebase/config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -54,7 +55,10 @@ export default function Classwork(params) {
 
   const classroom = useClassroom(params.match.params.id);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [isVisbleUploadPdf, setIsVisbleUploadPdf] = useState(false);
   const [chooseHomework, setChooseHomework] = useState({});
+  const [pdfFile, setPdfFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [homeworks, setHomeworks] = useState([]);
   const [progress, setProgress] = useState(0);
@@ -66,6 +70,9 @@ export default function Classwork(params) {
     <Menu onClick={handleMenuClick}>
       <Menu.Item key="exam" icon={<CarryOutOutlined />}>
         Bài kiểm tra
+      </Menu.Item>
+      <Menu.Item key="exam-pdf" icon={<FileProtectOutlined />}>
+        Bài kiểm tra (PDF)
       </Menu.Item>
       <Menu.Item key="question" icon={<BulbOutlined />}>
         Câu hỏi
@@ -110,14 +117,13 @@ export default function Classwork(params) {
     </Menu>
   );
 
-  const menuCard = (
-    <Dropdown overlay={menu}>
-      <Button type="link" icon={<MoreOutlined />} size="large"></Button>
-    </Dropdown>
-  );
-
   function handleMenuClick(e) {
-    history.push(`/classroom/${id}/${e.key}/create`);
+    if (e.key === "exam") {
+      history.push(`/classroom/${id}/${e.key}/create`);
+    }
+    if (e.key === "exam-pdf") {
+      setIsVisbleUploadPdf(true);
+    }
   }
 
   function handleMenuHomeworkClick(e, homework) {
@@ -126,6 +132,10 @@ export default function Classwork(params) {
       setChooseHomework(homework);
     }
   }
+
+  // const handleUploadExam = async () => {
+
+  // }
 
   useEffect(() => {
     getClassroomDocuments(params.match.params.id)
@@ -268,9 +278,41 @@ export default function Classwork(params) {
       history.push(`/classroom/${classroom._id}/homework/${homework._id}`);
       return;
     }
-    
+
     return message.warn("Chưa đến thời gian làm bài");
-    
+  };
+
+  const handleUpload = () => {
+    const formData = new FormData();
+    formData.append("pdf", pdfFile);
+    setUploading(true);
+    // You can use any AJAX library you like
+    fetch("https://www.mocky.io/v2/5cc8019d300000980a055e76", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setPdfFile(null);
+        message.success("upload successfully.");
+      })
+      .catch(() => {
+        message.error("upload failed.");
+      })
+      .finally(() => {
+        setUploading(false);
+      });
+  };
+
+  const uploadPdf = {
+    nRemove: file => {
+      setPdfFile(null);
+    },
+    beforeUpload: file => {
+      setPdfFile(file);
+      return false;
+    },
+    pdfFile,
   };
 
   return (
@@ -513,6 +555,25 @@ export default function Classwork(params) {
             footer={[]}
           >
             <Detail homework={chooseHomework} />
+          </Modal>
+          <Modal
+            title="Basic Modal"
+            visible={isVisbleUploadPdf}
+            onOk={() => setIsVisbleUploadPdf(false)}
+            onCancel={() => setIsVisbleUploadPdf(false)}
+          >
+            <Upload {...uploadPdf}>
+              <Button icon={<UploadOutlined />}>Select File</Button>
+            </Upload>
+            <Button
+              type="primary"
+              onClick={handleUpload}
+              disabled={pdfFile === null}
+              loading={uploading}
+              style={{ marginTop: 16 }}
+            >
+              {uploading ? "Uploading" : "Start Upload"}
+            </Button>
           </Modal>
         </>
       ) : (

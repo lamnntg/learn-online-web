@@ -9,7 +9,6 @@ import { createMessage } from '../../../firebase/services';
 import { authService } from '../../../services/auth.service';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
-import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
 
 export default function ChatWindow() {
   const { id } = useParams();
