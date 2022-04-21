@@ -8,14 +8,15 @@
 }
 .message {
   padding: 0 10px;
-  max-height: calc(100vh - 220px);
+  height: calc(100vh - 220px);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   .message-list {
     padding: 10px;
-    background-color: rgb(245, 245, 245);
   }
+  background-color: rgb(245, 245, 245);
+
 
   &-me {
     display: flex;
