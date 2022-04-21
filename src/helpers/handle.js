@@ -57,6 +57,11 @@ const handlePathName = (pathName) => {
 			}
 			listPath.url = '/questions';
 			break;
+		case 'learn':
+			listPath.pathName = 'Học';
+			listPath.subPathName = 'Học';
+			listPath.url = '/learn';
+			break;
 		default:
 			break;
 	}

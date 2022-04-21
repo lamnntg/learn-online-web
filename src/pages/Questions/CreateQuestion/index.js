@@ -5,7 +5,7 @@ import EditorToolbar, { formats, modules } from '../../../utils/ReactQuill.confi
 import { getAllQAByUserId, createQA } from '../../../services/questions.service';
 import { authService } from '../../../services/auth.service';
 import 'react-quill/dist/quill.snow.css';
-import '../question.style.scss';
+import './question.style.scss';
 
 import { Row, Button, Col, Upload, Input, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';

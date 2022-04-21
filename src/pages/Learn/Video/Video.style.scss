@@ -1,0 +1,12 @@
+.video {
+	.cursor-pointer {
+		cursor: pointer;
+	}
+	&-right {
+		.text-hover {
+			&:hover {
+				color: #eb2f96;
+			}
+		}
+	}
+}

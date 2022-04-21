@@ -1,7 +1,7 @@
-import React, { useContext, useMemo, useState } from "react";
-import useFirestore from "../hooks/useFirestore";
-import { authService } from "../services/auth.service";
-import { useParams } from "react-router-dom";
+import React, { useContext, useMemo, useState } from 'react';
+import useFirestore from '../hooks/useFirestore';
+import { authService } from '../services/auth.service';
+import { useParams } from 'react-router-dom';
 // import useFireStoreList from "../hooks/useFireStoreList";
 
 export const AppContext = React.createContext();
@@ -14,13 +14,13 @@ export default function AppProviderContext({ children }) {
 
   const roomCondition = useMemo(() => {
     return {
-      fieldsName: "members",
-      operator: "array-contains",
-      compareValue: user.id,
+      fieldsName: 'members',
+      operator: 'array-contains',
+      compareValue: user.id
     };
   }, [user.id]);
 
-  const rooms = useFirestore("rooms", roomCondition);
+  const rooms = useFirestore('rooms', roomCondition);
 
   return (
     <AppContext.Provider
@@ -28,12 +28,11 @@ export default function AppProviderContext({ children }) {
         rooms,
         isAddRoomVisible,
         setIsAddRoomVisible,
-        isInviteUsersVisible, 
-        setIsInviteUsersVisible,
-
-      }}
-    >
+        isInviteUsersVisible,
+        setIsInviteUsersVisible
+      }}>
       {children}
     </AppContext.Provider>
   );
 }
+

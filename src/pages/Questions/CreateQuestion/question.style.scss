@@ -1,0 +1,36 @@
+.question {
+  .ql-editor {
+    /* min-height: 500px !important; */
+    height: 100% !important;
+    border-radius: 10px;
+  }
+
+  .ql-container {
+    border-bottom-left-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
+    background: #fefcfc;
+    height: fit-content;
+    min-height: 400px;
+  }
+
+  .ql-snow.ql-toolbar {
+    display: block;
+    background: #eaecec;
+    border-top-left-radius: 0.5em;
+    border-top-right-radius: 0.5em;
+  }
+
+  /* Bubble Theme */
+  .ql-bubble .ql-editor {
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+  }
+
+  &_content {
+    margin-top: 20px;
+  }
+
+  &_list {
+    padding: 20px;
+  }
+}
