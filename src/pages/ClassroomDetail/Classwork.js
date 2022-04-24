@@ -99,7 +99,7 @@ export default function Classwork(params) {
           <Menu.Item key="mark" icon={<FileProtectOutlined />} disabled>
             Chấm điểm tự luân
           </Menu.Item>
-          <Menu.Item key="edit" icon={<EditOutlined />} disabled>
+          <Menu.Item key="edit" icon={<EditOutlined />}>
             Chỉnh sửa
           </Menu.Item>
           <Menu.Item key="delete" icon={<DeleteOutlined />}>
@@ -138,7 +138,6 @@ export default function Classwork(params) {
     }
 
     if (e.key === "delete") {
-      console.log(homework);
       await deleteHomework(homework._id).then((res) => {
         if (res.status === 200) {
           message.success("Xóa thành công");
@@ -148,6 +147,10 @@ export default function Classwork(params) {
       }).catch((err) => {
         message.error("Xóa thất bại");
       })
+    }
+
+    if (e.key === "edit") {
+      history.push(`/classroom/${id}/exam/${homework._id}/edit`);
     }
   }
 
