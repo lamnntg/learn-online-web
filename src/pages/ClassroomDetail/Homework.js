@@ -63,7 +63,6 @@ export default function Homework(params, props) {
     // });
 
     showPromiseConfirm();
-
   };
 
   function showPromiseConfirm() {
@@ -170,9 +169,9 @@ export default function Homework(params, props) {
     const unblock = history.block((location, action) => {
       console.log(isStart);
       if (isStart === true) {
-          return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
-        }
-        return true;
+        return window.confirm("Bạn chắc chắn muốn nộp bài làm?");
+      }
+      return true;
     });
 
     // window.onpopstate = function () {
@@ -239,7 +238,6 @@ export default function Homework(params, props) {
 
         setIsLoading(false);
         setIsBlocking(false);
-
       })
       .catch((err) => console.log(err));
 
@@ -304,7 +302,7 @@ export default function Homework(params, props) {
                           <img
                             className="center"
                             src={ques.url}
-                            width="350px"
+                            max-width="100%"
                             height="auto"
                             alt=""
                           />
@@ -324,11 +322,13 @@ export default function Homework(params, props) {
                                 }}
                               >
                                 <div>
-                                  <b>
-                                    {listAnswers[j]}
-                                    {"  :  "}
-                                  </b>
-                                  {ans.answer}
+                                  <p>
+                                    <b>
+                                      {listAnswers[j]}
+                                      {"  :  "}
+                                    </b>
+                                    {ans.answer}
+                                  </p>
                                 </div>
                                 {ans.url !== "" ? (
                                   <img
@@ -343,13 +343,22 @@ export default function Homework(params, props) {
                                 ) : (
                                   ""
                                 )}
-                                <br></br>
                               </div>
                             </>
                           ))}
                         </div>
 
-                        <Divider></Divider>
+                        <Divider orientation="left" plain>
+                          {ques.type === "choose" ? (
+                            <b>
+                              <i>Chọn câu trả lời:</i>
+                            </b>
+                          ) : (
+                            <b>
+                              <i>Nhập câu trả lời:</i>
+                            </b>
+                          )}{" "}
+                        </Divider>
 
                         <Row
                           justify="start"
@@ -358,9 +367,7 @@ export default function Homework(params, props) {
                         >
                           {ques.type === "choose" ? (
                             <>
-                              <b style={{ paddingRight: "30px" }}>
-                                Chọn câu trả lời:
-                              </b>
+                              <b style={{ paddingRight: "30px" }}>Đáp án:</b>
                               {answers[i].answers.map((ans, j) => (
                                 <Col span={3}>
                                   <Button
