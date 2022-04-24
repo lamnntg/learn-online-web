@@ -18,6 +18,7 @@ import Classwork from './pages/ClassroomDetail/Classwork';
 import People from './pages/ClassroomDetail/People';
 import Setting from './pages/ClassroomDetail/Setting';
 import CreateExam2 from './pages/ClassroomDetail/CreateExam2';
+import ExamEdit from './pages/ExamEdit';
 import Homework from './pages/ClassroomDetail/Homework';
 import Exam from './pages/Exam/Exam';
 import ClassroomChat from './pages/ClassroomChat/ClassroomChat';
@@ -71,6 +72,8 @@ function App() {
                 <Route exact path="/classroom/:id/people" component={People} />
                 <Route exact path="/classroom/:id/setting" component={Setting} />
                 <Route exact path="/classroom/:id/exam/create" component={CreateExam2} />
+                <Route exact path="/classroom/:id/exam/:examId/edit" component={ExamEdit} />
+
                 <Route exact path="/classroom/:id/homework/:homeworkId" component={Homework} />
               </AppProviderContext>
 

@@ -27,19 +27,20 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import FilterNoneIcon from "@material-ui/icons/FilterNone";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
-import ImageUploadModal from "./ImageUploadModal";
+import ImageUploadModal from "../../components/modals/ImageUpload";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SaveIcon from "@material-ui/icons/Save";
 import Checkbox from "@material-ui/core/Checkbox";
 import Select from "@material-ui/core/Select";
 
-import { createHomework } from "../../services/homework.service";
+import { createHomework, getHomeworkDetail, updateHomework } from "../../services/homework.service";
 import { authService } from "../../services/auth.service";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import { clone, update } from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CreateExam2(params) {
+function ExamEdit(params) {
   const classes = useStyles();
   const [questions, setQuestions] = React.useState([]);
   const [enableSubmit, setEnableSubmit] = React.useState(false);
@@ -72,25 +73,32 @@ function CreateExam2(params) {
 
   const [loadingFormData, setLoadingFormData] = React.useState(true);
   const classroom = useClassroom(params.match.params.id);
+  const examId = params.match.params.examId;
+  
 
-  // React.useEffect(() => {
-  //   if (props.formData.questions !== undefined) {
-  //     //console.log(props.formData.questions.length);
-  //     if (props.formData.questions.length === 0) {
-  //       setQuestions([
-  //         {
-  //           questionText: "Question",
-  //           options: [{ optionText: "Option 1" }],
-  //           open: false,
-  //         },
-  //       ]);
-  //     } else {
-  //       setQuestions(props.formData.questions);
-  //     }
-  //     setLoadingFormData(false);
-  //   }
-  //   setFormData(props.formData);
-  // }, [props.formData]);
+  React.useEffect(() => {
+    getHomeworkDetail(examId).then((res) => {
+      setFormData({
+        title: res.title,
+        description: res.description,
+        time: 60,
+        startTime: moment().format("YYYY-MM-DDTHH:mm"),
+      })
+
+      let data = clone(res.questions);
+      data = data.map((item) => {
+        item['questionImage'] = item['url'];
+        item['options'] = [];
+        item['open'] = false;
+
+        return item;
+      })
+
+      setQuestions(data);
+    }).catch((err) => { 
+      message.error(err.message);
+    });
+  }, [classroom, examId]);
 
   function saveQuestions() {
     let errorQuestion = null;
@@ -106,6 +114,11 @@ function CreateExam2(params) {
 
     questions.forEach((question, i) => {
       if (question.type === "" || question.point === "") {
+        errorQuestion = i;
+        return;
+      }
+
+      if (question.type === "choose" && question.options.length === 0) {
         errorQuestion = i;
         return;
       }
@@ -128,7 +141,7 @@ function CreateExam2(params) {
 
     console.log(questions);
     // return;
-    createHomework(data).then(
+    updateHomework(examId, data).then(
       (result) => {
         console.log(result);
         history.push(`/classroom/${params.match.params.id}/homework`);
@@ -987,4 +1000,4 @@ function CreateExam2(params) {
     </div>
   );
 }
-export default CreateExam2;
+export default ExamEdit;
