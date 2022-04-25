@@ -15,13 +15,16 @@ import convesionImg5 from '../assets/images/face-2.jpg';
 import project1 from '../assets/images/home-decor-1.jpeg';
 import project2 from '../assets/images/home-decor-2.jpeg';
 import project3 from '../assets/images/home-decor-3.jpeg';
+import { userService } from '../services/user.service';
+import { toBase64 } from '../common/ConvertImageToBase64';
 
 function Profile() {
   const user = authService.getCurrentUser();
   const isMorderator = authService.checkModerator();
   const [visible, setVisible] = useState(false);
   const [information, setInformation] = useState(false);
-  const [imageURL, setImageURL] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(user.avatar_url || profilavatar);
+  const [avatar, setAvatar] = useState(null);
   const [, setLoading] = useState(false);
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -30,30 +33,34 @@ function Profile() {
   };
 
   const beforeUpload = file => {
-    console.log('Before Upload');
-    // const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    // if (!isJpgOrPng) {
-    //   message.error('You can only upload JPG/PNG file!');
-    // }
-    // const isLt2M = file.size / 1024 / 1024 < 2;
-    // if (!isLt2M) {
-    //   message.error('Image must smaller than 2MB!');
-    // }
-    // return isJpgOrPng && isLt2M;
+    setAvatar(file);
+    
+    return true;
   };
 
-  const handleChange = info => {
-    console.log('Updaload');
-    // if (info.file.status === 'uploading') {
-    //   setLoading(false);
-    //   return;
-    // }
-    // if (info.file.status === 'done') {
-    //   getBase64(info.file.originFileObj, imageUrl => {
-    //     setLoading(false);
-    //     setImageURL(false);
-    //   });
-    // }
+  const uploadImage = async options => {
+    const { onSuccess, onError, file, onProgress } = options;
+
+    const fmData = new FormData();
+    
+    const fileBase64 = await toBase64(avatar);
+    fmData.append("avatar", fileBase64);
+    fmData.append("id", user.id);
+    try {
+      const res = await userService.uploadAvatar(fmData);
+      
+      let newUser = {...user, avatar_url: res.result};
+      setAvatarUrl(res.result);
+      localStorage.setItem("user", JSON.stringify(newUser));
+    } catch (err) {
+      console.log("Eroor: ", err);
+      const error = new Error("Some error");
+      onError({ err });
+    }
+  };
+  
+  const handleChange = async info => {
+
   };
 
   const pencil = [
@@ -71,8 +78,6 @@ function Profile() {
       <div></div>
     </div>
   );
-
-  const seeAvatar = () => {};
 
   const data = [
     {
@@ -141,20 +146,21 @@ function Profile() {
                     className="avatar-uploader projects-uploader"
                     showUploadList={false}
                     action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                    customRequest={uploadImage}
                     beforeUpload={beforeUpload}
                     onChange={handleChange}>
-                    {imageURL ? <img src={imageURL} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                    {uploadButton}
                   </Upload>
                 </Row>
-                <Avatar className="cursor-pointer" size={74} shape="square" src={profilavatar}></Avatar>
+                <Avatar className="cursor-pointer" size={74} shape="square" src={avatarUrl}></Avatar>
 
                 <Col style={{ position: 'absolute', display: 'none' }}>
                   <Image
                     width={200}
-                    src={profilavatar}
+                    src={avatarUrl}
                     preview={{
                       visible,
-                      src: profilavatar,
+                      src: avatarUrl,
                       onVisibleChange: value => {
                         setVisible(value);
                       }
