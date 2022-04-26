@@ -37,7 +37,7 @@ function Sidenav({ color }) {
       </div>
       <hr />
       <Menu theme="light" mode="inline">
-        <Menu.Item key="db">
+        <Menu.Item key="db" style={{ marginBottom: '10px' }}>
           <NavLink to="/dashboard">
             <span
               className="icon"
@@ -49,7 +49,7 @@ function Sidenav({ color }) {
             <span className="label">Trang chủ</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="classroom">
+        <Menu.Item key="classroom" style={{ marginBottom: '10px' }}>
           <NavLink to="/classroom">
             <span
               className="icon"
@@ -61,7 +61,7 @@ function Sidenav({ color }) {
             <span className="label">Lớp học</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="learn">
+        <Menu.Item key="learn" style={{ marginBottom: '10px' }}>
           <NavLink to="/learn">
             <span
               className="icon"
@@ -73,7 +73,7 @@ function Sidenav({ color }) {
             <span className="label">Học</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="questions">
+        <Menu.Item key="questions" style={{ marginBottom: '10px' }}>
           <NavLink to="/questions">
             <span
               className="icon"
@@ -98,10 +98,10 @@ function Sidenav({ color }) {
             <span className="label">RTL</span>
           </NavLink>
         </Menu.Item> */}
-        <Menu.Item className="menu-item-header" key="5">
-          Account Pages
+        <Menu.Item className="menu-item-header" key="5" style={{ marginBottom: '10px' }}>
+          Trang cá nhân
         </Menu.Item>
-        <Menu.Item key="profile">
+        <Menu.Item key="profile" style={{ marginBottom: '10px' }}>
           <NavLink to="/profile">
             <span
               className="icon"
@@ -113,13 +113,16 @@ function Sidenav({ color }) {
             <span className="label">Trang cá nhân</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="meeting1">
+        <Menu.Item className="menu-item-header" key="5" style={{ marginBottom: '10px' }}>
+          Phòng họp
+        </Menu.Item>
+        <Menu.Item key="meeting1" style={{ marginBottom: '10px' }}>
           <NavLink to="/meeting">
             <span className="icon">{<VideoCameraOutlined />}</span>
             <span className="label">Meeting</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item className="menu-item-header" key="8">
+        {/* <Menu.Item className="menu-item-header" key="8">
           Classrooms
         </Menu.Item>
         <Menu.Item key="meeting2">
@@ -133,7 +136,7 @@ function Sidenav({ color }) {
             <span className="icon">C2</span>
             <span className="label">Lớp học 2</span>
           </NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
         {/*<Menu.Item key="8">
           <NavLink to="/sign-up">
             <span className="icon">{signup}</span>

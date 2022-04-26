@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-import { Card, Col, Row, Typography, Tooltip, Progress, Upload, message, Button, Timeline, Radio } from 'antd';
+import { Card, Col, Row, Typography, Tooltip, Progress, Upload, message, Button, Timeline, Radio, Spin, Space } from 'antd';
 import { ToTopOutlined, MenuUnfoldOutlined, RightOutlined } from '@ant-design/icons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 
@@ -22,6 +22,7 @@ import card from '../assets/images/info-card-1.jpg';
 
 function Home() {
   const [news, setNews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { Title, Text } = Typography;
 
   const onChange = e => console.log(`radio checked:${e.target.value}`);
@@ -31,7 +32,10 @@ function Home() {
   useEffect(async () => {
     await axios
       .get('https://newsapi.org/v2/top-headlines?country=us&category=technology&apiKey=1cf49d1063ef429ca40cbc99f1b01b0c')
-      .then(res => setNews(res.data.articles));
+      .then(res => {
+        setNews(res.data.articles);
+        setIsLoading(false);
+      });
   }, []);
 
   const dollor = [
@@ -306,25 +310,31 @@ function Home() {
             </>
           }>
           <Row gutter={[24, 24]}>
-            {news.map((p, index) => {
-              if (p.urlToImage) {
-                return (
-                  <Col span={24} md={12} xl={6} key={index} className="cursor-pointer">
-                    <Card
-                      onClick={() => {
-                        window.open(p.url);
-                      }}
-                      bordered={false}
-                      className="card-project"
-                      cover={<img alt="example" height={200} style={{ objectFit: 'cover' }} src={p.urlToImage} />}>
-                      <div className="card-tag">{p.author}</div>
-                      <h5>{p.title}</h5>
-                      <p>{p.description}</p>
-                    </Card>
-                  </Col>
-                );
-              }
-            })}
+            {!isLoading ? (
+              news.map((p, index) => {
+                if (p.urlToImage) {
+                  return (
+                    <Col span={24} md={12} xl={6} key={index} className="cursor-pointer">
+                      <Card
+                        onClick={() => {
+                          window.open(p.url);
+                        }}
+                        bordered={false}
+                        className="card-project"
+                        cover={<img alt="example" height={200} style={{ objectFit: 'cover' }} src={p.urlToImage} />}>
+                        <div className="card-tag">{p.author}</div>
+                        <h5>{p.title}</h5>
+                        <p>{p.description}</p>
+                      </Card>
+                    </Col>
+                  );
+                }
+              })
+            ) : (
+              <Space size="middle" className="loading">
+                <Spin size="large" />
+              </Space>
+            )}
           </Row>
         </Card>
 
