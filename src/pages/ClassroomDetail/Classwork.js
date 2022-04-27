@@ -139,11 +139,10 @@ export default function Classwork(params) {
 
     if (e.key === "delete") {
       await deleteHomework(homework._id).then((res) => {
-        if (res.status === 200) {
-          message.success("Xóa thành công");
-          let newHomeworks = homeworks.filter((item) => item._id === homework._id);
+          let newHomeworks = homeworks.filter((item) => item._id != homework._id);
+          console.log(homeworks)
           setHomeworks(newHomeworks);
-        }
+          message.success("Xóa thành công");
       }).catch((err) => {
         message.error("Xóa thất bại");
       })
