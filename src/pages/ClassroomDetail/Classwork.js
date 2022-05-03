@@ -475,11 +475,6 @@ export default function Classwork(params) {
                   title={[
                     <h6 className="font-semibold m-0">Tài liệu lớp học</h6>,
                   ]}
-                  extra={[
-                    <Button type="primary">
-                      <span>VIEW ALL</span>
-                    </Button>,
-                  ]}
                 >
                   <List
                     itemLayout="horizontal"
