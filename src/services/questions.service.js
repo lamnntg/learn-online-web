@@ -29,3 +29,17 @@ export const getQuestionByID = async (questionId) => {
   });
   return req.data;
 };
+
+export const deleteQuestionById = async (questionId) => {
+  const req = await axios.delete(`${API_ROOT}/qa/delete/${questionId}`, {
+    headers: authHeader(),
+  });
+  return req.data;
+};
+
+export const updateQuestionById = async (questionID, data) => {
+  const req = await axios.put(`${API_ROOT}/qa/${questionID}`, data, {
+    headers: authHeader(),
+  });
+  return req.data;
+};
