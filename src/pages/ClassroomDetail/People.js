@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import NavBar from "../../components/Classroom/Navbar";
 import { useParams } from "react-router-dom";
 import * as XLSX from "xlsx";
-
+import Moment from "react-moment";
 import {
   Row,
   Col,
@@ -17,9 +17,11 @@ import {
   Typography,
   Modal,
 } from "antd";
+import { DeleteOutlined, UploadOutlined } from "@ant-design/icons";
+import { importUserClassroom } from "../../services/classroom.service";
 // Images
 import useClassroom from "../../hooks/useClassroom";
-import { isEmpty } from "lodash";
+import { clone, isEmpty } from "lodash";
 
 const { Title } = Typography;
 // table code start
@@ -48,71 +50,162 @@ const columns = [
   },
 ];
 
-const makeDataUsers = (users) => {
-  return users.map((user, key) => {
-    return {
-      key: key,
-      name: (
-        <>
-          <Avatar.Group>
-            <Avatar
-              className="shape-avatar"
-              shape="square"
-              size={40}
-              src={user.avatar_url || null}
-            ></Avatar>
-            <div className="avatar-info">
-              <Title level={5}>{user.name}</Title>
-              <p>{user.email}</p>
-            </div>
-          </Avatar.Group>{" "}
-        </>
-      ),
-      function: (
-        <>
-          <div className="author-info">
-            <Title level={5}>Manager</Title>
-            <p>Organization</p>
-          </div>
-        </>
-      ),
+const columnsImport = [
+  {
+    title: "Họ và tên",
+    dataIndex: "name",
+    key: "name",
+    width: "32%",
+  },
+  {
+    title: "Địa chỉ",
+    dataIndex: "function",
+    key: "function",
+  },
 
-      status: (
-        <>
-          <Button type="primary" className="tag-primary">
-            ONLINE
-          </Button>
-        </>
-      ),
-
-      employed: (
-        <>
-          <div className="ant-employed">
-            <span>23/04/18</span>
-            <a href="#pablo">Edit</a>
-          </div>
-        </>
-      ),
-    };
-  });
-};
-
-const makeDataImport = (users) => {
-
-}
+  {
+    title: "Số điện thoại",
+    key: "status",
+    dataIndex: "status",
+  },
+  {
+    title: "Ngày tạo",
+    key: "employed",
+    dataIndex: "employed",
+  },
+];
 
 function People(params) {
   let { id } = useParams();
   const [columnsTable, setColumnsTable] = useState([]);
-  const [data, setData] = useState([]);
+  const [dataImport, setDataImport] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const classroom = useClassroom(params.match.params.id);
+
+  console.log(dataImport);
+
+  const deleteDataImport = (key) => {
+    console.log(key);
+    let newData = clone(dataImport);
+    newData.splice(key, 1);
+    setDataImport(newData);
+  };
+
+  const makeDataUsers = (users) => {
+    return users.map((user, key) => {
+      return {
+        key: key,
+        name: (
+          <>
+            <Avatar.Group>
+              <Avatar
+                className="shape-avatar"
+                shape="square"
+                size={40}
+                src={user.avatar_url || null}
+              ></Avatar>
+              <div className="avatar-info">
+                <Title level={5}>{user.name}</Title>
+                <p>{user.email}</p>
+              </div>
+            </Avatar.Group>{" "}
+          </>
+        ),
+        function: (
+          <>
+            <div className="author-info">
+              <Title level={5}>Manager</Title>
+              <p>{user.address}</p>
+            </div>
+          </>
+        ),
+
+        status: (
+          <>
+            <Title level={5}>{user.phone}</Title>
+          </>
+        ),
+
+        employed: (
+          <>
+            <div className="ant-employed">
+              <Moment format="YYYY-MM-DD HH:mm">{Date.now()}</Moment>{" "}
+              <Button
+                onClick={() => {
+                  deleteDataImport(key);
+                }}
+              >
+                <DeleteOutlined />
+              </Button>
+            </div>
+          </>
+        ),
+      };
+    });
+  };
+
+  const makeDataImport = (users) => {
+    return users.map((user, key) => {
+      return {
+        key: key,
+        name: (
+          <>
+            <Avatar.Group>
+              <Avatar
+                className="shape-avatar"
+                shape="square"
+                size={40}
+                src={user.avatar_url || null}
+              ></Avatar>
+              <div className="avatar-info">
+                <Title level={5}>{user.name}</Title>
+                <p>{user.email}</p>
+              </div>
+            </Avatar.Group>{" "}
+          </>
+        ),
+        function: (
+          <>
+            <div className="author-info">
+              <Title level={5}>Manager</Title>
+              <p>Organization</p>
+            </div>
+          </>
+        ),
+
+        status: (
+          <>
+            <Button type="primary" className="tag-primary">
+              ONLINE
+            </Button>
+          </>
+        ),
+
+        employed: (
+          <>
+            <div className="ant-employed">
+              <span>23/04/18</span>
+              <a href="#pablo">Edit</a>
+            </div>
+          </>
+        ),
+      };
+    });
+  };
 
   const showModal = () => {
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
     setIsModalVisible(false);
+    await importUserClassroom(id, { users: dataImport })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleCancel = () => {
@@ -156,7 +249,7 @@ function People(params) {
       selector: c,
     }));
 
-    setData(list);
+    setDataImport(list);
     setColumnsTable(columns);
   };
 
@@ -177,7 +270,6 @@ function People(params) {
     };
     reader.readAsBinaryString(file);
   };
-  const classroom = useClassroom(params.match.params.id);
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
 
   return (
@@ -199,7 +291,9 @@ function People(params) {
               <div className="table-responsive">
                 <Table
                   columns={columns}
-                  dataSource={isEmpty(classroom) ? [] : makeDataUsers(data)}
+                  dataSource={
+                    isEmpty(classroom) ? [] : makeDataImport(classroom.users)
+                  }
                   pagination={false}
                   className="ant-border-space"
                 />
@@ -209,7 +303,7 @@ function People(params) {
         </Row>
       </div>
       <Modal
-        title="Nhập thành viên lớp học"
+        title="Nhập thành viên lớp học : "
         style={{ top: 20, bottom: 20 }}
         visible={isModalVisible}
         onOk={handleOk}
@@ -221,11 +315,15 @@ function People(params) {
           accept=".csv,.xlsx,.xls"
           onChange={handleFileUpload}
         />
+
         <div className="table-responsive">
           <Table
-            columns={columns}
-            pagination={{ defaultPageSize: 7, showSizeChanger: true, pageSizeOptions: ['10', '20', '30']}}
-            dataSource={isEmpty(classroom) ? [] : makeDataUsers(data)}
+            columns={columnsImport}
+            pagination={{
+              defaultPageSize: 7,
+              showSizeChanger: true,
+            }}
+            dataSource={isEmpty(classroom) ? [] : makeDataUsers(dataImport)}
             className="ant-border-space"
           />
         </div>

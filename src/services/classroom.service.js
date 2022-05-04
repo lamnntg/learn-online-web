@@ -70,3 +70,7 @@ export const deleteClassroomDocument = async (id) => {
   return req.data;
 }
 
+export const importUserClassroom = async (classroomId, data) => {
+  const req = await axios.post(`${API_ROOT}/classroom/${classroomId}/users/import`, data, { headers: authHeader() });
+  return req.data;
+}
