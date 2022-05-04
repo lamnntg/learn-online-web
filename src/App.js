@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Home from "./pages/Home";
 import Questions from "./pages/Questions";
 import CreateQuestion from "./pages/Questions/CreateQuestion";
+import EditQuestion from "./pages/Questions/EditQuestion";
 import ReadQuestion from "./pages/Questions/ReadingQuestion";
 import Learn from "./pages/Learn";
 import CourseVideo from "./pages/Learn/Video";
@@ -71,6 +72,7 @@ function App() {
                 path="/questions/create"
                 component={CreateQuestion}
               />
+              <Route exact path="/questions/edit" component={EditQuestion} />
               <Route
                 exact
                 path="/questions/read/:id"

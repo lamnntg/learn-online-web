@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation, useHistory } from "react-router-dom";
-import { authService } from "../../services/auth.service";
+import { authService } from "../../../services/auth.service";
 import { Row, Col, Card, Button, Avatar, Upload, message } from "antd";
-import { getAllQA } from "../../services/questions.service";
+import { getAllQA } from "../../../services/questions.service";
 import { VerticalAlignTopOutlined } from "@ant-design/icons";
-import { getAllQAByUserId } from "../../services/questions.service";
-import { getQuestion } from "../../redux/question/question.actions";
+import { getAllQAByUserId } from "../../../services/questions.service";
+import { getQuestion } from "../../../redux/question/question.actions";
 import { useDispatch } from "react-redux";
-import store from "../../redux/store";
-import imageDefault from "../../assets/images/classroom.jpg";
+import store from "../../../redux/store";
+import imageDefault from "../../../assets/images/classroom.jpg";
 
-import "./style.scss";
-
-function Questions() {
+function EditQuestion() {
   const [questions, setQuestions] = useState([]);
   const dispatch = useDispatch();
   const location = useLocation();
@@ -45,8 +43,8 @@ function Questions() {
     });
   }, []);
 
-  const onReading = (id) => {
-    history.push(`${location.pathname}/read/${id}`);
+  const onEdit = (id) => {
+    history.push(`${location.pathname}/${id}`);
   };
 
   return (
@@ -57,11 +55,10 @@ function Questions() {
         title={
           <>
             <div>
-              <h6 className="font-semibold">Câu hỏi</h6>
-              <p>Chia sẻ & học hỏi kiến thức</p>
+              <h6 className="font-semibold">Chỉnh sửa câu hỏi</h6>
             </div>
 
-            <Row justify="end">
+            {/* <Row justify="end">
               <div style={{ marginRight: "10px" }}>
                 <NavLink to={createQuestionPath}>
                   <Button type="primary">Tạo câu hỏi</Button>
@@ -73,7 +70,7 @@ function Questions() {
                   <Button type="light">Chỉnh sửa</Button>
                 </NavLink>
               </div>
-            </Row>
+            </Row> */}
           </>
         }
       >
@@ -87,7 +84,7 @@ function Questions() {
               className="h-full question-post"
             >
               <Card
-                onClick={() => onReading(p._id)}
+                onClick={() => onEdit(p._id)}
                 bordered={false}
                 className="card-project"
                 cover={
@@ -100,11 +97,7 @@ function Questions() {
               >
                 <h5 className="card-tag">{p.title}</h5>
                 <p>{p.description}</p>
-                <Row gutter={[6, 0]} className="card-footer">
-                  {/* <Col span={12}>
-										<Button type='button'>VIEW PROJECT</Button>
-									</Col> */}
-                </Row>
+                <Row gutter={[6, 0]} className="card-footer"></Row>
               </Card>
             </Col>
           ))}
@@ -114,4 +107,4 @@ function Questions() {
   );
 }
 
-export default Questions;
+export default EditQuestion;
