@@ -1,26 +1,30 @@
 .read {
-	display: flex;
-	justify-content: center;
+  display: flex;
+  justify-content: center;
 
-	.container {
-		width: 80%;
-	}
+  .container {
+    width: 80%;
+  }
 
-	&-title {
-		margin-top: 20px;
-		margin-bottom: 40px;
-	}
+  &-title {
+    margin-top: 20px;
+    margin-bottom: 40px;
+  }
 
-	&-content {
-		font-size: 18px;
-		line-height: 1.8;
-	}
+  &-content {
+    line-height: 1.8;
 
-	&-time {
-		padding-left: 30px;
-	}
+    & * {
+      font-size: 16px !important;
+    }
+  }
 
-	.image-bg {
-		margin: 0 !important;
-	}
+  &-time {
+    padding-left: 30px;
+  }
+
+  .image-bg {
+    margin: 0 !important;
+    height: 250px;
+  }
 }
