@@ -18,7 +18,10 @@ import {
   Modal,
 } from "antd";
 import { DeleteOutlined, UploadOutlined } from "@ant-design/icons";
-import { importUserClassroom } from "../../services/classroom.service";
+import {
+  importUserClassroom,
+  getUsersPending,
+} from "../../services/classroom.service";
 // Images
 import useClassroom from "../../hooks/useClassroom";
 import { clone, isEmpty } from "lodash";
@@ -33,7 +36,7 @@ const columns = [
     width: "32%",
   },
   {
-    title: "Chức vụ",
+    title: "Số điện thoại",
     dataIndex: "function",
     key: "function",
   },
@@ -44,7 +47,7 @@ const columns = [
     dataIndex: "status",
   },
   {
-    title: "EMPLOYED",
+    title: "Địa chỉ",
     key: "employed",
     dataIndex: "employed",
   },
@@ -77,12 +80,18 @@ const columnsImport = [
 
 function People(params) {
   let { id } = useParams();
-  const [columnsTable, setColumnsTable] = useState([]);
-  const [dataImport, setDataImport] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const classroom = useClassroom(params.match.params.id);
 
-  console.log(dataImport);
+  const [columnsTable, setColumnsTable] = useState([]);
+  const [usersClassroom, setUsersClassroom] = useState([]);
+  const [dataImport, setDataImport] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  useEffect(() => {
+    getUsersPending(id).then((res) => {
+      setUsersClassroom(res.users);
+    });
+  }, [id]);
 
   const deleteDataImport = (key) => {
     console.log(key);
@@ -91,7 +100,7 @@ function People(params) {
     setDataImport(newData);
   };
 
-  const makeDataUsers = (users) => {
+  const makeDataImport = (users) => {
     return users.map((user, key) => {
       return {
         key: key,
@@ -102,7 +111,7 @@ function People(params) {
                 className="shape-avatar"
                 shape="square"
                 size={40}
-                src={user.avatar_url || null}
+                src={user.avatar_url ?? null}
               ></Avatar>
               <div className="avatar-info">
                 <Title level={5}>{user.name}</Title>
@@ -114,8 +123,7 @@ function People(params) {
         function: (
           <>
             <div className="author-info">
-              <Title level={5}>Manager</Title>
-              <p>{user.address}</p>
+              <Title level={5}>{user.address}</Title>
             </div>
           </>
         ),
@@ -144,7 +152,7 @@ function People(params) {
     });
   };
 
-  const makeDataImport = (users) => {
+  const makeDataUsers = (users) => {
     return users.map((user, key) => {
       return {
         key: key,
@@ -155,11 +163,11 @@ function People(params) {
                 className="shape-avatar"
                 shape="square"
                 size={40}
-                src={user.avatar_url || null}
+                src={user?.avatar_url ?? null}
               ></Avatar>
               <div className="avatar-info">
-                <Title level={5}>{user.name}</Title>
-                <p>{user.email}</p>
+                <Title level={5}>{user?.name}</Title>
+                <p>{user?.email}</p>
               </div>
             </Avatar.Group>{" "}
           </>
@@ -167,16 +175,18 @@ function People(params) {
         function: (
           <>
             <div className="author-info">
-              <Title level={5}>Manager</Title>
-              <p>Organization</p>
+              <Title level={5}>{user?.phone}</Title>
             </div>
           </>
         ),
 
         status: (
           <>
-            <Button type="primary" className="tag-primary">
-              ONLINE
+            <Button
+              type={user?.roles ? "primary" : "danger"}
+              className="tag-primary"
+            >
+              {user?.roles ? "Đang hoạt động" : "Đang chờ xác nhận"}
             </Button>
           </>
         ),
@@ -184,8 +194,8 @@ function People(params) {
         employed: (
           <>
             <div className="ant-employed">
-              <span>23/04/18</span>
-              <a href="#pablo">Edit</a>
+              <p>{user?.address}</p>
+              <a href="#pablo">Xóa</a>
             </div>
           </>
         ),
@@ -193,6 +203,7 @@ function People(params) {
     });
   };
 
+  console.log(classroom);
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -202,6 +213,8 @@ function People(params) {
     await importUserClassroom(id, { users: dataImport })
       .then((res) => {
         console.log(res);
+        setUsersClassroom(dataImport);
+        setDataImport([]);
       })
       .catch((err) => {
         console.log(err);
@@ -276,8 +289,8 @@ function People(params) {
     <div>
       <NavBar id={id} tab="people" />
       <div className="tabled">
-        <Row gutter={[24, 0]}>
-          <Col xs="24" xl={24}>
+        <Row>
+          <Col xs={24} xl={24}>
             <Card
               bordered={false}
               className="criclebox tablespace mb-24"
@@ -292,9 +305,11 @@ function People(params) {
                 <Table
                   columns={columns}
                   dataSource={
-                    isEmpty(classroom) ? [] : makeDataImport(classroom.users)
+                    isEmpty(classroom)
+                      ? []
+                      : makeDataUsers(classroom.users.concat(usersClassroom))
                   }
-                  pagination={false}
+                  pagination={true}
                   className="ant-border-space"
                 />
               </div>
@@ -323,7 +338,7 @@ function People(params) {
               defaultPageSize: 7,
               showSizeChanger: true,
             }}
-            dataSource={isEmpty(classroom) ? [] : makeDataUsers(dataImport)}
+            dataSource={isEmpty(classroom) ? [] : makeDataImport(dataImport)}
             className="ant-border-space"
           />
         </div>

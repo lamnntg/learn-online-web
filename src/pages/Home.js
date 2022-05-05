@@ -10,7 +10,8 @@ import {
   Progress,
   Upload,
   message,
-  Modal, Button,
+  Modal,
+  Button,
   Spin,
   Space,
 } from "antd";
@@ -36,15 +37,31 @@ import team3 from "../assets/images/team-3.jpg";
 import team4 from "../assets/images/team-4.jpg";
 import card from "../assets/images/info-card-1.jpg";
 import { authService } from "../services/auth.service";
+import { userService } from "../services/user.service";
 
 function Home() {
   const [news, setNews] = useState([]);
+  const [invites, setInvites] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const { Title, Text } = Typography;
   const user = authService.getCurrentUser();
-  const [isModalVisible, setIsModalVisible] = useState(user.status === 'pending' ? true : false);
+  const [isModalVisible, setIsModalVisible] = useState(
+    user.status === "pending" ? true : false
+  );
+  console.log(invites);
 
-  console.log(user);
+  useEffect(() => {
+    userService
+      .getClassroomInvite(user.email)
+      .then((res) => {
+        setInvites(res.data.result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -56,7 +73,7 @@ function Home() {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-  
+
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
 
   const [reverse, setReverse] = useState(false);
@@ -586,16 +603,19 @@ function Home() {
             </Card>
           </Col>
         </Row> */}
-
+  
         <Modal
           title="Xác nhận tham gia lớp học"
           visible={isModalVisible}
           onOk={handleOk}
           onCancel={handleCancel}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+            {invites.map((invite, index) => (
+            <>
+              <p>Lời mời tham gia lớp : {invite.classroom.name} - Phòng: {invite.classroom.room}. Môn : {invite.classroom.subject}</p>
+            </>
+          ))}
+
         </Modal>
       </div>
     </>

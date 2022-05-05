@@ -74,3 +74,9 @@ export const importUserClassroom = async (classroomId, data) => {
   const req = await axios.post(`${API_ROOT}/classroom/${classroomId}/users/import`, data, { headers: authHeader() });
   return req.data;
 }
+
+export const getUsersPending= async (classroomId) => {
+  const req = await axios.get(`${API_ROOT}/classroom/${classroomId}/get-users/pending`, { headers: authHeader() });
+  
+  return req.data;
+}
