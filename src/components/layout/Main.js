@@ -101,6 +101,7 @@ function Main({ children }) {
                 currentUser={currentUser}
                 breakcrumbUrl={listPath.url}
                 invites={invites}
+                setInvites={setInvites}
               />
             </AntHeader>
           </Affix>
@@ -116,6 +117,7 @@ function Main({ children }) {
               currentUser={currentUser}
               breakcrumbUrl={listPath.url}
               invites={invites}
+              setInvites={setInvites}
             />
           </AntHeader>
         )}

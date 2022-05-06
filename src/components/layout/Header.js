@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { authService } from "../../services/auth.service";
+import { userService } from "../../services/user.service";
 
 import {
   Row,
@@ -15,6 +16,7 @@ import {
   Typography,
   Switch,
   Menu,
+  message,
 } from "antd";
 
 import {
@@ -196,6 +198,7 @@ function Header({
   currentUser,
   breakcrumbUrl,
   invites,
+  setInvites
 }) {
   const { Title, Text } = Typography;
   const [visible, setVisible] = useState(false);
@@ -211,12 +214,42 @@ function Header({
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
+    await userService.submitInvite({
+      id: chooseInvite._id,
+      status: "accepted",
+      userId: currentUser.id,
+      classroomId: chooseInvite.classroom._id,
+    }).then((res) => {
+      let newInvites = invites.filter((invite) => {
+        return invite.id != chooseInvite.id;
+      })
+      setInvites(newInvites);
+    }).catch((err) => {
+      console.log(err)
+    });
+
     setChooseInvite(null);
     setIsModalVisible(false);
+    message.success("Bạn đã tham gia lớp thanh công !");
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    await userService.submitInvite({
+      id: chooseInvite._id,
+      status: "denied",
+      userId: currentUser.id,
+      classroomId: chooseInvite.classroom._id,
+    }).then((res) => {
+      let newInvites = invites.filter((invite) => {
+        return invite.id != chooseInvite.id;
+      })
+      setInvites(newInvites);
+    }).catch((err) => {
+      console.log(err)
+    });
+    message.success("Bạn đã từ chối tham gia lớp thanh công !");
+
     setChooseInvite(null);
     setIsModalVisible(false);
   };
@@ -291,9 +324,6 @@ function Header({
 
   return (
     <>
-      <div className="setting-drawer" onClick={showDrawer}>
-        {setting}
-      </div>
       <Row gutter={[24, 0]}>
         <Col span={24} md={6}>
           <Breadcrumb>
