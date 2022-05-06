@@ -39,7 +39,17 @@ const getUserById = (id) => {
 };
 
 const getClassroomInvite = (email) => {
-  return axios.post(`${API_ROOT}/user/get-invite`, { email : email}, {
+  return axios.post(
+    `${API_ROOT}/user/get-invite`,
+    { email: email },
+    {
+      headers: authHeader(),
+    }
+  );
+};
+
+const submitInvite = (data) => {
+  return axios.post(`${API_ROOT}/user/submit-invite`, data, {
     headers: authHeader(),
   });
 };
@@ -52,5 +62,6 @@ export const userService = {
   uploadAvatar,
   updateUser,
   getUserById,
-  getClassroomInvite
+  getClassroomInvite,
+  submitInvite,
 };

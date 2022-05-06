@@ -46,22 +46,6 @@ function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const { Title, Text } = Typography;
   const user = authService.getCurrentUser();
-  const [isModalVisible, setIsModalVisible] = useState(
-    user.status === "pending" ? true : false
-  );
-
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
 
   useEffect(async () => {
     await axios
@@ -418,20 +402,6 @@ function Home() {
             </Card>
           </Col>
         </Row> */}
-  
-        <Modal
-          title="Xác nhận tham gia lớp học"
-          visible={isModalVisible}
-          onOk={handleOk}
-          onCancel={handleCancel}
-        >
-            {invites.map((invite, index) => (
-            <>
-              <p>Lời mời tham gia lớp : {invite.classroom.name} - Phòng: {invite.classroom.room}. Môn : {invite.classroom.subject}</p>
-            </>
-          ))}
-
-        </Modal>
       </div>
     </>
   );
