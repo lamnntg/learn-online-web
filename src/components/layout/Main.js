@@ -6,7 +6,7 @@ import Header from './Header';
 import Footer from './Footer';
 import { handle } from '../../helpers/handle';
 import { authService } from '../../services/auth.service';
-
+import { userService } from '../../services/user.service';
 const { Header: AntHeader, Content, Sider } = Layout;
 
 function Main({ children }) {
@@ -16,6 +16,7 @@ function Main({ children }) {
   const [sidenavColor, setSidenavColor] = useState('#1890ff');
   const [sidenavType, setSidenavType] = useState('transparent');
   const [fixed, setFixed] = useState(false);
+  const [invites, setInvites] = useState([]);
 
   const openDrawer = () => setVisible(!visible);
   const handleSidenavType = type => setSidenavType(type);
@@ -29,6 +30,18 @@ function Main({ children }) {
 
   var subPathName = listPath.subPathName;
   pathname = listPath.pathName;
+
+
+  useEffect(() => {
+    userService
+      .getClassroomInvite(currentUser.email)
+      .then((res) => {
+        setInvites(res.data.result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   useEffect(() => {
     if (pathname === 'rtl') {
@@ -87,6 +100,7 @@ function Main({ children }) {
                 handleFixedNavbar={handleFixedNavbar}
                 currentUser={currentUser}
                 breakcrumbUrl={listPath.url}
+                invites={invites}
               />
             </AntHeader>
           </Affix>
@@ -101,6 +115,7 @@ function Main({ children }) {
               handleFixedNavbar={handleFixedNavbar}
               currentUser={currentUser}
               breakcrumbUrl={listPath.url}
+              invites={invites}
             />
           </AntHeader>
         )}

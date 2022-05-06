@@ -49,18 +49,7 @@ function Home() {
   const [isModalVisible, setIsModalVisible] = useState(
     user.status === "pending" ? true : false
   );
-  console.log(invites);
 
-  useEffect(() => {
-    userService
-      .getClassroomInvite(user.email)
-      .then((res) => {
-        setInvites(res.data.result);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -73,10 +62,6 @@ function Home() {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
-  const onChange = (e) => console.log(`radio checked:${e.target.value}`);
-
-  const [reverse, setReverse] = useState(false);
 
   useEffect(async () => {
     await axios
@@ -205,176 +190,6 @@ function Home() {
       bnb: "bnb2",
     },
   ];
-
-  const list = [
-    {
-      img: ava1,
-      Title: "Soft UI Shopify Version",
-      bud: "$14,000",
-      progress: <Progress percent={60} size="small" />,
-      member: (
-        <div className="avatar-group mt-2">
-          <Tooltip placement="bottom" title="Ryan Tompson">
-            <img className="tootip-img" src={team1} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Romina Hadid">
-            <img className="tootip-img" src={team2} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Alexander Smith">
-            <img className="tootip-img" src={team3} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Jessica Doe">
-            <img className="tootip-img" src={team4} alt="" />
-          </Tooltip>
-        </div>
-      ),
-    },
-    {
-      img: ava2,
-      Title: "Progress Track",
-      bud: "$3,000",
-      progress: <Progress percent={10} size="small" />,
-      member: (
-        <div className="avatar-group mt-2">
-          <Tooltip placement="bottom" title="Ryan Tompson">
-            <img className="tootip-img" src={team1} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Romina Hadid">
-            <img className="tootip-img" src={team2} alt="" />
-          </Tooltip>
-        </div>
-      ),
-    },
-    {
-      img: ava3,
-      Title: "Fix Platform Errors",
-      bud: "Not Set",
-      progress: <Progress percent={100} size="small" status="active" />,
-      member: (
-        <div className="avatar-group mt-2">
-          <Tooltip placement="bottom" title="Ryan Tompson">
-            <img className="tootip-img" src={team1} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Romina Hadid">
-            <img className="tootip-img" src={team1} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Alexander Smith">
-            <img className="tootip-img" src={team3} alt="" />
-          </Tooltip>
-        </div>
-      ),
-    },
-    {
-      img: ava4,
-      Title: "Launch new Mobile App",
-      bud: "$20,600",
-      progress: <Progress percent={100} size="small" status="active" />,
-      member: (
-        <div className="avatar-group mt-2">
-          <Tooltip placement="bottom" title="Ryan Tompson">
-            <img className="tootip-img" src={team1} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Romina Hadid">
-            <img className="tootip-img" src={team2} alt="" />
-          </Tooltip>
-        </div>
-      ),
-    },
-    {
-      img: ava5,
-      Title: "Add the New Landing Page",
-      bud: "$4,000",
-      progress: <Progress percent={80} size="small" />,
-      member: (
-        <div className="avatar-group mt-2">
-          <Tooltip placement="bottom" title="Ryan Tompson">
-            <img className="tootip-img" src={team1} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Romina Hadid">
-            <img className="tootip-img" src={team2} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Alexander Smith">
-            <img className="tootip-img" src={team3} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Jessica Doe">
-            <img className="tootip-img" src={team4} alt="" />
-          </Tooltip>
-        </div>
-      ),
-    },
-
-    {
-      img: ava6,
-      Title: "Redesign Online Store",
-      bud: "$2,000",
-      progress: (
-        <Progress
-          percent={100}
-          size="small"
-          status="exception"
-          format={() => "Cancel"}
-        />
-      ),
-      member: (
-        <div className="avatar-group mt-2">
-          <Tooltip placement="bottom" title="Ryan Tompson">
-            <img className="tootip-img" src={team1} alt="" />
-          </Tooltip>
-          <Tooltip placement="bottom" title="Romina Hadid">
-            <img className="tootip-img" src={team2} alt="" />
-          </Tooltip>
-        </div>
-      ),
-    },
-  ];
-
-  const timelineList = [
-    {
-      title: "$2,400 - Redesign store",
-      time: "09 JUN 7:20 PM",
-      color: "green",
-    },
-    {
-      title: "New order #3654323",
-      time: "08 JUN 12:20 PM",
-      color: "green",
-    },
-    {
-      title: "Company server payments",
-      time: "04 JUN 3:10 PM",
-    },
-    {
-      title: "New card added for order #4826321",
-      time: "02 JUN 2:45 PM",
-    },
-    {
-      title: "Unlock folders for development",
-      time: "18 MAY 1:30 PM",
-    },
-    {
-      title: "New order #46282344",
-      time: "14 MAY 3:30 PM",
-      color: "gray",
-    },
-  ];
-
-  const uploadProps = {
-    name: "file",
-    action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-    headers: {
-      authorization: "authorization-text",
-    },
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
 
   return (
     <>
