@@ -31,6 +31,7 @@ import {
 import Moment from "react-moment";
 
 import { NavLink, Link, useHistory } from "react-router-dom";
+import { updateRoom } from "../../firebase/services";
 import styled from "styled-components";
 import avtar from "../../assets/images/team-2.jpg";
 
@@ -245,6 +246,8 @@ function Header({
         return invite.id != chooseInvite.id;
       })
       setInvites(newInvites);
+      const uid = chooseInvite.classroom._id
+      updateRoom(currentUser.id, uid);
     }).catch((err) => {
       console.log(err)
     });

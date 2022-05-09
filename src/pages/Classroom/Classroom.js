@@ -128,7 +128,7 @@ export default function Classroom() {
         classroomCode: classroomCode,
         userId: currentUser.id,
       });
-      if (result) {
+      if (result?.result != false) {
         const uid = result.result._id;
         updateRoom(user.id, uid);
 
