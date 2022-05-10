@@ -43,3 +43,17 @@ export const updateQuestionById = async (questionID, data) => {
   });
   return req.data;
 };
+
+export const getCommentByQaId = async (questionID) => {
+  const req = await axios.get(`${API_ROOT}/qa/get-answers/${questionID}`, {
+    headers: authHeader(),
+  });
+  return req.data;
+};
+
+export const postCommentByQaId = async (data) => {
+  const req = await axios.post(`${API_ROOT}/qa/store-answers`, data, {
+    headers: authHeader(),
+  });
+  return req.data;
+};

@@ -8,6 +8,8 @@ import {
   Tooltip,
   Avatar,
   Button,
+  Spin,
+  Space,
 } from "antd";
 import {
   QuestionCircleOutlined,
@@ -17,18 +19,28 @@ import {
   UpCircleOutlined,
 } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
-import { getQuestionByID } from "../../../services/questions.service";
+import {
+  getQuestionByID,
+  getCommentByQaId,
+  postCommentByQaId,
+} from "../../../services/questions.service";
 import { userService } from "../../../services/user.service";
 import moment from "moment";
 import BgProfile from "../../../assets/images/classroom.jpg";
 import "./read.question.scss";
+import { authService } from "../../../services/auth.service";
 
 const ReadQuestion = () => {
   const location = useLocation();
+  const currentUser = authService.getCurrentUser();
   const { Title, Paragraph } = Typography;
   const [questionInfo, setQuestionInfo] = useState(null);
   const [author, setAuthor] = useState(null);
   const [visible, setVisible] = useState(false);
+  const [loadingComment, setLoadingComment] = useState(true);
+  const [comments, setComments] = useState(null);
+  const [comment, setComment] = useState("");
+
   const dummy = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
   const questionId = location.pathname.split("/").pop();
@@ -46,15 +58,46 @@ const ReadQuestion = () => {
     }
   }, [questionInfo]);
 
+  const getAllComments = async () => {
+    await getCommentByQaId(questionId).then((res) => {
+      setComments(res.result.reverse());
+      setLoadingComment(false);
+    });
+  };
+
   const convertTime = (time) => {
     return moment(time).format("LL");
   };
   const showDrawer = () => setVisible(true);
   const hideDrawer = () => setVisible(false);
 
-  const showComment = () => {
+  const showComment = async () => {
     // call api
+    if (comments === null) {
+      await getAllComments();
+    }
     showDrawer();
+  };
+
+  const addComment = (data) => {
+    const newData = { ...data, user: currentUser };
+    setComments([newData, ...comments]);
+  };
+
+  const submitComment = async () => {
+    const data = {
+      userQuestion: questionId,
+      userId: currentUser.id,
+      content: comment,
+    };
+    await postCommentByQaId(data).then((res) => {
+      setComment("");
+      addComment(res.result);
+    });
+  };
+
+  const setValueInput = async (event) => {
+    setComment(event.target.value);
   };
 
   return (
@@ -135,73 +178,81 @@ const ReadQuestion = () => {
                 <div className="header-top">
                   <Title level={4} id="comment-custom">
                     Bình luận
+                    {loadingComment && <Spin />}
                   </Title>
                 </div>
 
-                <Col className="sidebar-color">
-                  <Row align="bottom" style={{ marginBottom: "10px" }}>
-                    <Col span={2}>
-                      <Avatar
-                        size={32}
-                        src="https://joeschmoe.io/api/v1/random"
-                      />
+                {!loadingComment && (
+                  <>
+                    <Col className="sidebar-color">
+                      <Row align="bottom" style={{ marginBottom: "10px" }}>
+                        <Col span={2}>
+                          <Avatar size={32} src={currentUser.avatar_url} />
+                        </Col>
+                        <Col span={22}>
+                          <input
+                            style={{
+                              outline: "0",
+                              border: 0,
+                              borderBottom: "1px solid #333",
+                              width: "100%",
+                            }}
+                            value={comment}
+                            onChange={(e) => setValueInput(e)}
+                            placeholder="Viết bình luận"
+                            type="text"
+                          />
+                        </Col>
+                      </Row>
+                      <Row justify="end" style={{ marginBottom: "30px" }}>
+                        <Button
+                          type="danger"
+                          style={{ marginRight: "15px" }}
+                          onClick={() => setComment("")}
+                        >
+                          Hủy bỏ
+                        </Button>
+                        <Button type="primary" onClick={() => submitComment()}>
+                          Bình luận
+                        </Button>
+                      </Row>
+                      {comments &&
+                        comments.map((el) => (
+                          <Comment
+                            author={<a>{el.user.name}</a>}
+                            avatar={
+                              <Avatar
+                                src={el.user.avatar_url}
+                                alt={el.user.name}
+                              />
+                            }
+                            content={<p>{el.content}</p>}
+                            datetime={
+                              <Tooltip
+                                title={moment(el.createdAt).format(
+                                  "YYYY-MM-DD HH:mm:ss"
+                                )}
+                              >
+                                <span>{moment(el.createdAt).fromNow()}</span>
+                              </Tooltip>
+                            }
+                          />
+                        ))}
                     </Col>
-                    <Col span={22}>
-                      <input
+                    <a href="#comment-custom">
+                      <UpCircleOutlined
                         style={{
-                          outline: "0",
-                          border: 0,
-                          borderBottom: "1px solid #333",
-                          width: "100%",
+                          fontSize: "40px",
+                          color: "#ff970b",
+                          position: "fixed",
+                          bottom: "20px",
+                          right: "30px",
+                          cursor: "pointer",
                         }}
-                        placeholder="Viết bình luận"
-                        type="text"
-                      />
-                    </Col>
-                  </Row>
-                  <Row justify="end" style={{ marginBottom: "30px" }}>
-                    <Button type="danger" style={{ marginRight: "15px" }}>
-                      Hủy bỏ
-                    </Button>
-                    <Button type="primary">Bình luận</Button>
-                  </Row>
-                  {dummy.map((el) => (
-                    <Comment
-                      author={<a>Han Solo</a>}
-                      avatar={
-                        <Avatar
-                          src="https://joeschmoe.io/api/v1/random"
-                          alt="Han Solo"
-                        />
-                      }
-                      content={
-                        <p>
-                          We supply a series of design principles, practical
-                          patterns and high quality design resources (Sketch and
-                          Axure), to help people create their product prototypes
-                          beautifully and efficiently.
-                        </p>
-                      }
-                      datetime={
-                        <Tooltip title={moment().format("YYYY-MM-DD HH:mm:ss")}>
-                          <span>{moment().fromNow()}</span>
-                        </Tooltip>
-                      }
-                    />
-                  ))}
-                </Col>
-                <a href="#comment-custom">
-                  <UpCircleOutlined
-                    style={{
-                      fontSize: "40px",
-                      color: "#ff970b",
-                      position: "fixed",
-                      bottom: "20px",
-                      right: "30px",
-                      cursor: "pointer",
-                    }}
-                  ></UpCircleOutlined>
-                </a>
+                      ></UpCircleOutlined>
+                    </a>
+                  </>
+                )}
               </div>
             </Drawer>
           </>
