@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react";
-import { Col, Row, Typography } from "antd";
+import {
+  Col,
+  Drawer,
+  Row,
+  Typography,
+  Comment,
+  Tooltip,
+  Avatar,
+  Button,
+} from "antd";
 import {
   QuestionCircleOutlined,
   CommentOutlined,
   HeartOutlined,
+  UserOutlined,
+  UpCircleOutlined,
 } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
 import { getQuestionByID } from "../../../services/questions.service";
@@ -17,6 +28,8 @@ const ReadQuestion = () => {
   const { Title, Paragraph } = Typography;
   const [questionInfo, setQuestionInfo] = useState(null);
   const [author, setAuthor] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const dummy = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
   const questionId = location.pathname.split("/").pop();
   useEffect(async () => {
@@ -35,6 +48,13 @@ const ReadQuestion = () => {
 
   const convertTime = (time) => {
     return moment(time).format("LL");
+  };
+  const showDrawer = () => setVisible(true);
+  const hideDrawer = () => setVisible(false);
+
+  const showComment = () => {
+    // call api
+    showDrawer();
   };
 
   return (
@@ -59,15 +79,38 @@ const ReadQuestion = () => {
                   <Col span={12}>
                     <QuestionCircleOutlined /> {questionInfo.title}
                   </Col>
-                  <Col span={2} justify="end" style={{ cursor: "pointer" }}>
+                  <Col span={3} justify="end" style={{ cursor: "pointer" }}>
                     <Row justify="space-between">
                       <Col span={12}>
-                        <Row align="middle">
+                        <Row align="middle" onClick={() => showComment()}>
                           <CommentOutlined />
-                          <Paragraph> 21</Paragraph>
+                          <Paragraph
+                            style={{
+                              fontSize: "15px",
+                              margin: 0,
+                              paddingLeft: "10px",
+                            }}
+                          >
+                            {" "}
+                            21
+                          </Paragraph>
                         </Row>
                       </Col>
-                      <HeartOutlined />
+                      <Col span={12}>
+                        <Row align="middle">
+                          <HeartOutlined />
+                          <Paragraph
+                            style={{
+                              fontSize: "15px",
+                              margin: 0,
+                              paddingLeft: "10px",
+                            }}
+                          >
+                            {" "}
+                            21
+                          </Paragraph>
+                        </Row>
+                      </Col>
                     </Row>
                   </Col>
                 </Row>
@@ -81,6 +124,86 @@ const ReadQuestion = () => {
                 dangerouslySetInnerHTML={{ __html: questionInfo.content }}
               ></div>
             </div>
+            <Drawer
+              className="settings-drawer"
+              mask={true}
+              width={680}
+              onClose={hideDrawer}
+              visible={visible}
+            >
+              <div layout="vertical">
+                <div className="header-top">
+                  <Title level={4} id="comment-custom">
+                    Bình luận
+                  </Title>
+                </div>
+
+                <Col className="sidebar-color">
+                  <Row align="bottom" style={{ marginBottom: "10px" }}>
+                    <Col span={2}>
+                      <Avatar
+                        size={32}
+                        src="https://joeschmoe.io/api/v1/random"
+                      />
+                    </Col>
+                    <Col span={22}>
+                      <input
+                        style={{
+                          outline: "0",
+                          border: 0,
+                          borderBottom: "1px solid #333",
+                          width: "100%",
+                        }}
+                        placeholder="Viết bình luận"
+                        type="text"
+                      />
+                    </Col>
+                  </Row>
+                  <Row justify="end" style={{ marginBottom: "30px" }}>
+                    <Button type="danger" style={{ marginRight: "15px" }}>
+                      Hủy bỏ
+                    </Button>
+                    <Button type="primary">Bình luận</Button>
+                  </Row>
+                  {dummy.map((el) => (
+                    <Comment
+                      author={<a>Han Solo</a>}
+                      avatar={
+                        <Avatar
+                          src="https://joeschmoe.io/api/v1/random"
+                          alt="Han Solo"
+                        />
+                      }
+                      content={
+                        <p>
+                          We supply a series of design principles, practical
+                          patterns and high quality design resources (Sketch and
+                          Axure), to help people create their product prototypes
+                          beautifully and efficiently.
+                        </p>
+                      }
+                      datetime={
+                        <Tooltip title={moment().format("YYYY-MM-DD HH:mm:ss")}>
+                          <span>{moment().fromNow()}</span>
+                        </Tooltip>
+                      }
+                    />
+                  ))}
+                </Col>
+                <a href="#comment-custom">
+                  <UpCircleOutlined
+                    style={{
+                      fontSize: "40px",
+                      color: "#ff970b",
+                      position: "fixed",
+                      bottom: "20px",
+                      right: "30px",
+                      cursor: "pointer",
+                    }}
+                  ></UpCircleOutlined>
+                </a>
+              </div>
+            </Drawer>
           </>
         )}
       </div>
