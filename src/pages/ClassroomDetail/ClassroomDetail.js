@@ -33,8 +33,8 @@ export default function ClassroomDetail(props) {
 	const [data, setData] = useState([]);
 	const currentUser = authService.getCurrentUser();
 
-	useEffect(() => {
-		getClassroomNotifications(id)
+	useEffect(async () => {
+		await getClassroomNotifications(id)
 			.then((res) => {
 				setData(res.reverse());
 			})

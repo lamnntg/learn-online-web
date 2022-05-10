@@ -4,8 +4,8 @@ import { getClassroomById } from "../services/classroom.service";
 const useClassroom = (classroomId) => {
   const [classroom, setClassroom] = useState({});
 
-  useEffect(() => {
-    getClassroomById(classroomId)
+  useEffect(async () => {
+    await getClassroomById(classroomId)
       .then((res) => {
         setClassroom(res.result);
       })

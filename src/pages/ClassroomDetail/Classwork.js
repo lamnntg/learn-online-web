@@ -153,8 +153,8 @@ export default function Classwork(params) {
     }
   }
 
-  useEffect(() => {
-    getClassroomDocuments(params.match.params.id)
+  useEffect(async () => {
+    await getClassroomDocuments(params.match.params.id)
       .then((res) => {
         setDocuments(res.reverse());
       })
@@ -162,7 +162,7 @@ export default function Classwork(params) {
         console.log(err);
       });
 
-    getHomework(params.match.params.id)
+    await getHomework(params.match.params.id)
       .then((res) => {
         console.log(res);
         setHomeworks(res.result.reverse());

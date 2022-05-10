@@ -32,8 +32,8 @@ function Main({ children }) {
   pathname = listPath.pathName;
 
 
-  useEffect(() => {
-    userService
+  useEffect(async () => {
+    await userService
       .getClassroomInvite(currentUser.email)
       .then((res) => {
         setInvites(res.data.result);

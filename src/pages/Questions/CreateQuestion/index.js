@@ -49,8 +49,8 @@ function CreateQuestion() {
     setQuestionValue({ ...questionValue, content });
   };
 
-  useEffect(() => {
-    getAllQAByUserId(user.id).then((res) => {
+  useEffect(async () => {
+    await getAllQAByUserId(user.id).then((res) => {
       setListQuestions(res.result);
     });
   }, []);

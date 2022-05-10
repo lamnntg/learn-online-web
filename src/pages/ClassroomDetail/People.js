@@ -87,8 +87,8 @@ function People(params) {
   const [dataImport, setDataImport] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  useEffect(() => {
-    getUsersPending(id).then((res) => {
+  useEffect(async () => {
+    await getUsersPending(id).then((res) => {
       setUsersClassroom(res.users);
     });
   }, [id]);

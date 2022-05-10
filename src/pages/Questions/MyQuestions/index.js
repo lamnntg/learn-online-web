@@ -28,8 +28,8 @@ function MyQuestions() {
   const createQuestionPath = `${location.pathname}/create`;
   const editQuestionPath = `${location.pathname}/edit`;
 
-  useEffect(() => {
-    getAllQA()
+  useEffect(async () => {
+    await getAllQA()
       .then((res) => {
         setQuestions(res);
       })
@@ -38,8 +38,8 @@ function MyQuestions() {
       });
   }, []);
 
-  useEffect(() => {
-    getAllQAByUserId(user.id).then((res) => {
+  useEffect(async () => {
+    await getAllQAByUserId(user.id).then((res) => {
       setListQuestions(res.result);
     });
   }, []);

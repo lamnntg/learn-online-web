@@ -196,8 +196,8 @@ export default function Homework(params, props) {
     };
   }, [history, isStart]);
 
-  useEffect(() => {
-    getHomeworkDetail(homeworkId)
+  useEffect(async () => {
+    await getHomeworkDetail(homeworkId)
       .then((res) => {
         const homeworkInfor = {
           ...res,

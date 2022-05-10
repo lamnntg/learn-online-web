@@ -57,8 +57,8 @@ export default function Classroom() {
   const isModerator = currentUser.roles.includes(ROLE_MODERATOR);
 
   //get data class room
-  useEffect(() => {
-    getClassrooms(user.id)
+  useEffect(async () => {
+    await getClassrooms(user.id)
       .then((res) => {
         setClassrooms(res.result);
       })
@@ -72,9 +72,9 @@ export default function Classroom() {
   }, [user]);
 
   //get data classroom Manage
-  useEffect(() => {
+  useEffect(async () => {
     if (isModerator) {
-      getClassroomManage(user.id)
+      await getClassroomManage(user.id)
         .then((res) => {
           setClassroomManage(res.result);
         })

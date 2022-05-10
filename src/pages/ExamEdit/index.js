@@ -76,8 +76,8 @@ function ExamEdit(params) {
   const examId = params.match.params.examId;
   
 
-  React.useEffect(() => {
-    getHomeworkDetail(examId).then((res) => {
+  React.useEffect(async () => {
+    await getHomeworkDetail(examId).then((res) => {
       setFormData({
         title: res.title,
         description: res.description,

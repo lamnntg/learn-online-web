@@ -6,8 +6,8 @@ import moment from "moment";
 export default function Result(props) {
   const { homework } = props;
   const [results, setResults] = useState([]);
-  useEffect(() => {
-    getResultHomework(homework._id)
+  useEffect(async () => {
+    await getResultHomework(homework._id)
       .then((res) => {
         console.log(res);
         setResults(res);

@@ -10,8 +10,8 @@ export default function ClassroomProviderContext({ children }) {
 
   let classroomId = localStorage.getItem('classroomId')
 
-  useEffect(() => {
-    const unsubscibed = getClassroomById(classroomId)
+  useEffect(async () => {
+    const unsubscibed = await getClassroomById(classroomId)
       .then((res) => {
         setClassroom(res.result);
         setIsLoading(false);
