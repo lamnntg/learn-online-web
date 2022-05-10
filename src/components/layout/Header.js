@@ -199,7 +199,7 @@ function Header({
   currentUser,
   breakcrumbUrl,
   invites,
-  setInvites
+  setInvites,
 }) {
   const { Title, Text } = Typography;
   const [visible, setVisible] = useState(false);
@@ -216,19 +216,22 @@ function Header({
   };
 
   const handleOk = async () => {
-    await userService.submitInvite({
-      id: chooseInvite._id,
-      status: "accepted",
-      userId: currentUser.id,
-      classroomId: chooseInvite.classroom._id,
-    }).then((res) => {
-      let newInvites = invites.filter((invite) => {
-        return invite.id != chooseInvite.id;
+    await userService
+      .submitInvite({
+        id: chooseInvite._id,
+        status: "accepted",
+        userId: currentUser.id,
+        classroomId: chooseInvite.classroom._id,
       })
-      setInvites(newInvites);
-    }).catch((err) => {
-      console.log(err)
-    });
+      .then((res) => {
+        let newInvites = invites.filter((invite) => {
+          return invite.id != chooseInvite.id;
+        });
+        setInvites(newInvites);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     setChooseInvite(null);
     setIsModalVisible(false);
@@ -236,21 +239,24 @@ function Header({
   };
 
   const handleCancel = async () => {
-    await userService.submitInvite({
-      id: chooseInvite._id,
-      status: "denied",
-      userId: currentUser.id,
-      classroomId: chooseInvite.classroom._id,
-    }).then((res) => {
-      let newInvites = invites.filter((invite) => {
-        return invite.id != chooseInvite.id;
+    await userService
+      .submitInvite({
+        id: chooseInvite._id,
+        status: "denied",
+        userId: currentUser.id,
+        classroomId: chooseInvite.classroom._id,
       })
-      setInvites(newInvites);
-      const uid = chooseInvite.classroom._id
-      updateRoom(currentUser.id, uid);
-    }).catch((err) => {
-      console.log(err)
-    });
+      .then((res) => {
+        let newInvites = invites.filter((invite) => {
+          return invite.id != chooseInvite.id;
+        });
+        setInvites(newInvites);
+        const uid = chooseInvite.classroom._id;
+        updateRoom(currentUser.id, uid);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     message.success("Bạn đã từ chối tham gia lớp thanh công !");
 
     setChooseInvite(null);
