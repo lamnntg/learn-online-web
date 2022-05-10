@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { Typography } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { Col, Row, Typography } from "antd";
+import {
+  QuestionCircleOutlined,
+  CommentOutlined,
+  HeartOutlined,
+} from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
 import { getQuestionByID } from "../../../services/questions.service";
 import { userService } from "../../../services/user.service";
@@ -51,9 +55,23 @@ const ReadQuestion = () => {
             </div>
             <div className="read-title">
               <Title level={3}>
-                <QuestionCircleOutlined /> {questionInfo.title}
+                <Row span={24} justify="space-between">
+                  <Col span={12}>
+                    <QuestionCircleOutlined /> {questionInfo.title}
+                  </Col>
+                  <Col span={2} justify="end" style={{ cursor: "pointer" }}>
+                    <Row justify="space-between">
+                      <Col span={12}>
+                        <Row align="middle">
+                          <CommentOutlined />
+                          <Paragraph> 21</Paragraph>
+                        </Row>
+                      </Col>
+                      <HeartOutlined />
+                    </Row>
+                  </Col>
+                </Row>
               </Title>
-
               <Paragraph level={5} className="read-time">
                 {author && author.name} - {convertTime(questionInfo.createdAt)}
               </Paragraph>
