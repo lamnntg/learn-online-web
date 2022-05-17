@@ -135,7 +135,7 @@ const ReadQuestion = () => {
                             }}
                           >
                             {" "}
-                            21
+                            {comments && comments.length}
                           </Paragraph>
                         </Row>
                       </Col>
@@ -150,7 +150,6 @@ const ReadQuestion = () => {
                             }}
                           >
                             {" "}
-                            21
                           </Paragraph>
                         </Row>
                       </Col>
