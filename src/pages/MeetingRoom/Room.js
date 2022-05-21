@@ -126,91 +126,91 @@ const Room = (props) => {
       console.error("Error accessing media devices.", error);
     }
 
-    // navigator.mediaDevices
-    //   .getUserMedia({ video: true, audio: true })
-    //   .then((stream) => {
-    //     console.log(stream);
-    //     userVideoRef.current.srcObject = stream;
-    //     userStream.current = stream;
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        console.log(stream);
+        userVideoRef.current.srcObject = stream;
+        userStream.current = stream;
 
-    //     socket.emit("BE-join-room", { roomId, userName: currentUser.username });
-    //     socket.on("FE-user-join", (users) => {
-    //       // all users
-    //       const peers = [];
-    //       users.forEach(({ userId, info }) => {
-    //         let { userName, video, audio } = info;
+        socket.emit("BE-join-room", { roomId, userName: currentUser.username });
+        socket.on("FE-user-join", (users) => {
+          // all users
+          const peers = [];
+          users.forEach(({ userId, info }) => {
+            let { userName, video, audio } = info;
 
-    //         if (userName !== currentUser.username) {
-    //           const peer = createPeer(userId, socket.id, stream);
+            if (userName !== currentUser.username) {
+              const peer = createPeer(userId, socket.id, stream);
 
-    //           peer.userName = userName;
-    //           peer.peerID = userId;
+              peer.userName = userName;
+              peer.peerID = userId;
 
-    //           peersRef.current.push({
-    //             peerID: userId,
-    //             peer,
-    //             userName,
-    //           });
-    //           peers.push(peer);
+              peersRef.current.push({
+                peerID: userId,
+                peer,
+                userName,
+              });
+              peers.push(peer);
 
-    //           setUserVideoAudio((preList) => {
-    //             return {
-    //               ...preList,
-    //               [peer.userName]: { video, audio },
-    //             };
-    //           });
-    //         }
-    //       });
+              setUserVideoAudio((preList) => {
+                return {
+                  ...preList,
+                  [peer.userName]: { video, audio },
+                };
+              });
+            }
+          });
 
-    //       setPeers(peers);
-    //     });
+          setPeers(peers);
+        });
 
-    //     socket.on("FE-receive-call", ({ signal, from, info }) => {
-    //       let { userName, video, audio } = info;
-    //       const peerIdx = findPeer(from);
+        socket.on("FE-receive-call", ({ signal, from, info }) => {
+          let { userName, video, audio } = info;
+          const peerIdx = findPeer(from);
 
-    //       if (!peerIdx) {
-    //         const peer = addPeer(signal, from, stream);
+          if (!peerIdx) {
+            const peer = addPeer(signal, from, stream);
 
-    //         peer.userName = userName;
+            peer.userName = userName;
 
-    //         peersRef.current.push({
-    //           peerID: from,
-    //           peer,
-    //           userName: userName,
-    //         });
-    //         setPeers((users) => {
-    //           return [...users, peer];
-    //         });
-    //         setUserVideoAudio((preList) => {
-    //           return {
-    //             ...preList,
-    //             [peer.userName]: { video, audio },
-    //           };
-    //         });
-    //       }
-    //     });
+            peersRef.current.push({
+              peerID: from,
+              peer,
+              userName: userName,
+            });
+            setPeers((users) => {
+              return [...users, peer];
+            });
+            setUserVideoAudio((preList) => {
+              return {
+                ...preList,
+                [peer.userName]: { video, audio },
+              };
+            });
+          }
+        });
 
-    //     socket.on("FE-call-accepted", ({ signal, answerId }) => {
-    //       const peerIdx = findPeer(answerId);
-    //       peerIdx.peer.signal(signal);
-    //     });
+        socket.on("FE-call-accepted", ({ signal, answerId }) => {
+          const peerIdx = findPeer(answerId);
+          peerIdx.peer.signal(signal);
+        });
 
-    //     socket.on("FE-user-leave", ({ userId, userName }) => {
-    //       const peerIdx = findPeer(userId);
-    //       peerIdx.peer.destroy();
-    //       setPeers((users) => {
-    //         users = users.filter((user) => user.peerID !== peerIdx.peer.peerID);
-    //         return [...users];
-    //       });
-    //       peersRef.current = peersRef.current.filter(
-    //         ({ peerID }) => peerID !== userId
-    //       );
-    //     });
-    //   })
-    //   .catch((err) =>
-    //     console.log(err)
-    //   );
+        socket.on("FE-user-leave", ({ userId, userName }) => {
+          const peerIdx = findPeer(userId);
+          peerIdx.peer.destroy();
+          setPeers((users) => {
+            users = users.filter((user) => user.peerID !== peerIdx.peer.peerID);
+            return [...users];
+          });
+          peersRef.current = peersRef.current.filter(
+            ({ peerID }) => peerID !== userId
+          );
+        });
+      })
+      .catch((err) =>
+        console.log(err)
+      );
 
     // handle change device video
     socket.on("FE-toggle-camera", ({ userId, switchTarget }) => {
