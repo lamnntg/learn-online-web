@@ -13,7 +13,7 @@ import {
   Form,
   Input,
   Switch,
-  message as MessageAnt
+  message as MessageAnt,
 } from "antd";
 import loginbg from "../assets/images/login.png";
 import {
@@ -142,7 +142,7 @@ function SignIn() {
       })
       .catch((error) => {
         MessageAnt.error(error);
-        setPassword('');
+        setPassword("");
         setLoading(false);
       });
   };
@@ -152,8 +152,8 @@ function SignIn() {
   }
 
   const onFinish = (values) => {
+    handleLogin();
     console.log("Success:", values);
-    handleLogin()
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -225,7 +225,11 @@ function SignIn() {
                     },
                   ]}
                 >
-                  <Input placeholder="Email" value={username} onChange={onChangeUsername} />
+                  <Input
+                    placeholder="Email"
+                    value={username}
+                    onChange={onChangeUsername}
+                  />
                 </Form.Item>
 
                 <Form.Item
@@ -239,7 +243,11 @@ function SignIn() {
                     },
                   ]}
                 >
-                  <Input type="password" placeholder="Password" onChange={onChangePassword}/>
+                  <Input
+                    type="password"
+                    placeholder="Password"
+                    onChange={onChangePassword}
+                  />
                 </Form.Item>
 
                 <Form.Item
@@ -265,6 +273,16 @@ function SignIn() {
                   <Link to="/sign-up" className="text-dark font-bold">
                     Sign Up
                   </Link>
+                </p>
+                <p className="font-semibold text-muted">
+                  Login by your Face ?{" "}
+                  <a 
+                    className="text-dark font-bold"
+                    href="http://localhost:5000/"
+    
+                  >
+                    Sign In
+                  </a>
                 </p>
               </Form>
             </Col>

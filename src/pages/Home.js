@@ -146,29 +146,29 @@ function Home() {
   ];
   const count = [
     {
-      today: "Today’s Sales",
-      title: "$53,000",
+      today: "Lượng truy cập ngày hôm nay",
+      title: "20,000",
       persent: "+30%",
       icon: dollor,
       bnb: "bnb2",
     },
     {
-      today: "Today’s Users",
+      today: "Bạn bè của bạn",
       title: "3,200",
       persent: "+20%",
       icon: profile,
       bnb: "bnb2",
     },
     {
-      today: "New Clients",
-      title: "+1,200",
+      today: "Bài kiểm tra cần hoàn thành",
+      title: "+3",
       persent: "-20%",
       icon: heart,
       bnb: "redtext",
     },
     {
-      today: "New Orders",
-      title: "$13,200",
+      today: "Chứng chỉ khóa học",
+      title: "10",
       persent: "10%",
       icon: cart,
       bnb: "bnb2",
