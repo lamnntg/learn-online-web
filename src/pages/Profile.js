@@ -8,13 +8,10 @@ import {
   List,
   Descriptions,
   Avatar,
-  Radio,
-  Switch,
   Upload,
   Image,
   Form,
   Input,
-  InputNumber,
   Modal,
 } from "antd";
 import { EyeOutlined } from "@ant-design/icons";

@@ -6,20 +6,10 @@ import {
   Col,
   Row,
   Typography,
-  Tooltip,
-  Progress,
-  Upload,
-  message,
-  Modal,
-  Button,
   Spin,
   Space,
 } from "antd";
-import {
-  ToTopOutlined,
-  MenuUnfoldOutlined,
-  RightOutlined,
-} from "@ant-design/icons";
+
 import Paragraph from "antd/lib/typography/Paragraph";
 
 import Echart from "../components/chart/EChart";

@@ -1,13 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import { login } from "../redux/auth/auth.actions";
-import { Link, Redirect, useHistory } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import jwt from "jsonwebtoken";
 import { Spin, Space } from "antd";
 
-export default function SignInByFace(props) {
+export default function SignInByFace() {
   const { isLoggedIn } = useSelector((state) => state.auth);
-  const { message } = useSelector((state) => state.message);
   const history = useHistory();
   const dispatch = useDispatch();
 

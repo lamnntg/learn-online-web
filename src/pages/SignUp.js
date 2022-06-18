@@ -348,7 +348,7 @@ function SignUp() {
           </Menu>
           <p className="copyright">
             {" "}
-            Copyright © 2021 Muse by <a href="#pablo">Creative Tim</a>.{" "}
+            Copyright © 2022 Learn Online by <a href="#pablo">Lam Nguyen</a>.{" "}
           </p>
         </Footer>
       </div>
