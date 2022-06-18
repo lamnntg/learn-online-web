@@ -24,6 +24,7 @@ import {
   TwitterOutlined,
   InstagramOutlined,
   VerticalAlignTopOutlined,
+  LoginOutlined
 } from "@ant-design/icons";
 
 import BgProfile from "../assets/images/bg-works.jpg";
@@ -386,6 +387,11 @@ function Profile() {
                 </a>
                 <a href="#pablo" className="mx-5 px-5">
                   {<InstagramOutlined style={{ color: "#e1306c" }} />}
+                </a>
+              </Descriptions.Item>
+              <Descriptions.Item label="Register Login By Face" span={3}>
+                <a href={`http://localhost:5000?register=true&username=${user.username}`} className="mx-5 px-5">
+                  {<LoginOutlined />}
                 </a>
               </Descriptions.Item>
             </Descriptions>

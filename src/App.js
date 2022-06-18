@@ -34,6 +34,7 @@ import { history } from "./helpers/history";
 import { logout } from "./redux/auth/auth.actions";
 import AuthVerify from "./common/AuthVerify";
 import NotFound from "./pages/NotFound";
+import SignInByFace from "./pages/SignInByFace";
 import Room from "./pages/MeetingRoom/Room";
 import AppProviderContext from "./contexts/AppProviderContext";
 
@@ -56,6 +57,7 @@ function App() {
             <Route exact path="/" component={Landing} />
             <Route path="/sign-up" exact component={SignUp} />
             <Route path="/sign-in" exact component={SignIn} />
+            <Route path="/login-by-face" exact component={SignInByFace} />
             <Redirect from="*" to="/sign-in" />
           </Switch>
         ) : (
@@ -128,7 +130,7 @@ function App() {
                 />
               </AppProviderContext>
 
-              {/* <Redirect from="*" to="/dashboard" /> */}
+              <Redirect from="*" to="/dashboard" />
             </Main>
           </Switch>
         )}
