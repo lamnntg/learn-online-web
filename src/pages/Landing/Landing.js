@@ -129,10 +129,8 @@ export default function Landing() {
   const handleLogin = () => {
     if (isLoggedIn) {
       history.push("/dashboard");
-      window.location.reload();
     } else {
       history.push("/sign-in");
-      window.location.reload();
     }
   }
   
