@@ -40,10 +40,10 @@ function Home() {
   useEffect(async () => {
     await axios
       .get(
-        "https://newsapi.org/v2/top-headlines?country=us&category=technology&apiKey=1cf49d1063ef429ca40cbc99f1b01b0c"
+        "https://newsdata.io/api/1/news?apikey=pub_8586ca3d566995baa03687c9e9a2e7678ea2&q=technology&language=en"
       )
       .then((res) => {
-        setNews(res.data.articles);
+        setNews(res.data.results);
         setIsLoading(false);
       });
   }, []);
@@ -209,7 +209,7 @@ function Home() {
           <Row gutter={[24, 24]}>
             {!isLoading ? (
               news.map((p, index) => {
-                if (p.urlToImage) {
+                if (p.image_url) {
                   return (
                     <Col
                       span={24}
@@ -220,7 +220,7 @@ function Home() {
                     >
                       <Card
                         onClick={() => {
-                          window.open(p.url);
+                          window.open(p.link);
                         }}
                         bordered={false}
                         className="card-project"
@@ -229,11 +229,11 @@ function Home() {
                             alt="example"
                             height={200}
                             style={{ objectFit: "cover" }}
-                            src={p.urlToImage}
+                            src={p.image_url}
                           />
                         }
                       >
-                        <div className="card-tag">{p.author}</div>
+                        <div className="card-tag">{p.creator}</div>
                         <h5>{p.title}</h5>
                         <p>{p.description}</p>
                       </Card>
