@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useHistory } from "react-router-dom";
 import Peer from "simple-peer";
 import styled from "styled-components";
 import socket from "../../socket";
@@ -8,6 +9,7 @@ import Chat from "../../components/meeting/Chat/Chat";
 import { authService } from "../../services/auth.service";
 
 const Room = (props) => {
+  const history = useHistory();
   const currentUser = authService.getCurrentUser();
   const [peers, setPeers] = useState([]);
   const [userVideoAudio, setUserVideoAudio] = useState({
@@ -113,6 +115,9 @@ const Room = (props) => {
 
       socket.on("FE-user-leave", ({ userId, userName }) => {
         const peerIdx = findPeer(userId);
+        if (!peerIdx) {
+          history.push("/dashboard");
+        }
         peerIdx.peer.destroy();
         setPeers((users) => {
           users = users.filter((user) => user.peerID !== peerIdx.peer.peerID);
@@ -198,6 +203,9 @@ const Room = (props) => {
 
         socket.on("FE-user-leave", ({ userId, userName }) => {
           const peerIdx = findPeer(userId);
+          if (!peerIdx) {
+            history.push("/dashboard");
+          }
           peerIdx.peer.destroy();
           setPeers((users) => {
             users = users.filter((user) => user.peerID !== peerIdx.peer.peerID);
